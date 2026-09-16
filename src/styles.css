@@ -1,0 +1,82 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: #12101c;
+  color: #e4dcc8;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+.kit {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+}
+
+.kit__head h1 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.kit__head p {
+  margin: 0 0 28px;
+  color: #8a8498;
+  font-size: 12px;
+}
+
+.kit__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.kit__card {
+  display: grid;
+  gap: 6px;
+}
+
+.kit__card strong {
+  font-size: 12px;
+}
+
+.kit__card span {
+  color: #8a8498;
+  font-size: 11px;
+}
+
+.kit__stage {
+  display: grid;
+  place-items: center;
+  min-height: 280px;
+  padding: 16px;
+  background:
+    linear-gradient(45deg, #1c1828 25%, transparent 25%) 0 0 / 16px 16px,
+    linear-gradient(-45deg, #1c1828 25%, transparent 25%) 0 8px / 16px 16px,
+    #161322;
+  border: 1px solid #2a2640;
+}
+
+.kit__stage img {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  width: auto;
+  height: auto;
+  max-width: none;
+  transform-origin: center;
+  transform: scale(2);
+}
