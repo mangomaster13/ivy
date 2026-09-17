@@ -1,12 +1,10 @@
 # Ivy
 
-16-bit pixel house gift game. Design spec: [docs/game-design.md](docs/game-design.md).
+16-bit pixel house gift game for iPhone. Design spec: [docs/game-design.md](docs/game-design.md). Motion and transitions: [docs/ux-motion.md](docs/ux-motion.md).
 
-Pixel kit lives in `public/pixels/`. Preview:
+Open `ios/Ivy.xcodeproj` in Xcode 15+ (iOS 17 SDK). Choose your Development Team, then run on an iPhone simulator or device.
 
-```bash
-npm install
-npm run dev
-```
-
-Regenerate pixels: `npm run pixels`.
+- iPhone only, portrait locked
+- Bundle ID: `com.ivy.gift`
+- Pixel art lives in `ios/Ivy/Assets.xcassets`
+- Intended distribution: TestFlight, not the App Store
