@@ -254,6 +254,11 @@ struct ContentView: View {
                 HallAtmosphere(store: store, scale: scale)
             }
             if store.sceneView == 0 { WonderlandAtmosphere(store: store, scale: scale) }
+            if store.room == .gelato, store.sceneView == 1 {
+                GelatoGutterArtwork(store: store)
+                    .frame(width: 320 * scale, height: 160 * scale)
+                    .allowsHitTesting(false).accessibilityHidden(true)
+            }
             FoodAndFragranceWorld(store: store, scale: scale)
             canvasTapLayer(scale: scale)
             ForEach(store.explorationSpots) { spot in

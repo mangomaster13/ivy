@@ -65,58 +65,70 @@ extension GameStore {
 
 struct GelatoGutterView: View {
     @Bindable var store: GameStore
+
+    var body: some View {
+        FittedSceneStage(aspectRatio: 2) {
+            ZStack {
+                InspectionBackdrop(surface: .scene("gelato-gutter-empty"))
+                GelatoGutterArtwork(store: store)
+            }
+        }
+        .gameBackAction(store.backFromMemory)
+    }
+}
+
+/// Both views use the gutter plate's 1774 × 887 reference canvas.
+/// Pivots sit on the three brass channel mounts; the tag rests in the dish.
+struct GelatoGutterArtwork: View {
+    @Bindable var store: GameStore
     @State private var dragStarts: [Int: Double] = [:]
     private let mounts = [CGPoint(x: 307, y: 237), CGPoint(x: 605, y: 300), CGPoint(x: 896, y: 372)]
 
     var body: some View {
-        FittedSceneStage(aspectRatio: 2) {
-            GeometryReader { geometry in
-                let scale = geometry.size.width / 1774
-                ZStack(alignment: .topLeading) {
-                    InspectionBackdrop(surface: .scene("gelato-gutter-empty"))
-                    waterline(scale: scale)
-                        .allowsHitTesting(false).accessibilityHidden(true)
-                    ForEach(0..<3) { index in
-                        let mount = mounts[index]
-                        Image("gelato-pivot").resizable().interpolation(.high)
-                            .frame(width: 125 * scale, height: 125 * scale)
-                            .rotationEffect(.degrees(store.gelatoWater.currentAngles[index]),
-                                            anchor: UnitPoint(x: 0.32, y: 0.5))
-                            .frame(width: max(48, 125 * scale), height: max(48, 125 * scale))
-                            .contentShape(Rectangle())
-                            .gesture(DragGesture(minimumDistance: 4)
-                                .onChanged { value in
-                                    let start = dragStarts[index] ?? store.gelatoWater.currentAngles[index]
-                                    if dragStarts[index] == nil { dragStarts[index] = start }
-                                    store.setGelatoAngle(index, to: start + Double(value.translation.width / 2.5))
-                                }
-                                .onEnded { _ in
-                                    dragStarts[index] = nil
-                                    store.finishGelatoAdjustment()
-                                })
-                        .position(x: (mount.x + 22.5) * scale, y: mount.y * scale)
-                        .accessibilityLabel("Rainwater diverter \(index + 1)")
-                        .accessibilityValue(store.gelatoWater.landingDescription(index))
-                        .accessibilityAdjustableAction { direction in
-                            switch direction {
-                            case .increment: store.setGelatoAngle(index, to: store.gelatoWater.currentAngles[index] + 5)
-                            case .decrement: store.setGelatoAngle(index, to: store.gelatoWater.currentAngles[index] - 5)
-                            @unknown default: break
+        GeometryReader { geometry in
+            let scale = geometry.size.width / 1774
+            ZStack(alignment: .topLeading) {
+                waterline(scale: scale)
+                    .allowsHitTesting(false).accessibilityHidden(true)
+                ForEach(0..<3) { index in
+                    let mount = mounts[index]
+                    Image("gelato-pivot").resizable().interpolation(.high)
+                        .frame(width: 125 * scale, height: 125 * scale)
+                        .rotationEffect(.degrees(store.gelatoWater.currentAngles[index]),
+                                        anchor: UnitPoint(x: 0.32, y: 0.5))
+                        .frame(width: max(48, 125 * scale), height: max(48, 125 * scale))
+                        .contentShape(Rectangle())
+                        .gesture(DragGesture(minimumDistance: 4)
+                            .onChanged { value in
+                                let start = dragStarts[index] ?? store.gelatoWater.currentAngles[index]
+                                if dragStarts[index] == nil { dragStarts[index] = start }
+                                store.setGelatoAngle(index, to: start + Double(value.translation.width / 2.5))
                             }
-                            store.finishGelatoAdjustment()
+                            .onEnded { _ in
+                                dragStarts[index] = nil
+                                store.finishGelatoAdjustment()
+                            })
+                    .position(x: (mount.x + 22.5) * scale, y: mount.y * scale)
+                    .accessibilityLabel("Rainwater diverter \(index + 1)")
+                    .accessibilityValue(store.gelatoWater.landingDescription(index))
+                    .accessibilityAdjustableAction { direction in
+                        switch direction {
+                        case .increment: store.setGelatoAngle(index, to: store.gelatoWater.currentAngles[index] + 5)
+                        case .decrement: store.setGelatoAngle(index, to: store.gelatoWater.currentAngles[index] - 5)
+                        @unknown default: break
                         }
-                    }
-                    if store.gelatoWater.tagRevealed {
-                        Image("gelato-float-tag").resizable().interpolation(.high).scaledToFit()
-                            .frame(width: 175 * scale, height: 88 * scale)
-                            .position(x: 1137 * scale, y: 578 * scale)
-                            .accessibilityLabel("Five-petal blossom points to crescent moon")
+                        store.finishGelatoAdjustment()
                     }
                 }
-                .frame(width: geometry.size.width, height: geometry.size.height)
+                if store.gelatoWater.tagRevealed {
+                    Image("gelato-float-tag").resizable().interpolation(.high).scaledToFit()
+                        .frame(width: 175 * scale, height: 88 * scale)
+                        .position(x: 1137 * scale, y: 578 * scale)
+                        .accessibilityLabel("Five-petal blossom points to crescent moon")
+                }
             }
+            .frame(width: geometry.size.width, height: geometry.size.height)
         }
-        .gameBackAction(store.backFromMemory)
     }
 
     private func waterline(scale: CGFloat) -> some View {

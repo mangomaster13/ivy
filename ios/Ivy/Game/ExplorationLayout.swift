@@ -56,9 +56,11 @@ extension GameStore {
             .init("potted plant", 81, 60, 38, 61, .ambient("The basil likes this weather better than we do.")),
             .init("rain puddle", 108, 143, 78, 13, .ambient("The whole street fits inside this puddle."))]
         case (.gelato, 1): [
-            .init("utensil cabinet", 145, 69, 39, 31, .dispenser),
-            .init("gelato counter", 14, 64, 119, 28, .memory(.tasting)),
-            .init("rain gutter", 153, 5, 55, 39, .memory(.rainGutter)),
+            // Match the gutter plate: cabinet face below the dish, counter below the channel.
+            .init("utensil cabinet", 161, 120, 67, 37, .dispenser),
+            .init("gelato counter", 3, 77, 139, 38, .memory(.tasting)),
+            .init("rain gutter and three diverters", 20, 28, 191, 46, .memory(.rainGutter)),
+            .init("marked rainwater dish", 185, 96, 42, 20, .memory(.rainGutter)),
             .init("awning", 15, 5, 138, 21, .ambient("A little roof against a very big rain."))]
         case (.yard, 0): [
             .init("sky", 115, 1, 115, 25, .ambient("Some words hide behind clouds. Some stay with you.")),

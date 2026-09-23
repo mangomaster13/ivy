@@ -146,7 +146,7 @@ extension GameStore {
         case (.corridor, 1): "explore-corridor-mirror"
         case (.bedroom, 1): memories.bedroomLampOn == true ? "explore-bedroom-desk" : "explore-bedroom-desk-off"
         case (.gelato, -1): "explore-gelato-bench"
-        case (.gelato, 1): "explore-gelato-service"
+        case (.gelato, 1): "gelato-gutter-empty"
         default: nil
         }
     }
