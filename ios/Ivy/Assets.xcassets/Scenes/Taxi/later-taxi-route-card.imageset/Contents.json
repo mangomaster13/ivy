@@ -1,0 +1,23 @@
+{
+  "images": [
+    {
+      "filename": "later-taxi-route-card.png",
+      "idiom": "universal",
+      "scale": "1x"
+    },
+    {
+      "filename": "later-taxi-route-card@2x.png",
+      "idiom": "universal",
+      "scale": "2x"
+    },
+    {
+      "filename": "later-taxi-route-card@3x.png",
+      "idiom": "universal",
+      "scale": "3x"
+    }
+  ],
+  "info": {
+    "author": "xcode",
+    "version": 1
+  }
+}

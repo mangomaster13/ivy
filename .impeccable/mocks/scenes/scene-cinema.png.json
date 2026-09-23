@@ -1,0 +1,10 @@
+{
+  "name": "cinema",
+  "approved": false,
+  "style": "Hong Kong Hotel Noir \u00d7 Botanical Alchemy",
+  "reference": "../approved/hall-style-reference.png",
+  "role": "Cinema lobby. Two-line kiosk. EXIT only to sunset.",
+  "back": "supermarket bag \u2192 supermarket",
+  "forward": "EXIT \u2192 sunset",
+  "egg": "ticket kiosk"
+}

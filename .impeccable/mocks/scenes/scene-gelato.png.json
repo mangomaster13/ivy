@@ -1,0 +1,10 @@
+{
+  "name": "gelato",
+  "approved": false,
+  "style": "Hong Kong Hotel Noir \u00d7 Botanical Alchemy",
+  "reference": "../approved/hall-style-reference.png",
+  "role": "Rain stall. Six-flavor machine.",
+  "back": "wet awning \u2192 bedroom",
+  "forward": "Big Top sign \u2192 noodle",
+  "egg": "gelato cabinet"
+}

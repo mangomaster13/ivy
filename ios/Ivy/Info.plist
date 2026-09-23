@@ -2,14 +2,15 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>UIAppFonts</key>
+    <array>
+        <string>Kiddos.ttf</string>
+        <string>Juniper-Regular.ttf</string>
+    </array>
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>
 		<string>Night</string>
-		<key>UIImageName</key>
-		<string>intro-house</string>
-		<key>UIImageRespectsSafeAreaInsets</key>
-		<false/>
 	</dict>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>

@@ -1,0 +1,10 @@
+{
+  "name": "noodle",
+  "approved": false,
+  "style": "Hong Kong Hotel Noir \u00d7 Botanical Alchemy",
+  "reference": "../approved/hall-style-reference.png",
+  "role": "Noodle stall. Garbled tube sign becomes BIGTOP.",
+  "back": "rain glass \u2192 gelato",
+  "forward": "supermarket door \u2192 supermarket",
+  "egg": "scrambled neon sign"
+}

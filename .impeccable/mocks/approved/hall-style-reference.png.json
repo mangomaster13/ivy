@@ -1,0 +1,9 @@
+{
+  "name": "Hong Kong Botanical Alchemy",
+  "role": "Canonical visual reference for every game scene",
+  "approved": true,
+  "revision": 2,
+  "prompt": "Mature 32-bit-style pixel-art puzzle world: 1980s Hong Kong hotel noir fused with botanical alchemy; smoked teal, oxblood, terrazzo, rosewood, aged brass, warm amber light, blue-hour sunset, restrained ivy, readable diegetic machinery, detailed short-sleeve Vuori shirt, and an open welcoming stair to Wonderland.",
+  "composition": "Keep the center and foreground floor open. Place the underground entrance against the far-right back wall beside the prize machine as a compact, illuminated stairwell descending below room level.",
+  "eggMachine": "Show exactly 13 egg sockets: twelve sockets grouped as two rows of six plus one visually separated completion socket. Preserve a separate envelope reward window, activation control, and prize drawer."
+}

@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "memory-yunnan-postcard.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "memory-yunnan-postcard@2x.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "memory-yunnan-postcard@3x.png",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

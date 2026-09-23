@@ -1,0 +1,10 @@
+{
+  "name": "taxi",
+  "approved": false,
+  "style": "Hong Kong Hotel Noir \u00d7 Botanical Alchemy",
+  "reference": "../approved/hall-style-reference.png",
+  "role": "Back seat. Meter then kiss close-up. Door returns to hall.",
+  "back": "ferris lights in rear window \u2192 ferris",
+  "forward": "car door \u2192 hall",
+  "egg": "meter"
+}

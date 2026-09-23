@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "gelato-tasting.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "gelato-tasting@2x.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "gelato-tasting@3x.png",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

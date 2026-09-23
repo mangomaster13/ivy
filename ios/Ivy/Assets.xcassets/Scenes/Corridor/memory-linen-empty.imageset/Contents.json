@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "memory-linen-empty.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "memory-linen-empty@2x.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "memory-linen-empty@3x.png",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "hk-corridor-empty.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "hk-corridor-empty@2x.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "hk-corridor-empty@3x.png",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

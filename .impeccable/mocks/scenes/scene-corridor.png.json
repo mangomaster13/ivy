@@ -1,0 +1,10 @@
+{
+  "name": "corridor",
+  "approved": false,
+  "style": "Hong Kong Hotel Noir \u00d7 Botanical Alchemy",
+  "reference": "../approved/hall-style-reference.png",
+  "role": "Hotel corridor. Four digit wheels open the bedroom door.",
+  "back": "elevator \u2192 plane",
+  "forward": "bedroom door \u2192 bedroom",
+  "egg": "keycard in wall holder"
+}

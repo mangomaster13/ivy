@@ -1,0 +1,429 @@
+import SwiftUI
+
+// Optional records in MemoryProgress leave every pre-existing save field intact.
+struct BigTopProgress: Codable {
+    // Optional for backward-compatible decoding of existing saves.
+    var signOrder: String? = Self.shuffledSign()
+    static func shuffledSign() -> String {
+        var result: String
+        repeat { result = String("BIGTOP".shuffled()) }
+        while ["BIGTOP", "POTGIB"].contains(result)
+        return result
+    }
+    var signDraft = ""
+    var wholeSignAttempt: Bool? = nil
+    var signSolved = false
+    var menuRevealed = false
+    // Optional so the former placemat search saves continue decoding.
+    var tracingAngle: Double? = nil
+    var tracingOffset: Double? = nil
+    var menuDrawerOpen: Bool? = nil
+    var menuTaken = false
+    var menuPlaced = false
+    var menuPage = 0
+    var order: Set<Int> = []
+    var orderSolved = false
+    var streetUnlocked = false
+}
+
+struct PerfumeProgress: Codable {
+    var opened: Set<String> = []
+    var found: Set<AdventureTool> = []
+    var mixture: [AdventureTool?] = [nil, nil, nil]
+    var brewed: Set<AdventureTool> = []
+    var output: AdventureTool? = nil
+    var arrangement: [AdventureTool?] = [nil, nil, nil]
+    var formulaPage = 0
+    var arranged = false
+    var cinemaUnlocked = false
+}
+
+enum BigTopMenu {
+    static let dishes = [
+        "Half Roast Goose", "Quarter Roast Goose", "Roast Duck", "Barbecued Pork", "Crispy Pork Belly",
+        "Steamed Rice", "Rice Noodles", "Egg Fried Rice", "Wonton Noodles", "Soy Sauce Fried Noodles",
+        "Choy Sum", "Chinese Broccoli", "Marinated Egg", "Fish Balls", "Soup of the Day",
+        "Lemon Tea", "Ovaltine", "Milk Tea", "Coffee", "Lemon Water"
+    ]
+    static let answer: Set<Int> = [0, 5, 6, 15, 16]
+}
+
+struct PerfumeIngredient: Identifiable {
+    let tool: AdventureTool
+    let name: String
+    let cabinet: String
+    var id: String { tool.rawValue }
+    static let all: [Self] = [
+        .init(tool: .gaiacWood, name: "Gaiac Wood", cabinet: "wood"),
+        .init(tool: .cedar, name: "Cedar", cabinet: "wood"),
+        .init(tool: .incense, name: "Olibanum / Incense", cabinet: "wood"),
+        .init(tool: .oakmoss, name: "Oakmoss", cabinet: "wood"),
+        .init(tool: .patchouli, name: "Patchouli", cabinet: "wood"),
+        .init(tool: .vetiver, name: "Vetiver", cabinet: "wood"),
+        .init(tool: .bergamot, name: "Bergamot", cabinet: "botanical"),
+        .init(tool: .grapefruit, name: "Grapefruit", cabinet: "botanical"),
+        .init(tool: .petitgrain, name: "Petitgrain", cabinet: "botanical"),
+        .init(tool: .orangeBlossom, name: "Orange Blossom", cabinet: "botanical"),
+        .init(tool: .iris, name: "Iris", cabinet: "botanical"),
+        .init(tool: .violet, name: "Violet", cabinet: "botanical"),
+        .init(tool: .jasmine, name: "Jasmine", cabinet: "botanical"),
+        .init(tool: .cinnamon, name: "Cinnamon", cabinet: "spice"),
+        .init(tool: .pimentoBay, name: "Pimento Bay Oil", cabinet: "spice"),
+        .init(tool: .pinkPepper, name: "Pink Pepper", cabinet: "spice"),
+        .init(tool: .cardamom, name: "Cardamom", cabinet: "spice"),
+        .init(tool: .musk, name: "Musk", cabinet: "lab"),
+        .init(tool: .crystalMoss, name: "Crystal Moss", cabinet: "lab"),
+        .init(tool: .clearwood, name: "Clearwood", cabinet: "lab"),
+        .init(tool: .ambroxyde, name: "Ambroxyde", cabinet: "lab")
+    ]
+    static var tools: [AdventureTool] { all.map(\.tool) }
+    // The legacy ID remains decodable and usable when held in an older save.
+    static var world: [Self] { all.filter { $0.tool != .ambroxyde } }
+}
+
+struct PerfumeFormula: Identifiable {
+    let bottle: AdventureTool
+    let name: String
+    let city: String
+    let core: AdventureTool
+    let supporting: [AdventureTool]
+    let clue: AdventureClue
+    var id: String { bottle.rawValue }
+    static let all: [Self] = [
+        .init(bottle: .gaiac10, name: "Gaiac 10", city: "Tokyo", core: .gaiacWood,
+              supporting: [.musk, .cedar, .incense], clue: .gaiacFormula),
+        .init(bottle: .bergamote22, name: "Bergamote 22", city: "", core: .bergamot,
+              supporting: [.grapefruit, .petitgrain, .orangeBlossom, .vetiver, .cedar], clue: .bergamoteFormula),
+        .init(bottle: .mousse30, name: "Mousse de Chene 30", city: "Amsterdam", core: .oakmoss,
+              supporting: [.patchouli, .crystalMoss, .clearwood, .cinnamon, .pimentoBay, .pinkPepper], clue: .mousseFormula)
+    ]
+    static var bottles: [AdventureTool] { all.map(\.bottle) }
+    func accepts(_ ingredients: [AdventureTool]) -> Bool {
+        let set = Set(ingredients)
+        return ingredients.count == 3 && set.count == 3 && set.contains(core)
+            && set.subtracting([core]).isSubset(of: Set(supporting))
+    }
+}
+
+extension AdventureTool {
+    var ingredient: PerfumeIngredient? { PerfumeIngredient.all.first { $0.tool == self } }
+    var formula: PerfumeFormula? { PerfumeFormula.all.first { $0.bottle == self } }
+    var isFragranceTool: Bool { ingredient != nil || formula != nil }
+    var fragranceImageName: String {
+        switch self {
+        case .gaiac10: "ll4-upright-gaiac10"
+        case .bergamote22: "ll4-upright-bergamote22"
+        case .mousse30: "ll4-upright-mousse30"
+        default: "ll3-ingredient-" + rawValue
+        }
+    }
+}
+
+extension GameStore {
+    var bigTop: BigTopProgress {
+        get { memories.bigTop ?? BigTopProgress() }
+        set { memories.bigTop = newValue }
+    }
+    var perfumery: PerfumeProgress {
+        get { memories.perfumery ?? PerfumeProgress() }
+        set { memories.perfumery = newValue }
+    }
+
+    func openNotebook() {
+        guard overlay != .adventure(.notebook), collectingEgg == nil, !isHallTransitioning else { return }
+        notebookReturnOverlay = overlay
+        notebookClueFlash = false
+        notebookFlashTask?.cancel()
+        dismissSceneHint(); overlay = .adventure(.notebook)
+    }
+    func closeNotebook() {
+        guard overlay == .adventure(.notebook) else { return }
+        overlay = notebookReturnOverlay ?? .none
+        notebookReturnOverlay = nil
+        dismissSceneHint()
+    }
+
+    private var canChangeFoodPuzzle: Bool { !isIntro && !isHallTransitioning && collectingEgg == nil }
+
+    func tapNeonLetter(_ letter: String) {
+        guard canChangeFoodPuzzle else { return }
+        guard room == .gelato, overlay == .memory(.bigTopSign), !bigTop.signSolved else { return }
+        guard letter.count == 1, "BIGTOP".contains(letter) else { return }
+        bigTop.wholeSignAttempt = true
+        if bigTop.signDraft.contains(letter) {
+            if bigTop.signDraft.hasSuffix(letter) {
+                bigTop.signDraft.removeLast()
+                persistNow()
+            }
+            return
+        }
+        bigTop.signDraft += letter
+        guard bigTop.signDraft.count == 6 else { persistNow(); return }
+        if bigTop.signDraft == "BIGTOP" {
+            bigTop.signSolved = true
+            IvyHaptics.success()
+            dismissSceneHint()
+            persistNow()
+            if prefersReducedMotion {
+                transition(to: .noodle)
+            } else {
+                Task { [weak self] in
+                    try? await Task.sleep(for: .milliseconds(450))
+                    guard let self, self.room == .gelato,
+                          self.overlay == .memory(.bigTopSign) else { return }
+                    self.transition(to: .noodle)
+                }
+            }
+            return
+        }
+        // The whole attempt resets together; individual positions never disclose correctness.
+        bigTop.signDraft = ""
+        IvyHaptics.warning()
+        dismissSceneHint(); persistNow()
+    }
+    func turnBigTopTracingPaper(_ angle: Double) {
+        guard canChangeFoodPuzzle else { return }
+        guard room == .noodle, overlay == .memory(.bigTopMenuSearch), !bigTop.menuTaken else { return }
+        bigTop.tracingAngle = min(360, max(0, angle)); persistNow()
+    }
+    func slideBigTopTracingPaper(_ offset: Double) {
+        guard canChangeFoodPuzzle else { return }
+        guard room == .noodle, overlay == .memory(.bigTopMenuSearch), !bigTop.menuTaken else { return }
+        bigTop.tracingOffset = min(70, max(-15, offset)); persistNow()
+    }
+    func openBigTopMenuDrawer() {
+        guard canChangeFoodPuzzle else { return }
+        guard room == .noodle, overlay == .memory(.bigTopMenuSearch), !bigTop.menuTaken else { return }
+        let angle = bigTop.tracingAngle ?? 0
+        guard abs(angle - 180) < 18, abs((bigTop.tracingOffset ?? 0) - 43) < 9 else { return }
+        bigTop.menuDrawerOpen = true; persistNow()
+    }
+    func takeBigTopMenu() {
+        guard canChangeFoodPuzzle else { return }
+        guard room == .noodle, overlay == .memory(.bigTopMenuSearch), bigTop.menuDrawerOpen == true,
+              !bigTop.menuTaken, !bigTop.orderSolved else { return }
+        bigTop.menuTaken = true; bigTop.menuDrawerOpen = false
+        acquire(.dinnerMenu); persistNow()
+    }
+    func placeBigTopMenu() {
+        guard canChangeFoodPuzzle else { return }
+        guard room == .noodle, overlay == .memory(.bigTopOrder), !bigTop.menuPlaced,
+              use(.dinnerMenu) else { return }
+        bigTop.menuPlaced = true; consume(.dinnerMenu)
+        // Placement leads straight to the usable menu; Back returns to the scene.
+        overlay = .memory(.bigTopMenu)
+        memoryNavigation.removeAll { $0 == .bigTopOrder }
+        persistNow()
+    }
+    func turnDinnerPage(_ delta: Int) {
+        guard canChangeFoodPuzzle else { return }
+        guard room == .noodle, overlay == .memory(.bigTopMenu) else { return }
+        bigTop.menuPage = min(3, max(0, bigTop.menuPage + delta)); dismissSceneHint(); persistNow()
+    }
+    func selectDish(_ index: Int) {
+        guard canChangeFoodPuzzle else { return }
+        guard room == .noodle, overlay == .memory(.bigTopMenu), bigTop.menuPlaced,
+              !bigTop.orderSolved, BigTopMenu.dishes.indices.contains(index) else { return }
+        if bigTop.order.contains(index) { bigTop.order.remove(index) } else { bigTop.order.insert(index) }
+        dismissSceneHint(); persistNow()
+    }
+    func placeDinnerOrder() {
+        guard canChangeFoodPuzzle else { return }
+        guard room == .noodle, overlay == .memory(.bigTopMenu), bigTop.menuPlaced, !bigTop.orderSolved else { return }
+        guard bigTop.order == BigTopMenu.answer else { showInputError("That wasn't our order."); return }
+        bigTop.orderSolved = true; bigTop.streetUnlocked = true
+        memories.opened.insert("bigTop")
+        dismissSceneHint(); IvyHaptics.success(); persistNow()
+    }
+    func collectDinner() {
+        guard canChangeFoodPuzzle else { return }
+        guard room == .noodle, overlay == .memory(.bigTop), bigTop.orderSolved, collectingEgg == nil else { return }
+        guard !collected.contains(.noodle) else { return }
+        bigTop.streetUnlocked = true
+        // The player already tapped the meal. Element is the reward, not another pickup gate.
+        collected.insert(.noodle)
+        toolsVisible = false
+        IvyHaptics.success()
+        persistNow()
+    }
+
+    func enterPerfumery() {
+        guard room == .perfume, sceneView == 0, canExplore else { return }
+        transition(to: .perfume, view: 1)
+    }
+    func leavePerfumery() {
+        guard room == .perfume, sceneView > 0, canExplore else { return }
+        transition(to: .perfume, view: 0)
+    }
+    func openIngredientCabinet(_ cabinet: String) {
+        guard canChangeFoodPuzzle else { return }
+        guard room == .perfume, overlay == .memory(Self.cabinetPanel(cabinet)),
+              ["wood", "botanical", "spice", "lab"].contains(cabinet) else { return }
+        perfumery.opened.insert(cabinet); persistNow()
+    }
+    static func cabinetPanel(_ cabinet: String) -> MemoryPanel {
+        switch cabinet {
+        case "wood": .perfumeWood
+        case "botanical": .perfumeBotanical
+        case "spice": .perfumeSpice
+        default: .perfumeLab
+        }
+    }
+    func takeIngredient(_ tool: AdventureTool) {
+        guard canChangeFoodPuzzle else { return }
+        guard let ingredient = tool.ingredient, room == .perfume,
+              overlay == .memory(Self.cabinetPanel(ingredient.cabinet)),
+              perfumery.opened.contains(ingredient.cabinet), !perfumery.found.contains(tool),
+              !perfumery.arranged, !collected.contains(.perfume) else { return }
+        perfumery.found.insert(tool); acquire(tool); persistNow()
+    }
+    func turnFormulaPage(_ delta: Int) {
+        guard canChangeFoodPuzzle else { return }
+        guard room == .perfume, overlay == .memory(.perfumeFormula) else { return }
+        perfumery.formulaPage = min(2, max(0, perfumery.formulaPage + delta))
+        discover(PerfumeFormula.all[perfumery.formulaPage].clue)
+    }
+    func putIngredient(_ tool: AdventureTool, at slot: Int) {
+        guard canChangeFoodPuzzle else { return }
+        guard room == .perfume, overlay == .memory(.perfumeMix), !perfumery.arranged,
+              perfumery.output == nil, (0..<3).contains(slot), tool.ingredient != nil,
+              perfumery.found.contains(tool), exploration.tools.contains(tool) else { return }
+        if let previous = perfumery.mixture[slot] { exploration.tools.insert(previous) }
+        perfumery.mixture[slot] = tool; exploration.tools.remove(tool)
+        selectedTool = nil; dismissSceneHint(); persistNow()
+    }
+    func removeIngredient(at slot: Int) {
+        guard canChangeFoodPuzzle else { return }
+        guard room == .perfume, overlay == .memory(.perfumeMix), !perfumery.arranged,
+              perfumery.output == nil, (0..<3).contains(slot), let tool = perfumery.mixture[slot] else { return }
+        perfumery.mixture[slot] = nil; exploration.tools.insert(tool)
+        dismissSceneHint(); persistNow()
+    }
+    func blendPerfume() {
+        guard canChangeFoodPuzzle else { return }
+        guard room == .perfume, overlay == .memory(.perfumeMix), !perfumery.arranged,
+              perfumery.output == nil else { return }
+        let ingredients = perfumery.mixture.compactMap { $0 }
+        guard let formula = PerfumeFormula.all.first(where: { $0.accepts(ingredients) }) else {
+            showInputError("Something feels out of place."); return
+        }
+        guard !perfumery.brewed.contains(formula.bottle) else {
+            showInputError("We've bottled this one already."); return
+        }
+        exploration.tools.formUnion(ingredients)
+        perfumery.mixture = [nil, nil, nil]
+        perfumery.brewed.insert(formula.bottle); perfumery.output = formula.bottle
+        selectedTool = nil; dismissSceneHint(); IvyHaptics.success(); persistNow()
+    }
+    func takePerfume() {
+        guard canChangeFoodPuzzle else { return }
+        guard room == .perfume, overlay == .memory(.perfumeMix), let bottle = perfumery.output else { return }
+        perfumery.output = nil; acquire(bottle); persistNow()
+    }
+    func placePerfume(_ bottle: AdventureTool, at slot: Int) {
+        guard canChangeFoodPuzzle else { return }
+        guard room == .perfume, overlay == .memory(.perfume), !perfumery.arranged,
+              (0..<3).contains(slot), bottle.formula != nil, perfumery.brewed.contains(bottle) else { return }
+        if let source = perfumery.arrangement.firstIndex(of: bottle) {
+            guard source != slot else { return }
+            perfumery.arrangement.swapAt(source, slot)
+        } else {
+            guard exploration.tools.contains(bottle) else { return }
+            if let displaced = perfumery.arrangement[slot] { exploration.tools.insert(displaced) }
+            perfumery.arrangement[slot] = bottle; exploration.tools.remove(bottle)
+        }
+        selectedTool = nil; selectedPerfumeBottle = nil; dismissSceneHint()
+        if perfumery.arrangement == PerfumeFormula.bottles.map(Optional.some) {
+            perfumery.arranged = true; memories.opened.insert("perfume"); IvyHaptics.success()
+            collectPerfumes()
+        }
+        persistNow()
+    }
+    func returnPerfume(at slot: Int) {
+        guard canChangeFoodPuzzle else { return }
+        guard room == .perfume, overlay == .memory(.perfume), !perfumery.arranged,
+              (0..<3).contains(slot), let bottle = perfumery.arrangement[slot] else { return }
+        perfumery.arrangement[slot] = nil; exploration.tools.insert(bottle)
+        selectedPerfumeBottle = nil; selectedTool = nil; toolsVisible = true
+        persistNow()
+    }
+    func collectPerfumes() {
+        guard canChangeFoodPuzzle else { return }
+        guard room == .perfume, overlay == .memory(.perfume), perfumery.arranged, collectingEgg == nil else { return }
+        perfumery.cinemaUnlocked = true
+        perfumery.mixture = [nil, nil, nil]
+        perfumery.output = nil
+        let tools = Set(PerfumeIngredient.tools + PerfumeFormula.bottles)
+        exploration.tools.subtract(tools)
+        memories.used.formUnion(tools)
+        memories.picked.formUnion(perfumery.found.union(perfumery.brewed))
+        if let tool = selectedTool, tools.contains(tool) { selectedTool = nil }
+        if collected.insert(.perfume).inserted { toolsVisible = false }
+        persistNow()
+    }
+
+    /// Old completion and access remain valid, without awarding a missing collectible.
+    func migrateFoodAndFragrance() {
+        if memories.bigTop == nil {
+            var progress = BigTopProgress()
+            progress.signSolved = room == .noodle || [.perfume, .cinema, .sunset, .ferris, .taxi].contains(room)
+                || !collected.isDisjoint(with: [.noodle, .perfume, .cinema, .sunset, .ferris, .taxi])
+            progress.orderSolved = collected.contains(.noodle) || memories.opened.contains("bigTop")
+            progress.signSolved = progress.signSolved || progress.orderSolved
+            progress.menuPlaced = progress.orderSolved
+            progress.menuTaken = progress.orderSolved
+            progress.streetUnlocked = collected.contains(.noodle) || [.perfume, .cinema, .sunset, .ferris, .taxi].contains(room)
+            bigTop = progress
+        }
+        // Serving dinner unlocks the street independently of claiming the memory.
+        if bigTop.orderSolved { bigTop.streetUnlocked = true }
+        bigTop.menuPage = min(3, max(0, bigTop.menuPage))
+        bigTop.tracingAngle = min(360, max(0, bigTop.tracingAngle ?? 0))
+        bigTop.tracingOffset = min(70, max(-15, bigTop.tracingOffset ?? 0))
+        if bigTop.signOrder.map({ $0.count == 6 && Set($0) == Set("BIGTOP") && !["BIGTOP", "POTGIB"].contains($0) }) != true {
+            bigTop.signOrder = BigTopProgress.shuffledSign()
+        }
+        bigTop.order = bigTop.order.intersection(BigTopMenu.dishes.indices)
+        // Only the former per-letter feedback drafts are discarded. New attempts resume.
+        if bigTop.wholeSignAttempt == nil {
+            if bigTop.signDraft == "BIGTOP" { bigTop.signSolved = true }
+            else { bigTop.signDraft = "" }
+        }
+        bigTop.wholeSignAttempt = true
+        if bigTop.signSolved { bigTop.signDraft = "BIGTOP" }
+        else if bigTop.signDraft.count > 5 || Set(bigTop.signDraft).count != bigTop.signDraft.count
+                    || !Set(bigTop.signDraft).isSubset(of: Set("BIGTOP")) { bigTop.signDraft = "" }
+        if memories.perfumery == nil {
+            var progress = PerfumeProgress()
+            progress.arranged = collected.contains(.perfume) || memories.opened.contains("perfume")
+            progress.cinemaUnlocked = collected.contains(.perfume) || [.cinema, .sunset, .ferris, .taxi].contains(room)
+            if progress.arranged {
+                progress.brewed = Set(PerfumeFormula.bottles)
+                progress.arrangement = PerfumeFormula.bottles.map(Optional.some)
+            }
+            perfumery = progress
+        }
+        perfumery.formulaPage = min(2, max(0, perfumery.formulaPage))
+        perfumery.found = perfumery.found.intersection(PerfumeIngredient.tools)
+        perfumery.brewed = perfumery.brewed.intersection(PerfumeFormula.bottles)
+        perfumery.mixture = normalizedSlots(perfumery.mixture, allowed: perfumery.found)
+        perfumery.arrangement = normalizedSlots(perfumery.arrangement, allowed: perfumery.brewed)
+        if let output = perfumery.output,
+           !perfumery.brewed.contains(output) || perfumery.arrangement.contains(output) { perfumery.output = nil }
+        exploration.tools.subtract(PerfumeIngredient.tools + PerfumeFormula.bottles)
+        if !collected.contains(.perfume) {
+            exploration.tools.formUnion(perfumery.found.subtracting(perfumery.mixture.compactMap { $0 }))
+            let onTable = Set(perfumery.arrangement.compactMap { $0 }).union([perfumery.output].compactMap { $0 })
+            exploration.tools.formUnion(perfumery.brewed.subtracting(onTable))
+        }
+        if bigTop.menuTaken && !bigTop.menuPlaced && !bigTop.orderSolved { exploration.tools.insert(.dinnerMenu) }
+        else { exploration.tools.remove(.dinnerMenu) }
+    }
+    private func normalizedSlots(_ slots: [AdventureTool?], allowed: Set<AdventureTool>) -> [AdventureTool?] {
+        var seen = Set<AdventureTool>()
+        return (0..<3).map { slot in
+            guard slot < slots.count, let tool = slots[slot], allowed.contains(tool), seen.insert(tool).inserted else { return nil }
+            return tool
+        }
+    }
+}

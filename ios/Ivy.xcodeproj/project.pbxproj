@@ -7,6 +7,36 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F26092300000000000000001 /* GelatoGutter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26092300000000000000002; };
+		F2092026B000000000000001 /* PerfumePlacement.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2092026B000000000000002; };
+		F2092026A000000000000007 /* FoodAndFragranceWorld.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2092026A000000000000008; };
+		F2092026A000000000000005 /* PerfumeViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2092026A000000000000006; };
+		F2092026A000000000000003 /* BigTopViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2092026A000000000000004; };
+		F2092026A000000000000001 /* FoodAndFragrance.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2092026A000000000000002; };
+		F20092026000000000000003 /* CityJigsaw.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20092026000000000000004; };
+		F20092026000000000000001 /* ElementMemoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20092026000000000000002; };
+		F19091900000000000000021 /* RoseArtwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = F19091900000000000000022; };
+		F19091900000000000000011 /* RosePuzzle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F19091900000000000000012; };
+		F19091900000000000000001 /* GelatoCloseups.swift in Sources */ = {isa = PBXBuildFile; fileRef = F19091900000000000000002; };
+		F01909190000000000000103 /* VuoriViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = F01909190000000000000104; };
+		F01909190000000000000101 /* VuoriPuzzle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F01909190000000000000102; };
+		F01919000000000000000001 /* RubbingSurface.swift in Sources */ = {isa = PBXBuildFile; fileRef = F01919000000000000000002; };
+		F19020260000000000000001 /* IvyMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = F19020260000000000000002; };
+		F02020260000000000000007 /* LaterMemories.swift in Sources */ = {isa = PBXBuildFile; fileRef = F02020260000000000000008; };
+		F02020260000000000000005 /* JourneyMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = F02020260000000000000006; };
+		F02020260000000000000003 /* MemoryCloseups.swift in Sources */ = {isa = PBXBuildFile; fileRef = F02020260000000000000004; };
+		F02020260000000000000001 /* MemoryJourney.swift in Sources */ = {isa = PBXBuildFile; fileRef = F02020260000000000000002; };
+		F01920260000000000000005 /* ExplorationViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = F01920260000000000000006; };
+		F01920260000000000000003 /* ExplorationLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F01920260000000000000004; };
+		F01920260000000000000001 /* Exploration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F01920260000000000000002; };
+		E01920260000000000000005 /* WonderlandTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E01920260000000000000006; };
+		E01920260000000000000003 /* WonderlandScenes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E01920260000000000000004; };
+		E01920260000000000000001 /* ScenePuzzles.swift in Sources */ = {isa = PBXBuildFile; fileRef = E01920260000000000000002; };
+		D01920260000000000000003 /* HallTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D01920260000000000000004; };
+		D01920260000000000000001 /* HallScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D01920260000000000000002; };
+		C01920260000000000000001 /* Juniper-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C01920260000000000000002; };
+		B01920260000000000000001 /* EggCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B01920260000000000000002; };
+		A01920260000000000000001 /* Kiddos.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A01920260000000000000002; };
 		7A1B2C3D4E5F608192A3B00F /* IvyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1B2C3D4E5F608192A3B004 /* IvyApp.swift */; };
 		7A1B2C3D4E5F608192A3B010 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1B2C3D4E5F608192A3B005 /* ContentView.swift */; };
 		7A1B2C3D4E5F608192A3B011 /* PixelCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1B2C3D4E5F608192A3B006 /* PixelCanvas.swift */; };
@@ -14,9 +44,62 @@
 		7A1B2C3D4E5F608192A3B024 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1B2C3D4E5F608192A3B021 /* GameState.swift */; };
 		7A1B2C3D4E5F608192A3B025 /* GameCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1B2C3D4E5F608192A3B022 /* GameCopy.swift */; };
 		7A1B2C3D4E5F608192A3B026 /* GameChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1B2C3D4E5F608192A3B023 /* GameChrome.swift */; };
+		7A1B2C3D4E5F608192A3B027 /* IntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1B2C3D4E5F608192A3B028 /* IntroView.swift */; };
+		7A1B2C3D4E5F608192A3B029 /* LyricLockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1B2C3D4E5F608192A3B02A /* LyricLockView.swift */; };
+		7A1B2C3D4E5F608192A3B02C /* AssemblePad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1B2C3D4E5F608192A3B02B /* AssemblePad.swift */; };
+		7A1B2C3D4E5F608192A3B02E /* MailboxLockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1B2C3D4E5F608192A3B02D /* MailboxLockView.swift */; };
+		7A1B2C3D4E5F608192A3B034 /* RulesEnvelopeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1B2C3D4E5F608192A3B02F /* RulesEnvelopeView.swift */; };
+		7A1B2C3D4E5F608192A3B036 /* PixelSprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1B2C3D4E5F608192A3B035 /* PixelSprite.swift */; };
+		7A1B2C3D4E5F608192A3B094 /* RoomGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1B2C3D4E5F608192A3B093 /* RoomGraph.swift */; };
+		7A1B2C3D4E5F608192A3B086 /* StoreHarness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1B2C3D4E5F608192A3B082 /* StoreHarness.swift */; };
+		7A1B2C3D4E5F608192A3B087 /* MailboxKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1B2C3D4E5F608192A3B083 /* MailboxKeyTests.swift */; };
+		7A1B2C3D4E5F608192A3B088 /* DoorIvyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1B2C3D4E5F608192A3B084 /* DoorIvyTests.swift */; };
+		7A1B2C3D4E5F608192A3B089 /* EggOrderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1B2C3D4E5F608192A3B085 /* EggOrderTests.swift */; };
+		7A1B2C3D4E5F608192A3B096 /* RoomGraphTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1B2C3D4E5F608192A3B095 /* RoomGraphTests.swift */; };
+		7A1B2C3D4E5F608192A3B098 /* DiegeticWalkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1B2C3D4E5F608192A3B097 /* DiegeticWalkTests.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		7A1B2C3D4E5F608192A3B08D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7A1B2C3D4E5F608192A3B001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7A1B2C3D4E5F608192A3B002;
+			remoteInfo = Ivy;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		F26092300000000000000002 /* GelatoGutter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GelatoGutter.swift; sourceTree = "<group>"; };
+		F2092026B000000000000002 /* PerfumePlacement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerfumePlacement.swift; sourceTree = "<group>"; };
+		F2092026A000000000000008 /* FoodAndFragranceWorld.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodAndFragranceWorld.swift; sourceTree = "<group>"; };
+		F2092026A000000000000006 /* PerfumeViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerfumeViews.swift; sourceTree = "<group>"; };
+		F2092026A000000000000004 /* BigTopViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BigTopViews.swift; sourceTree = "<group>"; };
+		F2092026A000000000000002 /* FoodAndFragrance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodAndFragrance.swift; sourceTree = "<group>"; };
+		F20092026000000000000004 /* CityJigsaw.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityJigsaw.swift; sourceTree = "<group>"; };
+		F20092026000000000000002 /* ElementMemoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElementMemoryView.swift; sourceTree = "<group>"; };
+		F19091900000000000000022 /* RoseArtwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoseArtwork.swift; sourceTree = "<group>"; };
+		F19091900000000000000012 /* RosePuzzle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosePuzzle.swift; sourceTree = "<group>"; };
+		F19091900000000000000002 /* GelatoCloseups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GelatoCloseups.swift; sourceTree = "<group>"; };
+		F01909190000000000000104 /* VuoriViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VuoriViews.swift; sourceTree = "<group>"; };
+		F01909190000000000000102 /* VuoriPuzzle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VuoriPuzzle.swift; sourceTree = "<group>"; };
+		F01919000000000000000002 /* RubbingSurface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RubbingSurface.swift; sourceTree = "<group>"; };
+		F19020260000000000000002 /* IvyMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IvyMessages.swift; sourceTree = "<group>"; };
+		F02020260000000000000008 /* LaterMemories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaterMemories.swift; sourceTree = "<group>"; };
+		F02020260000000000000006 /* JourneyMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JourneyMap.swift; sourceTree = "<group>"; };
+		F02020260000000000000004 /* MemoryCloseups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryCloseups.swift; sourceTree = "<group>"; };
+		F02020260000000000000002 /* MemoryJourney.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryJourney.swift; sourceTree = "<group>"; };
+		F01920260000000000000006 /* ExplorationViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplorationViews.swift; sourceTree = "<group>"; };
+		F01920260000000000000004 /* ExplorationLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplorationLayout.swift; sourceTree = "<group>"; };
+		F01920260000000000000002 /* Exploration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exploration.swift; sourceTree = "<group>"; };
+		E01920260000000000000006 /* WonderlandTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WonderlandTests.swift; sourceTree = "<group>"; };
+		E01920260000000000000004 /* WonderlandScenes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WonderlandScenes.swift; sourceTree = "<group>"; };
+		E01920260000000000000002 /* ScenePuzzles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenePuzzles.swift; sourceTree = "<group>"; };
+		D01920260000000000000004 /* HallTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HallTests.swift; sourceTree = "<group>"; };
+		D01920260000000000000002 /* HallScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HallScene.swift; sourceTree = "<group>"; };
+		C01920260000000000000002 /* Juniper-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Fonts/Juniper-Regular.ttf; sourceTree = "<group>"; };
+		B01920260000000000000002 /* EggCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EggCollectionView.swift; sourceTree = "<group>"; };
+		A01920260000000000000002 /* Kiddos.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Fonts/Kiddos.ttf; sourceTree = "<group>"; };
 		7A1B2C3D4E5F608192A3B003 /* Ivy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ivy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A1B2C3D4E5F608192A3B004 /* IvyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IvyApp.swift; sourceTree = "<group>"; };
 		7A1B2C3D4E5F608192A3B005 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -26,10 +109,31 @@
 		7A1B2C3D4E5F608192A3B021 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
 		7A1B2C3D4E5F608192A3B022 /* GameCopy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCopy.swift; sourceTree = "<group>"; };
 		7A1B2C3D4E5F608192A3B023 /* GameChrome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameChrome.swift; sourceTree = "<group>"; };
+		7A1B2C3D4E5F608192A3B028 /* IntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroView.swift; sourceTree = "<group>"; };
+		7A1B2C3D4E5F608192A3B02A /* LyricLockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricLockView.swift; sourceTree = "<group>"; };
+		7A1B2C3D4E5F608192A3B02B /* AssemblePad.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssemblePad.swift; sourceTree = "<group>"; };
+		7A1B2C3D4E5F608192A3B02D /* MailboxLockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailboxLockView.swift; sourceTree = "<group>"; };
+		7A1B2C3D4E5F608192A3B02F /* RulesEnvelopeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RulesEnvelopeView.swift; sourceTree = "<group>"; };
+		7A1B2C3D4E5F608192A3B035 /* PixelSprite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelSprite.swift; sourceTree = "<group>"; };
+		7A1B2C3D4E5F608192A3B093 /* RoomGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomGraph.swift; sourceTree = "<group>"; };
+		7A1B2C3D4E5F608192A3B095 /* RoomGraphTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomGraphTests.swift; sourceTree = "<group>"; };
+		7A1B2C3D4E5F608192A3B097 /* DiegeticWalkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiegeticWalkTests.swift; sourceTree = "<group>"; };
+		7A1B2C3D4E5F608192A3B081 /* IvyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IvyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7A1B2C3D4E5F608192A3B082 /* StoreHarness.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreHarness.swift; sourceTree = "<group>"; };
+		7A1B2C3D4E5F608192A3B083 /* MailboxKeyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailboxKeyTests.swift; sourceTree = "<group>"; };
+		7A1B2C3D4E5F608192A3B084 /* DoorIvyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoorIvyTests.swift; sourceTree = "<group>"; };
+		7A1B2C3D4E5F608192A3B085 /* EggOrderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EggOrderTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		7A1B2C3D4E5F608192A3B00E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7A1B2C3D4E5F608192A3B08B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -43,6 +147,7 @@
 			isa = PBXGroup;
 			children = (
 				7A1B2C3D4E5F608192A3B00A /* Ivy */,
+				7A1B2C3D4E5F608192A3B092 /* IvyTests */,
 				7A1B2C3D4E5F608192A3B00B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -50,13 +155,12 @@
 		7A1B2C3D4E5F608192A3B00A /* Ivy */ = {
 			isa = PBXGroup;
 			children = (
-				7A1B2C3D4E5F608192A3B004 /* IvyApp.swift */,
-				7A1B2C3D4E5F608192A3B005 /* ContentView.swift */,
-				7A1B2C3D4E5F608192A3B006 /* PixelCanvas.swift */,
-				7A1B2C3D4E5F608192A3B021 /* GameState.swift */,
-				7A1B2C3D4E5F608192A3B022 /* GameCopy.swift */,
-				7A1B2C3D4E5F608192A3B023 /* GameChrome.swift */,
+				7A1B2C3D4E5F608192A3B030 /* App */,
+				7A1B2C3D4E5F608192A3B031 /* Game */,
+				7A1B2C3D4E5F608192A3B032 /* Locks */,
 				7A1B2C3D4E5F608192A3B007 /* Assets.xcassets */,
+				A01920260000000000000002 /* Kiddos.ttf */,
+				C01920260000000000000002 /* Juniper-Regular.ttf */,
 				7A1B2C3D4E5F608192A3B008 /* Info.plist */,
 			);
 			path = Ivy;
@@ -66,8 +170,84 @@
 			isa = PBXGroup;
 			children = (
 				7A1B2C3D4E5F608192A3B003 /* Ivy.app */,
+				7A1B2C3D4E5F608192A3B081 /* IvyTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		7A1B2C3D4E5F608192A3B030 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				7A1B2C3D4E5F608192A3B004 /* IvyApp.swift */,
+				7A1B2C3D4E5F608192A3B005 /* ContentView.swift */,
+				7A1B2C3D4E5F608192A3B028 /* IntroView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		7A1B2C3D4E5F608192A3B031 /* Game */ = {
+			isa = PBXGroup;
+			children = (
+				7A1B2C3D4E5F608192A3B021 /* GameState.swift */,
+				D01920260000000000000002 /* HallScene.swift */,
+				F01909190000000000000104 /* VuoriViews.swift */,
+				F01909190000000000000102 /* VuoriPuzzle.swift */,
+				F01920260000000000000002 /* Exploration.swift */,
+				F02020260000000000000008 /* LaterMemories.swift */,
+				F02020260000000000000006 /* JourneyMap.swift */,
+				F19091900000000000000002 /* GelatoCloseups.swift */,
+				F26092300000000000000002 /* GelatoGutter.swift */,
+				F02020260000000000000004 /* MemoryCloseups.swift */,
+				F19091900000000000000012 /* RosePuzzle.swift */,
+				F20092026000000000000002 /* ElementMemoryView.swift */,
+				F20092026000000000000004 /* CityJigsaw.swift */,
+				F2092026A000000000000008 /* FoodAndFragranceWorld.swift */,
+				F2092026A000000000000006 /* PerfumeViews.swift */,
+				F2092026B000000000000002 /* PerfumePlacement.swift */,
+				F2092026A000000000000004 /* BigTopViews.swift */,
+				F2092026A000000000000002 /* FoodAndFragrance.swift */,
+				F19091900000000000000022 /* RoseArtwork.swift */,
+				F01919000000000000000002 /* RubbingSurface.swift */,
+				F02020260000000000000002 /* MemoryJourney.swift */,
+				F01920260000000000000004 /* ExplorationLayout.swift */,
+				F01920260000000000000006 /* ExplorationViews.swift */,
+				E01920260000000000000004 /* WonderlandScenes.swift */,
+				E01920260000000000000002 /* ScenePuzzles.swift */,
+				7A1B2C3D4E5F608192A3B022 /* GameCopy.swift */,
+				7A1B2C3D4E5F608192A3B006 /* PixelCanvas.swift */,
+				7A1B2C3D4E5F608192A3B035 /* PixelSprite.swift */,
+				7A1B2C3D4E5F608192A3B023 /* GameChrome.swift */,
+				F19020260000000000000002 /* IvyMessages.swift */,
+				B01920260000000000000002 /* EggCollectionView.swift */,
+				7A1B2C3D4E5F608192A3B093 /* RoomGraph.swift */,
+			);
+			path = Game;
+			sourceTree = "<group>";
+		};
+		7A1B2C3D4E5F608192A3B032 /* Locks */ = {
+			isa = PBXGroup;
+			children = (
+				7A1B2C3D4E5F608192A3B02B /* AssemblePad.swift */,
+				7A1B2C3D4E5F608192A3B02A /* LyricLockView.swift */,
+				7A1B2C3D4E5F608192A3B02D /* MailboxLockView.swift */,
+				7A1B2C3D4E5F608192A3B02F /* RulesEnvelopeView.swift */,
+			);
+			path = Locks;
+			sourceTree = "<group>";
+		};
+		7A1B2C3D4E5F608192A3B092 /* IvyTests */ = {
+			isa = PBXGroup;
+			children = (
+				D01920260000000000000004 /* HallTests.swift */,
+				E01920260000000000000006 /* WonderlandTests.swift */,
+				7A1B2C3D4E5F608192A3B082 /* StoreHarness.swift */,
+				7A1B2C3D4E5F608192A3B083 /* MailboxKeyTests.swift */,
+				7A1B2C3D4E5F608192A3B084 /* DoorIvyTests.swift */,
+				7A1B2C3D4E5F608192A3B085 /* EggOrderTests.swift */,
+				7A1B2C3D4E5F608192A3B095 /* RoomGraphTests.swift */,
+				7A1B2C3D4E5F608192A3B097 /* DiegeticWalkTests.swift */,
+			);
+			path = IvyTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -90,6 +270,24 @@
 			productReference = 7A1B2C3D4E5F608192A3B003 /* Ivy.app */;
 			productType = "com.apple.product-type.application";
 		};
+		7A1B2C3D4E5F608192A3B080 /* IvyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7A1B2C3D4E5F608192A3B091 /* Build configuration list for PBXNativeTarget "IvyTests" */;
+			buildPhases = (
+				7A1B2C3D4E5F608192A3B08A /* Sources */,
+				7A1B2C3D4E5F608192A3B08B /* Frameworks */,
+				7A1B2C3D4E5F608192A3B08C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7A1B2C3D4E5F608192A3B08E /* PBXTargetDependency */,
+			);
+			name = IvyTests;
+			productName = IvyTests;
+			productReference = 7A1B2C3D4E5F608192A3B081 /* IvyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -102,6 +300,10 @@
 				TargetAttributes = {
 					7A1B2C3D4E5F608192A3B002 = {
 						CreatedOnToolsVersion = 15.0;
+					};
+					7A1B2C3D4E5F608192A3B080 = {
+						CreatedOnToolsVersion = 15.0;
+						TestTargetID = 7A1B2C3D4E5F608192A3B002;
 					};
 				};
 			};
@@ -119,6 +321,7 @@
 			projectRoot = "";
 			targets = (
 				7A1B2C3D4E5F608192A3B002 /* Ivy */,
+				7A1B2C3D4E5F608192A3B080 /* IvyTests */,
 			);
 		};
 /* End PBXProject section */
@@ -129,6 +332,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				7A1B2C3D4E5F608192A3B012 /* Assets.xcassets in Resources */,
+				A01920260000000000000001 /* Kiddos.ttf in Resources */,
+				C01920260000000000000001 /* Juniper-Regular.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7A1B2C3D4E5F608192A3B08C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,16 +351,72 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D01920260000000000000001 /* HallScene.swift in Sources */,
+				F01909190000000000000103 /* VuoriViews.swift in Sources */,
+				F01909190000000000000101 /* VuoriPuzzle.swift in Sources */,
+				F01920260000000000000001 /* Exploration.swift in Sources */,
+				F02020260000000000000007 /* LaterMemories.swift in Sources */,
+				F02020260000000000000005 /* JourneyMap.swift in Sources */,
+				F19091900000000000000001 /* GelatoCloseups.swift in Sources */,
+				F26092300000000000000001 /* GelatoGutter.swift in Sources */,
+				F02020260000000000000003 /* MemoryCloseups.swift in Sources */,
+				F19091900000000000000011 /* RosePuzzle.swift in Sources */,
+				F20092026000000000000001 /* ElementMemoryView.swift in Sources */,
+				F20092026000000000000003 /* CityJigsaw.swift in Sources */,
+				F2092026A000000000000007 /* FoodAndFragranceWorld.swift in Sources */,
+				F2092026A000000000000005 /* PerfumeViews.swift in Sources */,
+				F2092026B000000000000001 /* PerfumePlacement.swift in Sources */,
+				F2092026A000000000000003 /* BigTopViews.swift in Sources */,
+				F2092026A000000000000001 /* FoodAndFragrance.swift in Sources */,
+				F19091900000000000000021 /* RoseArtwork.swift in Sources */,
+				F01919000000000000000001 /* RubbingSurface.swift in Sources */,
+				F02020260000000000000001 /* MemoryJourney.swift in Sources */,
+				F01920260000000000000003 /* ExplorationLayout.swift in Sources */,
+				F01920260000000000000005 /* ExplorationViews.swift in Sources */,
+				E01920260000000000000003 /* WonderlandScenes.swift in Sources */,
+				E01920260000000000000001 /* ScenePuzzles.swift in Sources */,
 				7A1B2C3D4E5F608192A3B00F /* IvyApp.swift in Sources */,
 				7A1B2C3D4E5F608192A3B010 /* ContentView.swift in Sources */,
 				7A1B2C3D4E5F608192A3B011 /* PixelCanvas.swift in Sources */,
+				7A1B2C3D4E5F608192A3B036 /* PixelSprite.swift in Sources */,
 				7A1B2C3D4E5F608192A3B024 /* GameState.swift in Sources */,
 				7A1B2C3D4E5F608192A3B025 /* GameCopy.swift in Sources */,
 				7A1B2C3D4E5F608192A3B026 /* GameChrome.swift in Sources */,
+				F19020260000000000000001 /* IvyMessages.swift in Sources */,
+				B01920260000000000000001 /* EggCollectionView.swift in Sources */,
+				7A1B2C3D4E5F608192A3B027 /* IntroView.swift in Sources */,
+				7A1B2C3D4E5F608192A3B029 /* LyricLockView.swift in Sources */,
+				7A1B2C3D4E5F608192A3B02C /* AssemblePad.swift in Sources */,
+				7A1B2C3D4E5F608192A3B02E /* MailboxLockView.swift in Sources */,
+				7A1B2C3D4E5F608192A3B034 /* RulesEnvelopeView.swift in Sources */,
+				7A1B2C3D4E5F608192A3B094 /* RoomGraph.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7A1B2C3D4E5F608192A3B08A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D01920260000000000000003 /* HallTests.swift in Sources */,
+				E01920260000000000000005 /* WonderlandTests.swift in Sources */,
+				7A1B2C3D4E5F608192A3B086 /* StoreHarness.swift in Sources */,
+				7A1B2C3D4E5F608192A3B087 /* MailboxKeyTests.swift in Sources */,
+				7A1B2C3D4E5F608192A3B088 /* DoorIvyTests.swift in Sources */,
+				7A1B2C3D4E5F608192A3B089 /* EggOrderTests.swift in Sources */,
+				7A1B2C3D4E5F608192A3B096 /* RoomGraphTests.swift in Sources */,
+				7A1B2C3D4E5F608192A3B098 /* DiegeticWalkTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		7A1B2C3D4E5F608192A3B08E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7A1B2C3D4E5F608192A3B002 /* Ivy */;
+			targetProxy = 7A1B2C3D4E5F608192A3B08D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		7A1B2C3D4E5F608192A3B013 /* Debug */ = {
@@ -344,6 +612,64 @@
 			};
 			name = Release;
 		};
+		7A1B2C3D4E5F608192A3B08F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 593KCRM3BW;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ivy.gift.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Ivy.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Ivy";
+			};
+			name = Debug;
+		};
+		7A1B2C3D4E5F608192A3B090 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 593KCRM3BW;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ivy.gift.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Ivy.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Ivy";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -361,6 +687,15 @@
 			buildConfigurations = (
 				7A1B2C3D4E5F608192A3B015 /* Debug */,
 				7A1B2C3D4E5F608192A3B016 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7A1B2C3D4E5F608192A3B091 /* Build configuration list for PBXNativeTarget "IvyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7A1B2C3D4E5F608192A3B08F /* Debug */,
+				7A1B2C3D4E5F608192A3B090 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

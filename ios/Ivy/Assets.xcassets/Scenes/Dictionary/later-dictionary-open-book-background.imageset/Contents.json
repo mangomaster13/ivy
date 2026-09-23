@@ -1,0 +1,23 @@
+{
+  "images": [
+    {
+      "filename": "later-dictionary-open-book-background.png",
+      "idiom": "universal",
+      "scale": "1x"
+    },
+    {
+      "filename": "later-dictionary-open-book-background@2x.png",
+      "idiom": "universal",
+      "scale": "2x"
+    },
+    {
+      "filename": "later-dictionary-open-book-background@3x.png",
+      "idiom": "universal",
+      "scale": "3x"
+    }
+  ],
+  "info": {
+    "author": "xcode",
+    "version": 1
+  }
+}

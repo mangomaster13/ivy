@@ -1,0 +1,91 @@
+{
+  "tool": "build-phase",
+  "version": 2,
+  "startedAt": "2026-09-18T08:51:21.522Z",
+  "comp": ".impeccable/mocks/ivy-sunset-hall-a.png",
+  "direction": "4836ea64",
+  "breakpoint": "1280x720",
+  "artifact": null,
+  "phase": "spec",
+  "phases": {
+    "comps": {
+      "status": "closed",
+      "openedAt": "2026-09-18T08:51:21.521Z",
+      "closedAt": "2026-09-18T08:54:04.257Z",
+      "attempts": 3,
+      "notes": [],
+      "gate": {
+        "ok": true,
+        "reasons": [],
+        "summary": "3 comps, 1 approved",
+        "approved": ".impeccable/mocks/ivy-sunset-hall-a.png",
+        "at": "2026-09-18T08:54:04.257Z"
+      },
+      "forced": null
+    },
+    "spec": {
+      "status": "open",
+      "openedAt": "2026-09-18T08:54:06.736Z",
+      "closedAt": null,
+      "attempts": 0,
+      "notes": [],
+      "gate": null,
+      "forced": null
+    },
+    "plates": {
+      "status": "pending",
+      "openedAt": null,
+      "closedAt": null,
+      "attempts": 0,
+      "notes": [],
+      "gate": null,
+      "forced": null
+    },
+    "hero": {
+      "status": "pending",
+      "openedAt": null,
+      "closedAt": null,
+      "attempts": 0,
+      "notes": [],
+      "gate": null,
+      "forced": null
+    },
+    "sections": {
+      "status": "pending",
+      "openedAt": null,
+      "closedAt": null,
+      "attempts": 0,
+      "notes": [],
+      "gate": null,
+      "forced": null
+    },
+    "motion": {
+      "status": "pending",
+      "openedAt": null,
+      "closedAt": null,
+      "attempts": 0,
+      "notes": [],
+      "gate": null,
+      "forced": null
+    },
+    "responsive": {
+      "status": "pending",
+      "openedAt": null,
+      "closedAt": null,
+      "attempts": 0,
+      "notes": [],
+      "gate": null,
+      "forced": null
+    },
+    "review": {
+      "status": "pending",
+      "openedAt": null,
+      "closedAt": null,
+      "attempts": 0,
+      "notes": [],
+      "gate": null,
+      "forced": null
+    }
+  },
+  "finish": null
+}

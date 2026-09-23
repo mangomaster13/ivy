@@ -1,0 +1,12 @@
+{
+  "name": "ferris",
+  "approved": false,
+  "style": "Hong Kong Hotel Noir \u00d7 Botanical Alchemy",
+  "reference": "../approved/hall-style-reference.png",
+  "role": "Inside a red glass gondola of the HK Observation Wheel. Harbour view is the collectible.",
+  "back": "sunset in left glass \u2192 sunset",
+  "forward": "red taxis on the harbourfront \u2192 taxi",
+  "egg": "Victoria Harbour / IFC view",
+  "landmark": "Hong Kong Observation Wheel, Central Harbourfront",
+  "notes": "White lattice spokes, red enclosed gondolas, IFC behind. No AIA logo."
+}

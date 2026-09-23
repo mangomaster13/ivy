@@ -1,0 +1,10 @@
+{
+  "name": "plane",
+  "approved": false,
+  "style": "Hong Kong Hotel Noir \u00d7 Botanical Alchemy",
+  "reference": "../approved/hall-style-reference.png",
+  "role": "Arrivals cabin. Boarding pass is souvenir and DEPART.",
+  "back": "floor hole \u2192 hall",
+  "forward": "DEPART stub / cabin door \u2192 corridor",
+  "egg": "boarding pass"
+}
