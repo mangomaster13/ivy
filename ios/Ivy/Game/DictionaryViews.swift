@@ -1,5 +1,20 @@
 import SwiftUI
 
+/// One camera transform for the painted pages, printed entries and persisted ink.
+enum DictionaryCamera {
+    static func artworkFrame(in viewport: CGSize, writing: Bool) -> CGRect {
+        let aspect: CGFloat = 16.0 / 9.0
+        let height = max(viewport.width / aspect, viewport.height,
+                         writing ? max(max(0, viewport.height - 100) / 0.34,
+                                       (viewport.height + 88) / 1.12) : 0)
+        let width = height * aspect
+        let x = writing ? viewport.width / 2 - width * 0.645 : (viewport.width - width) / 2
+        let y = writing ? (viewport.height - 88) / 2 - height * 0.44 : (viewport.height - height) / 2
+        return CGRect(x: min(0, max(viewport.width - width, x)),
+                      y: min(0, max(viewport.height - height, y)), width: width, height: height)
+    }
+}
+
 /// Slots are anchored to the painted counter (320 × 160), including sprite alpha margins.
 enum DictionaryLayout {
     static let book = CGRect(x: 128, y: 91, width: 82, height: 41)
@@ -50,31 +65,40 @@ struct DictionaryCloseupView: View {
     var body: some View {
         Group {
             if panel == .dictionarySong {
-                Image("later-dictionary-song-card").resizable().interpolation(.high).scaledToFit()
-                    .padding(16)
-                    .accessibilityLabel(store.clueText(.dictionaryLyric))
+                ZStack {
+                    // Empty timber on the stall counter, clear of its edges and pen stand.
+                    SceneDetailStage(bounds: CGRect(x: 125, y: 95, width: 64, height: 32)) {
+                        InspectionBackdrop(surface: .scene("later-dictionary-stall-background"))
+                    }
+                    Image("later-dictionary-song-card").resizable().interpolation(.high).scaledToFit()
+                        .padding(16)
+                        .accessibilityLabel(store.clueText(.dictionaryLyric))
+                }
             } else {
-                // 48 pt controls + 32 pt feedback remain outside the fitted book. No second footer budget.
-                VStack(spacing: 4) {
+                // The book scene fills content. Controls reserve space inside that scene,
+                // rather than taking height away from the artwork a second time.
+                ZStack(alignment: .bottom) {
                     book
-                    HStack(spacing: 16) {
-                        if store.dictionary.solved {
-                            PuzzleButton("Remember") { store.replayKeepsake(.dictionary) }
-                        } else if !writingCloseup {
-                            PuzzleButton("Write", action: openWritingSurface)
-                        } else {
-                            PuzzleButton("Undo", action: store.undoDictionaryStroke)
-                                .disabled(!store.canWriteDictionary || store.dictionary.strokes.isEmpty || submitting)
-                            PuzzleButton("Enter") {
-                                submitting = true
-                                submission = Task { @MainActor in
-                                    await store.submitDictionary()
-                                    submitting = false
-                                }
-                            }.disabled(!store.canWriteDictionary || store.dictionary.strokes.isEmpty || submitting)
-                        }
-                    }.frame(height: 48)
-                    SceneFeedback(store: store, height: 32).frame(height: 32)
+                    VStack(spacing: 4) {
+                        HStack(spacing: 16) {
+                            if store.dictionary.solved {
+                                PuzzleButton("Remember") { store.replayKeepsake(.dictionary) }
+                            } else if !writingCloseup {
+                                PuzzleButton("Write", action: openWritingSurface)
+                            } else {
+                                PuzzleButton("Undo", action: store.undoDictionaryStroke)
+                                    .disabled(!store.canWriteDictionary || store.dictionary.strokes.isEmpty || submitting)
+                                PuzzleButton("Enter") {
+                                    submitting = true
+                                    submission = Task { @MainActor in
+                                        await store.submitDictionary()
+                                        submitting = false
+                                    }
+                                }.disabled(!store.canWriteDictionary || store.dictionary.strokes.isEmpty || submitting)
+                            }
+                        }.frame(height: 48)
+                        SceneFeedback(store: store, height: 32).frame(height: 32)
+                    }
                 }
             }
         }
@@ -104,45 +128,42 @@ struct DictionaryCloseupView: View {
 
     private var book: some View {
         // This is a camera crop, not a resized writing surface: artwork and saved ink use one transform.
-        let crop = writingCloseup ? CGRect(x: 0.47, y: 0.24, width: 0.36, height: 0.40)
-                                 : CGRect(x: 0, y: 0, width: 1, height: 1)
-        return FittedSceneStage(aspectRatio: (16.0 / 9.0) * crop.width / crop.height) {
-            GeometryReader { geometry in
-                let size = CGSize(width: geometry.size.width / crop.width, height: geometry.size.height / crop.height)
-                let rect = DictionaryLayout.writing
-                ZStack(alignment: .topLeading) {
-                    Image("later-dictionary-open-book-background").resizable().interpolation(.high)
-                        .frame(width: size.width, height: size.height).accessibilityHidden(true)
-                    Image("later-dictionary-page-entries-overlay").resizable().interpolation(.high)
-                        .frame(width: size.width, height: size.height)
-                        .allowsHitTesting(false)
-                        .accessibilityLabel(store.clueText(.dictionaryEntries))
-                        .accessibilityHidden(writingCloseup)
-                    if !store.memories.picked.contains(.fountainPen) || store.dictionary.solved {
-                        Image("later-dictionary-fountain-pen").resizable().scaledToFit()
-                            .frame(width: size.width * 0.13, height: size.width * 0.13 / 1.5)
-                            .rotationEffect(.degrees(45))
-                            .position(x: size.width * 0.917, y: size.height * 0.63)
-                            .allowsHitTesting(false).accessibilityHidden(true)
-                    }
-                    ink
-                        .frame(width: size.width * rect.width, height: size.height * rect.height)
-                        .allowsHitTesting(writingCloseup)
-                        .position(x: size.width * rect.midX, y: size.height * rect.midY)
-                    if !writingCloseup {
-                        Button(action: openWritingSurface) {
-                            Color.clear.contentShape(Rectangle())
-                        }.buttonStyle(.plain)
-                            .frame(width: max(48, size.width * rect.width), height: max(48, size.height * rect.height))
-                            .position(x: size.width * rect.midX, y: size.height * rect.midY)
-                            .accessibilityLabel("Look closer at the dictionary entry")
-                    }
+        GeometryReader { geometry in
+            let frame = DictionaryCamera.artworkFrame(in: geometry.size, writing: writingCloseup)
+            let size = frame.size
+            let rect = DictionaryLayout.writing
+            ZStack(alignment: .topLeading) {
+                Image("later-dictionary-open-book-background").resizable().interpolation(.high)
+                    .frame(width: size.width, height: size.height).accessibilityHidden(true)
+                Image("later-dictionary-page-entries-overlay").resizable().interpolation(.high)
+                    .frame(width: size.width, height: size.height)
+                    .allowsHitTesting(false)
+                    .accessibilityLabel(store.clueText(.dictionaryEntries))
+                    .accessibilityHidden(writingCloseup)
+                if !store.memories.picked.contains(.fountainPen) || store.dictionary.solved {
+                    Image("later-dictionary-fountain-pen").resizable().scaledToFit()
+                        .frame(width: size.width * 0.13, height: size.width * 0.13 / 1.5)
+                        .rotationEffect(.degrees(45))
+                        .position(x: size.width * 0.917, y: size.height * 0.63)
+                        .allowsHitTesting(false).accessibilityHidden(true)
                 }
-                .frame(width: size.width, height: size.height, alignment: .topLeading)
-                .offset(x: -crop.minX * size.width, y: -crop.minY * size.height)
-                .frame(width: geometry.size.width, height: geometry.size.height, alignment: .topLeading)
-                .clipped()
+                ink
+                    .frame(width: size.width * rect.width, height: size.height * rect.height)
+                    .allowsHitTesting(writingCloseup)
+                    .position(x: size.width * rect.midX, y: size.height * rect.midY)
+                if !writingCloseup {
+                    Button(action: openWritingSurface) {
+                        Color.clear.contentShape(Rectangle())
+                    }.buttonStyle(.plain)
+                        .frame(width: max(48, size.width * rect.width), height: max(48, size.height * rect.height))
+                        .position(x: size.width * rect.midX, y: size.height * rect.midY)
+                        .accessibilityLabel("Look closer at the dictionary entry")
+                }
             }
+            .frame(width: size.width, height: size.height, alignment: .topLeading)
+            .offset(x: frame.minX, y: frame.minY)
+            .frame(width: geometry.size.width, height: geometry.size.height, alignment: .topLeading)
+            .clipped()
         }
     }
 

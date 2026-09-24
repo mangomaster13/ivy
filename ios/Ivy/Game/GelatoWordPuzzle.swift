@@ -112,19 +112,10 @@ struct GelatoWordMenuView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            let fullWidth = min(geometry.size.width, geometry.size.height * 2)
-            let compact = fullWidth < 528 && !enteringFlavor
-            // Short/narrow stages crop to the physical paper; controls keep their own column.
-            let width = compact ? min((geometry.size.width - 132) * 1774 / 1140,
-                                      (geometry.size.height - 38) * 1774 / 550) : fullWidth
-            let height = width / 2
-            let paperWidth = compact ? width * 1140 / 1774 : width
-            let paperHeight = compact ? width * 550 / 1774 : height
-            let offset = compact ? CGSize(width: -width * 190 / 1774, height: -width * 210 / 1774) : .zero
-            let origin = CGPoint(x: compact ? 4 : (geometry.size.width - width) / 2,
-                                 y: compact ? (geometry.size.height - 38 - paperHeight) / 2 : (geometry.size.height - height) / 2)
-            let actionPoint = CGPoint(x: compact ? geometry.size.width - 64 : origin.x + width * 0.865,
-                                      y: compact ? geometry.size.height / 2 : origin.y + height * 0.72)
+            let width = geometry.size.width
+            let height = geometry.size.height
+            let compact = width < 528
+            let actionPoint = CGPoint(x: width * 0.865, y: height * 0.72)
             ZStack(alignment: .topLeading) {
                 ZStack(alignment: .topLeading) {
                     InspectionBackdrop(surface: .scene(imageName))
@@ -135,16 +126,12 @@ struct GelatoWordMenuView: View {
                     }
                 }
                 .frame(width: width, height: height)
-                .offset(offset)
-                .frame(width: paperWidth, height: paperHeight, alignment: .topLeading)
-                .clipped() // Intentional camera crop; all word hit regions stay within the paper.
-                .position(x: origin.x + paperWidth / 2, y: origin.y + paperHeight / 2)
                 if !enteringFlavor {
                     if store.gelatoWords.flavorSolved {
-                        PuzzleButton("Taste", width: 112) { store.openMemory(.tasting) }
+                        PuzzleButton("Taste", width: compact ? 92 : 112) { store.openMemory(.tasting) }
                             .position(actionPoint)
                     } else if !store.gelatoWords.chainSolved {
-                        PuzzleButton("Enter", width: 112, action: store.submitGelatoChain)
+                        PuzzleButton("Enter", width: compact ? 92 : 112, action: store.submitGelatoChain)
                             .disabled(store.gelatoWords.order.count != 7)
                             .position(actionPoint)
                     }
@@ -155,7 +142,7 @@ struct GelatoWordMenuView: View {
                 // Keep the same TextField identity while keyboard focus changes layout.
                 if store.gelatoWords.chainSolved && !store.gelatoWords.flavorSolved {
                     flavorInput
-                        .frame(width: enteringFlavor ? min(300, geometry.size.width - 32) : compact ? 112 : max(112, width * 0.20))
+                        .frame(width: enteringFlavor ? min(300, geometry.size.width - 32) : compact ? 92 : max(112, width * 0.20))
                         .position(enteringFlavor ? CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2) : actionPoint)
                 }
             }
@@ -221,11 +208,26 @@ struct GelatoClueView: View {
     let store: GameStore
     let panel: MemoryPanel
     var body: some View {
-        FittedSceneStage(aspectRatio: 1.5) {
-            Image(panel == .gelatoNote ? "gelato-word-note" : "gelato-word-order")
-                .resizable().interpolation(.high).scaledToFit()
-                .accessibilityLabel(store.clueText(panel == .gelatoNote ? .gelatoLeaves : .gelatoOrder))
+        GeometryReader { geometry in
+            if panel == .gelatoNote {
+                // The paper lies between y=0.17 and 0.83. A 2:1 camera removes
+                // only the outer timber above/below it, keeping the entire note.
+                Image("gelato-word-note").resizable().interpolation(.high).scaledToFill()
+                    .frame(width: geometry.size.width, height: geometry.size.height)
+                    .clipped()
+            } else {
+                ZStack {
+                    // Bare counter, left of the saucer; the order is a transparent paper sprite.
+                    SceneDetailStage(bounds: CGRect(x: 70, y: 110, width: 64, height: 32)) {
+                        InspectionBackdrop(surface: .scene("gelato-tasting"))
+                    }
+                    Image("gelato-word-order").resizable().interpolation(.high).scaledToFit()
+                        .padding(16)
+                }
+            }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(store.clueText(panel == .gelatoNote ? .gelatoLeaves : .gelatoOrder))
         .gameBackAction(store.backFromMemory)
     }
 }

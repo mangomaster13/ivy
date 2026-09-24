@@ -223,7 +223,8 @@ struct MirrorRubbingCloseup: View {
     @Bindable var store: GameStore
     var body: some View {
         GeometryReader { geometry in
-            let width = min(geometry.size.width, geometry.size.height * 2.17)
+            // Cover content, transforming the glass and rubbing surface together.
+            let width = max(geometry.size.width, geometry.size.height * 2.17)
             let height = width / 2.17
             ZStack {
                 ZStack {
@@ -248,6 +249,7 @@ struct MirrorRubbingCloseup: View {
                     SceneFeedback(store: store, height: 44)
                 }.frame(width: geometry.size.width - 24, height: geometry.size.height - 24)
             }.frame(width: geometry.size.width, height: geometry.size.height)
+                .clipped()
         }
         .gameBackAction(store.cancelOverlay)
     }

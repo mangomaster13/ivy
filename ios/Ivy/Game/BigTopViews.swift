@@ -106,17 +106,20 @@ struct BigTopCloseupView: View {
 private struct BigTopOrderMenu: View {
     let store: GameStore
     var body: some View {
-        FittedSceneStage(aspectRatio: 12.0 / 5.0) {
+        FittedSceneStage {
             GeometryReader { geometry in
                 let size = geometry.size
-                // Four 48 pt rows need 192 pt. The wide authored paper preserves that height.
-                let rowHeight = max(48, size.height * 0.185)
+                // Reflow within the complete 2:1 tabletop; never shorten a 48 pt row.
+                let rows = size.height < 240 ? 2 : size.height < 320 ? 3 : 4
+                let columns = (10 + rows - 1) / rows
+                let columnWidth = max(48, size.width * 0.72 / CGFloat(columns))
+                let rowHeight = max(48, size.height * 0.60 / CGFloat(rows))
                 let order = store.bigTop.menuOrder ?? BigTopMenu.availableIDs
                 ZStack(alignment: .topLeading) {
-                    InspectionBackdrop(surface: .scene("bt3-menu-compact"))
+                    InspectionBackdrop(surface: .scene("bt3-menu"))
                     ForEach(Array(order.enumerated()), id: \.element) { offset, id in
-                        let column = offset < 4 ? 0 : offset < 7 ? 1 : 2
-                        let row = offset < 4 ? offset : offset < 7 ? offset - 4 : offset - 7
+                        let column = offset / rows
+                        let row = offset % rows
                         Button { store.selectDish(id) } label: {
                             HStack(spacing: 5) {
                                 ZStack {
@@ -127,13 +130,13 @@ private struct BigTopOrderMenu: View {
                                 }.frame(width: 16, height: 16)
                                 Image("bt3-dish-\(id)").resizable().interpolation(.high).scaledToFit()
                             }
-                            .frame(width: size.width * 0.217, height: rowHeight, alignment: .leading)
+                            .frame(width: columnWidth, height: rowHeight, alignment: .leading)
                             .contentShape(Rectangle())
                         }.buttonStyle(.plain).disabled(store.bigTop.orderSolved)
                             .accessibilityLabel(BigTopMenu.dishes[id])
                             .accessibilityValue(store.bigTop.order.contains(id) ? "Checked" : "Unchecked")
-                            .position(x: size.width * (0.14 + CGFloat(column) * 0.255),
-                                      y: size.height * 0.11 + rowHeight * (CGFloat(row) + 0.5))
+                            .position(x: size.width * 0.06 + columnWidth * (CGFloat(column) + 0.5),
+                                      y: size.height * 0.24 + rowHeight * (CGFloat(row) + 0.5))
                     }
                     Button(action: store.placeDinnerOrder) {
                         Color.clear.frame(width: max(48, size.width * 0.13), height: max(48, size.height * 0.46))

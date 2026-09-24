@@ -105,6 +105,39 @@ struct FittedSceneStage<Content: View>: View {
     }
 }
 
+/// A camera crop of a physical scene, with artwork and hit targets transformed together.
+/// Bounds use the existing 320 × 160 scene coordinates; Back stays in the root gutter.
+struct SceneDetailStage<Content: View>: View {
+    let bounds: CGRect
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        GeometryReader { geometry in
+            // Widen the camera, not the artwork. Keep the requested detail visible
+            // while the surrounding scene fills the root-owned viewport.
+            let camera = SceneDetailCamera.rect(containing: bounds, viewport: geometry.size)
+            let scale = geometry.size.width / camera.width
+            content
+                .frame(width: 320 * scale, height: 160 * scale)
+                .offset(x: -camera.minX * scale, y: -camera.minY * scale)
+                .frame(width: geometry.size.width, height: geometry.size.height, alignment: .topLeading)
+                .clipped()
+        }
+    }
+}
+
+enum SceneDetailCamera {
+    static func rect(containing bounds: CGRect, viewport: CGSize) -> CGRect {
+        guard viewport.width > 0, viewport.height > 0 else { return bounds }
+        let aspect = viewport.width / max(1, viewport.height)
+        let width = max(bounds.width, bounds.height * aspect)
+        let height = width / aspect
+        return CGRect(x: min(max(0, bounds.midX - width / 2), 320 - width),
+                      y: min(max(0, bounds.midY - height / 2), 160 - height),
+                      width: width, height: height)
+    }
+}
+
 struct KeepsakeSheet<Content: View>: View {
     let back: () -> Void
     let surface: InspectionSurface

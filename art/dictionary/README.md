@@ -12,12 +12,12 @@ Use the existing `later-dictionary-*` imagesets. The formerly documented `art/la
 | Book | `closed-book` | `DictionaryLayout.book` (128, 91, 82, 41); alpha silhouette stays on counter |
 | Lyric card | `song-card` | `DictionaryLayout.song` (79, 95, 51, 34), separate from book and stand |
 | Pen | `fountain-pen` | `DictionaryLayout.pen` (213, 87, 29, 20), on the baked empty stand; disappears while held, returns when solved |
-| Open book | `open-book-background` | 16:9 fitted original; no stretching to the scene's 2:1 ratio |
+| Open book | `open-book-background` | 16:9 original under a proportional full-content camera; no stretching |
 | Printed entries | `page-entries-overlay` | Full image overlay with the exact open-book transform |
 | Live ink | Runtime strokes | Normalized right-page bounds (0.49, 0.29, 0.31, 0.30); clear of spine and tray |
 | Keepsake | `later-dictionary-keepsake` | Existing eleventh collectible slot |
 
-The entry camera crop is (0.47, 0.24, 0.36, 0.40), using the same transform for paper, ink and gestures. Back leaves the crop first, then the book. A 48 pt action row and 32 pt feedback row are budgeted outside the fitted artwork. At a 360 × 220 pt content viewport the crop leaves approximately 176 × 83 pt of writing area; larger viewports grow it proportionally. No device-specific layout branch, second footer budget, new decorative panel or scroll view.
+The book and writing views now use `DictionaryCamera.artworkFrame` to cover the full root content while preserving the source aspect ratio. Ink, printed entries and gestures use that same transform; the bottom 88 pt are reserved inside the scene for controls and feedback. See [the closeup coverage fix](../../docs/ui/closeup-content-fix.md) for the camera, lyric-card support surface and actual verification scope.
 
 ## English card
 
