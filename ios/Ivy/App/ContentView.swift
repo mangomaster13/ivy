@@ -63,7 +63,7 @@ struct ContentView: View {
                                         .font(IvyType.hand(11))
                                         .foregroundStyle(IvyType.cream.opacity(0.65))
                                         .frame(width: 48, height: 48)
-                                        .accessibilityLabel("Choose a keepsake to reset before")
+                                        .accessibilityLabel("Choose where to reset from")
                                         .frame(width: GameLayout.navigationGutter)
                                         .padding(.top, max(12, (contentHeight - stageSize.height) / 2 + 12))
                                 }
@@ -81,14 +81,18 @@ struct ContentView: View {
         .statusBarHidden(true)
         .onPreferenceChange(GameTextInputFocusKey.self) { isEnteringAnswer = $0 }
         #if DEBUG
-        .confirmationDialog("Reset before which keepsake?", isPresented: $showingResetChoices) {
+        .confirmationDialog("Reset from where?", isPresented: $showingResetChoices) {
+            Button("0. Intro", role: .destructive) {
+                store = store.resetToIntro()
+                isEnteringAnswer = false
+            }
             ForEach(EggId.allCases) { egg in
                 Button("\(egg.slotIndex + 1). \(egg.rawValue.capitalized)", role: .destructive) {
                     store.reset(before: egg)
                 }
             }
         } message: {
-            Text("Progress from the selected keepsake onward will be reset.")
+            Text("Progress from the selected point onward will be reset.")
         }
         #endif
         .onPreferenceChange(RoseDropFrameKey.self) { store.roseDropFrame = $0 }

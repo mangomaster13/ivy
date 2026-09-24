@@ -317,6 +317,7 @@ final class GameStore {
     /// Isolated in tests so suites never share the phone snapshot.
     private let defaults: UserDefaults
     private static let persistKey = "ivy.game.snapshot.v4"
+    private var saveDiscarded = false
     /// Cloud x where `____` stays readable when Reduce Motion freezes the sky.
     private static let readableCloudOffset = 242
 
@@ -897,6 +898,19 @@ final class GameStore {
     }
 
     #if DEBUG
+    /// DEBUG only: discard this save and return to the untouched first-run intro.
+    func resetToIntro() -> GameStore {
+        saveDiscarded = true
+        persistTask?.cancel()
+        atmosphereTask?.cancel()
+        captionHideTask?.cancel()
+        plateIvyTask?.cancel()
+        assembleFinishTask?.cancel()
+        notebookFlashTask?.cancel()
+        defaults.removeObject(forKey: Self.persistKey)
+        return GameStore(defaults: defaults)
+    }
+
     /// DEBUG only: restart in the Jellycat bedroom with the hotel door unlocked.
     func resetToUnlockedRoom(persistResult: Bool = true) {
         let earlierRooms: Set<Room> = [.yard, .hall, .plane, .corridor]
@@ -1539,6 +1553,7 @@ final class GameStore {
 
     /// Encodes progress. Dialogue is not restored (copy is cheap to tap again).
     private func persist() {
+        guard !saveDiscarded else { return }
         #if DEBUG
         // Art-review launches are deliberately ephemeral and never overwrite the normal save.
         if ProcessInfo.processInfo.environment["IVY_REVIEW"] != nil { return }
