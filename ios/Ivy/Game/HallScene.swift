@@ -49,14 +49,129 @@ struct HallAtmosphere: View {
 struct HallPrizeView: View {
     @Bindable var store: GameStore
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var frame = 0
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var revealFrame = 0
+    @State private var activeEgg: EggId?
+    @State private var revealTask: Task<Void, Never>?
+    @State private var justPulled = false
+    @State private var letterOpen = false
+    @State private var letterFrame = 0
+    @State private var unrollLetter = false
+
     var body: some View {
+        Group {
+            if letterOpen { letterContent }
+            else { machineContent }
+        }
+        .gameBackAction {
+            if letterOpen { letterOpen = false }
+            else { store.cancelOverlay() }
+        }
+        .task(id: letterOpen) {
+            guard letterOpen, unrollLetter else { return }
+            do {
+                for next in 0..<GameCanvas.envelopeFrames {
+                    letterFrame = next
+                    try await Task.sleep(for: .milliseconds(180))
+                }
+            } catch { return }
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase != .active, store.lotteryDrawn {
+                revealTask?.cancel()
+                activeEgg = nil
+                revealFrame = 4
+            }
+        }
+        .onDisappear { revealTask?.cancel() }
+    }
+
+    private var machineImageName: String {
+        if !store.lotteryDrawn { return "lottery-machine-idle" }
+        switch revealFrame {
+        case 1: "lottery-machine-lever"
+        case 2: "lottery-machine-envelope-half"
+        case 3: "lottery-machine-envelope-full"
+        default: "lottery-machine-heart"
+        }
+    }
+
+    private var machineContent: some View {
+        PixelCanvas(imageName: machineImageName, pixelArt: false) { scale in
+            if let activeEgg {
+                Image("lottery-token-\(activeEgg.rawValue)")
+                    .resizable().interpolation(.high)
+                    .frame(width: 33 * scale, height: 25 * scale)
+                    .position(x: 173 * scale, y: 61 * scale)
+                    .accessibilityHidden(true)
+            }
+            if !store.lotteryDrawn {
+                Button(action: pullLever) {
+                    Color.clear.frame(width: 50 * scale, height: 82 * scale)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .position(x: 262 * scale, y: 60 * scale)
+                .accessibilityLabel("Pull the keepsake machine lever")
+                .accessibilityHint("Tap or drag the lever down")
+                .simultaneousGesture(
+                    DragGesture(minimumDistance: 12)
+                        .onEnded { if $0.translation.height > 24 * scale { pullLever() } }
+                )
+            }
+            if store.lotteryDrawn, revealFrame == 0 || revealFrame >= 3 {
+                Button(action: openLetter) {
+                    Color.clear.frame(width: 68 * scale, height: 46 * scale)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .position(x: 167 * scale, y: 94 * scale)
+                .accessibilityLabel("Open the letter from the machine")
+            }
+        }
+        .id(machineImageName)
+        .transition(.opacity)
+    }
+
+    private func pullLever() {
+        guard store.pullLottery() else { return }
+        justPulled = true
+        revealFrame = 1
+        if reduceMotion {
+            withAnimation(.easeInOut(duration: 0.18)) { revealFrame = 4 }
+            return
+        }
+        revealTask = Task { @MainActor in
+            do {
+                try await Task.sleep(for: .milliseconds(400))
+                for egg in EggId.allCases {
+                    activeEgg = egg
+                    try await Task.sleep(for: .milliseconds(290))
+                }
+                activeEgg = nil
+                revealFrame = 2
+                try await Task.sleep(for: .milliseconds(250))
+                revealFrame = 3
+                try await Task.sleep(for: .milliseconds(250))
+                revealFrame = 4
+            } catch { return }
+        }
+    }
+
+    private func openLetter() {
+        unrollLetter = justPulled && !reduceMotion
+        letterFrame = unrollLetter ? 0 : GameCanvas.envelopeFrames - 1
+        justPulled = false
+        letterOpen = true
+    }
+
+    private var letterContent: some View {
         GeometryReader { proxy in
             let scale = min((proxy.size.width - 48) / 448, (proxy.size.height - 24) / 300)
             ZStack {
                 Color("Night")
-                PixelSpriteFrame(sheet: .letterScroll, index: frame, scale: scale)
-                if frame == GameCanvas.envelopeFrames - 1 {
+                PixelSpriteFrame(sheet: .letterScroll, index: letterFrame, scale: scale)
+                if letterFrame == GameCanvas.envelopeFrames - 1 {
                     VStack(spacing: 10 * scale) {
                         IvyType.inscription("one more day, with you")
                             .font(IvyType.script(22 * scale))
@@ -68,16 +183,6 @@ struct HallPrizeView: View {
                     .foregroundStyle(IvyType.ink).padding(24).transition(.opacity)
                 }
             }.frame(width: proxy.size.width, height: proxy.size.height)
-        }
-        .gameBackAction(store.cancelOverlay)
-        .task {
-            if reduceMotion { frame = GameCanvas.envelopeFrames - 1; return }
-            do {
-                for next in 0..<GameCanvas.envelopeFrames {
-                    frame = next
-                    try await Task.sleep(for: .milliseconds(180))
-                }
-            } catch { return }
         }
     }
 }

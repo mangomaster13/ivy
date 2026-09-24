@@ -33,17 +33,22 @@ final class HallTests: XCTestCase {
         store.tapLottery()
         XCTAssertFalse(store.lotteryDrawn)
         XCTAssertEqual(store.overlay, .none)
+        XCTAssertFalse(store.pullLottery())
         store.collected.insert(.taxi)
         store.room = .taxi
         store.tapLottery()
         XCTAssertFalse(store.lotteryDrawn)
+        XCTAssertFalse(store.pullLottery())
         store.room = .hall
         store.tapLottery()
-        XCTAssertTrue(store.lotteryDrawn)
         XCTAssertEqual(store.overlay, .prize)
+        XCTAssertFalse(store.lotteryDrawn)
+        XCTAssertTrue(store.pullLottery())
+        XCTAssertTrue(store.lotteryDrawn)
         store.cancelOverlay()
         store.tapLottery()
         XCTAssertEqual(store.overlay, .prize)
+        XCTAssertFalse(store.pullLottery(), "Reopening cannot produce the gift twice")
     }
 
     func testHallDraftAndClaimSurviveReload() {
@@ -61,11 +66,16 @@ final class HallTests: XCTestCase {
         XCTAssertFalse(restored.lotteryDrawn)
         restored.collected = Set(EggId.allCases)
         restored.tapLottery()
+        XCTAssertFalse(restored.lotteryDrawn)
+        XCTAssertTrue(restored.pullLottery())
         restored.persistNow()
         let claimed = GameStore(defaults: defaults)
         XCTAssertTrue(claimed.lotteryDrawn)
         XCTAssertTrue(claimed.lotteryReady)
         XCTAssertEqual(claimed.overlay, .none)
+        claimed.tapLottery()
+        XCTAssertEqual(claimed.overlay, .prize)
+        XCTAssertFalse(claimed.pullLottery())
     }
 
     func testHallHoleDoesNotRequireVuoriAndKeepsInventory() {

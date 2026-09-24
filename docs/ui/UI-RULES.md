@@ -40,6 +40,7 @@ Picking up any tool automatically switches the footer to Tools (2026-09-20 revis
 
 Collecting any new keepsake automatically switches the footer to Memories at ownership commit, including physical pickups, assembly completion and direct Element rewards. Do not depend on a collection flight to trigger this switch. Reopening an owned keepsake, restoring saves and migrating progress must not force a tab change.
 
+The post-13 keepsake machine uses one identical brass-and-glass container for every collectible icon. Fit each icon by its visible artwork inside the inner glass boundary in every animation frame; no part of an icon may cross the container edge. Keep the container size and position fixed while the 13 icons change. Pulling the physical lever reveals the predetermined envelope, and an already claimed save reopens at the finished machine without awarding it again.
 
 **No pasted-image design.** Never place a rectangular scene illustration, screenshot, or baked interface inside another decorative panel. A closeup is a complete spatial scene: its artwork fills the scene stage, with interactive objects and controls positioned intentionally within it. Do not hide a pasted rectangle with rounded corners, fades, shadows, or a decorative border.
 

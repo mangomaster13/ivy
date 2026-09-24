@@ -710,10 +710,18 @@ final class GameStore {
             IvyHaptics.soft()
             return
         }
-        lotteryDrawn = true
         overlay = .prize
+        IvyHaptics.light()
+    }
+
+    /// The lever produces the fixed gift once; reopening the machine does not replay it.
+    @discardableResult
+    func pullLottery() -> Bool {
+        guard room == .hall, overlay == .prize, lotteryReady, !lotteryDrawn else { return false }
+        lotteryDrawn = true
         IvyHaptics.success()
         schedulePersist()
+        return true
     }
 
     /// Hall night door walks back to the yard.

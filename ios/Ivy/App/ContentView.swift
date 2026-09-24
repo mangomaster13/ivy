@@ -289,7 +289,7 @@ struct ContentView: View {
             if store.room == .hall, store.sceneView == 0 {
                 HotspotMarker(rect: HallLayout.garment, scale: scale, label: "Clothing on the hanger", action: store.tapVuori)
                 HotspotMarker(rect: HallLayout.machine, scale: scale,
-                              label: store.lotteryReady ? "Open your keepsake prize" : "A sleeping raffle machine", action: store.tapLottery)
+                              label: store.lotteryDrawn ? "Open your keepsake prize" : store.lotteryReady ? "Use the keepsake machine" : "A sleeping raffle machine", action: store.tapLottery)
             }
             if store.room == .yard, store.sceneView == 0 {
                 HotspotMarker(
