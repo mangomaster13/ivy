@@ -387,7 +387,14 @@ private struct ClueNotebookView: View {
                     }.frame(maxHeight: compact ? 105 : 150)
                         .accessibilityLabel(store.clueText(clue))
                 case .dictionaryLyric:
-                    Image("later-dictionary-song-card").resizable().scaledToFit()
+                    VStack(spacing: 4) {
+                        Image("later-dictionary-bookmark").resizable().scaledToFit()
+                            .frame(height: compact ? 65 : 92)
+                            .accessibilityHidden(true)
+                        IvyType.inscription(store.clueText(clue))
+                            .font(IvyType.script(compact ? 15 : 17))
+                            .foregroundStyle(IvyType.ink)
+                    }.accessibilityElement(children: .ignore)
                         .accessibilityLabel(store.clueText(clue))
                 case .travelOrder:
                     TravelOrderSymbols(symbolSize: compact ? 27 : 33)

@@ -108,7 +108,7 @@ enum Room: String, Codable {
         case .noodle: "bt2-room"
         case .perfume: "ll4-street"
         case .cinema: "later-cinema-projection-booth-background"
-        case .dictionary: "later-dictionary-stall-background"
+        case .dictionary: "later-dictionary-bookmark-stall"
         case .ferris: "later-ferris-exterior-background"
         case .taxi: "memory-taxi"
         }

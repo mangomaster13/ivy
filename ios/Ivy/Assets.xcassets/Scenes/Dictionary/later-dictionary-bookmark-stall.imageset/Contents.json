@@ -1,0 +1,8 @@
+{
+  "images": [
+    { "filename": "later-dictionary-bookmark-stall.png", "idiom": "universal", "scale": "1x" },
+    { "filename": "later-dictionary-bookmark-stall@2x.png", "idiom": "universal", "scale": "2x" },
+    { "filename": "later-dictionary-bookmark-stall@3x.png", "idiom": "universal", "scale": "3x" }
+  ],
+  "info": { "author": "xcode", "version": 1 }
+}

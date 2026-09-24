@@ -79,7 +79,7 @@ enum AdventureClue: String, Codable, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .cinemaTicket: "two seats, one memory"
-        case .dictionaryLyric: "a song on paper"
+        case .dictionaryLyric: "a song between pages"
         case .dictionaryEntries: "a missing word"
         case .gardenDate: "a date in the garden"
         case .label: "a very small label"

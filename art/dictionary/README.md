@@ -4,26 +4,27 @@ Implements the approved Dictionary station between Cinema and Ferris. Device pla
 
 ## Asset and surface contract
 
-Use the existing `later-dictionary-*` imagesets. The formerly documented `art/later-eggs/production/` directory is absent from this checkout; imported assets are the available approved references.
+The current scene uses the approved bookmark redesign. The older `later-dictionary-*` imagesets remain for history; the formerly documented `art/later-eggs/production/` directory is absent from this checkout.
 
 | Object | Imageset suffix | Surface / bounds |
 | --- | --- | --- |
-| Stall | `stall-background` | 320 × 160 logical stage; rear counter edge at y≈84, front at y≈130 |
+| Stall | `bookmark-stall` | 320 × 160 logical stage; lower shelf book and right-pillar Ferris painting are baked into the fixed background; counter remains empty for sprites |
 | Book | `closed-book` | `DictionaryLayout.book` (128, 91, 82, 41); alpha silhouette stays on counter |
-| Lyric card | `song-card` | `DictionaryLayout.song` (79, 95, 51, 34), separate from book and stand |
+| Lyric bookmark | `bookmark-stall`, `bookmark-closeup`, `bookmark` | Lower central shelf book at scene bounds (172, 50, 22, 29); full-shelf closeup and transparent Notes art use the same authored paper design |
+| Ferris painting | `bookmark-stall` | Hanging on the right pillar; route hotspot at (250, 27, 20, 32), not the Ferris silhouette outside |
 | Pen | `fountain-pen` | `DictionaryLayout.pen` (213, 87, 29, 20), on the baked empty stand; disappears while held, returns when solved |
 | Open book | `open-book-background` | 16:9 original under a proportional full-content camera; no stretching |
 | Printed entries | `page-entries-overlay` | Full image overlay with the exact open-book transform |
 | Live ink | Runtime strokes | Normalized right-page bounds (0.49, 0.29, 0.31, 0.30); clear of spine and tray |
 | Keepsake | `later-dictionary-keepsake` | Existing eleventh collectible slot |
 
-The book and writing views now use `DictionaryCamera.artworkFrame` to cover the full root content while preserving the source aspect ratio. Ink, printed entries and gestures use that same transform; the writing camera fits the area left of the shared right-hand action rail, reserving only the bottom feedback line. Undo sits above Enter; Write and Remember occupy the same rail. See [the closeup coverage fix](../../docs/ui/closeup-content-fix.md) for the camera, lyric-card support surface and actual verification scope.
+The book and writing views use `DictionaryCamera.artworkFrame` to cover the full root content while preserving the source aspect ratio. Ink, printed entries and gestures use that same transform; the writing camera fits the area left of the shared right-hand action rail, reserving only the bottom feedback line. Undo sits above Enter; Write and Remember occupy the same rail. The bookmark closeup is a separate full-screen shelf camera. See [the closeup coverage fix](../../docs/ui/closeup-content-fix.md) for the earlier camera fix and its verification scope.
 
-## English card
+## English bookmark
 
-The user explicitly replaced the former Chinese exception. `song-card-english.png` is the retained generated source (1536 × 1024, RGBA); 1x/2x/3x exports derive directly from it. English header: **Stefanie Sun · Dictionary of Love**. Lyric: **In the dictionary of love, “forever” cannot be found.** The card is shared by the scene, independent closeup and Notes. Source inspected for lettering, margins and alpha; this is asset inspection, not in-game visual acceptance.
+The user explicitly replaced the former Chinese exception. English header: **Stefanie Sun · Dictionary of Love**. Lyric: **In the dictionary of love, “forever” cannot be found.** The older `song-card-english.png` is retained as a lettering reference, not used in the current scene. The approved new design places a narrow bookmark in a dark teal book on the lower shelf; tapping it opens a complete shelf closeup. Notes uses the isolated transparent bookmark.
 
-Generated with the built-in imagegen tool, using the original imported card as the composition reference and `story-yard-base@2x.png` as the available Yard style reference. The prompt requested text localization only, retaining cream paper, teal border, music notes, camera angle and hand-painted texture; a second edit requested transparent background extraction. No new room art or prewritten answer on the blank book page.
+`source/bookmark-stall.png`, `source/bookmark-closeup.png`, and `source/bookmark.png` are the selected high-resolution built-in imagegen outputs. The existing stall established room geometry, the older English card established exact wording, and `story-yard-base@2x.png` established painting style. Each 1x/2x/3x export derives directly from its source. The fixed stall art contains no counter book or pen, so those remain stateful sprites; the dictionary's blank writing entry still has no prewritten answer. Artwork and source text were inspected, but no device rendering was run under the user-owned testing policy.
 
 ## State, recognition and completion
 

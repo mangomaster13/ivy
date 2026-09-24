@@ -15,10 +15,10 @@ enum DictionaryCamera {
     }
 }
 
-/// Slots are anchored to the painted counter (320 × 160), including sprite alpha margins.
+/// Slots use the 320 × 160 scene: book and pen on the counter, bookmark in the lower shelf.
 enum DictionaryLayout {
     static let book = CGRect(x: 128, y: 91, width: 82, height: 41)
-    static let song = CGRect(x: 79, y: 95, width: 51, height: 34)
+    static let bookmark = CGRect(x: 172, y: 50, width: 22, height: 29)
     static let pen = CGRect(x: 213, y: 87, width: 29, height: 20)
     // Inside the right page, clear of the spine, page edges and the pen tray.
     static let writing = CGRect(x: 0.49, y: 0.29, width: 0.31, height: 0.30)
@@ -26,7 +26,7 @@ enum DictionaryLayout {
     static func spots(penAvailable: Bool) -> [ExplorationSpot] {
         var slots: [(String, CGRect, ExplorationAction)] = [
             ("Dictionary", book, .memory(.dictionary)),
-            ("Song card", song, .memory(.dictionarySong))
+            ("Lyric bookmark in the shelf book", bookmark, .memory(.dictionarySong))
         ]
         if penAvailable { slots.append(("Fountain pen on its stand", pen, .dictionaryPen)) }
         return slots.map { ExplorationSpot($0.0, $0.1.minX, $0.1.minY, $0.1.width, $0.1.height, $0.2) }
@@ -40,7 +40,6 @@ struct DictionaryWorld: View {
     var body: some View {
         ZStack(alignment: .topLeading) {
             object("later-dictionary-closed-book", rect: DictionaryLayout.book)
-            object("later-dictionary-song-card", rect: DictionaryLayout.song)
             if !store.memories.picked.contains(.fountainPen) || store.dictionary.solved {
                 object("later-dictionary-fountain-pen", rect: DictionaryLayout.pen)
             }
@@ -65,13 +64,10 @@ struct DictionaryCloseupView: View {
     var body: some View {
         Group {
             if panel == .dictionarySong {
-                ZStack {
-                    // Empty timber on the stall counter, clear of its edges and pen stand.
-                    SceneDetailStage(bounds: CGRect(x: 125, y: 95, width: 64, height: 32)) {
-                        InspectionBackdrop(surface: .scene("later-dictionary-stall-background"))
-                    }
-                    Image("later-dictionary-song-card").resizable().interpolation(.high).scaledToFit()
-                        .padding(16)
+                GeometryReader { geometry in
+                    Image("later-dictionary-bookmark-closeup").resizable().interpolation(.high).scaledToFill()
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                        .clipped()
                         .accessibilityLabel(store.clueText(.dictionaryLyric))
                 }
             } else {

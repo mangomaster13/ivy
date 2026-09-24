@@ -120,7 +120,7 @@ enum RoomGraph {
         case .dictionary:
             return [
                 DiegeticHotspot(edge: .sunsetBack, rect: CGRect(x: 31, y: 19, width: 31, height: 54), label: "Cinema doors"),
-                DiegeticHotspot(edge: .sunsetForward, rect: CGRect(x: 294, y: 77, width: 25, height: 65), label: "Ferris silhouette")
+                DiegeticHotspot(edge: .sunsetForward, rect: CGRect(x: 250, y: 27, width: 20, height: 32), label: "Ferris wheel painting")
             ]
         case .ferris:
             return [

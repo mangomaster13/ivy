@@ -33,7 +33,7 @@ Ivy 是送给一个人的私人横屏 iPhone 回忆解谜游戏。院子和大�
 
 Rose 保留三朵红玫瑰、笑脸牛皮纸包装、棕色手臂和绿色花茎；侧躺姿态与枕头的相对位置以 `art/room/rose-bed/placement-reference.png` 为准；使用独立侧躺素材 `rose-lying`，花头朝左、笑脸包装与花茎横向朝右，不再旋转压扁竖立素材。Rose 与窗户拼图采用用户已批准的背景虚化，主体保持清楚。这是局部景深处理，不是给全游戏加模糊滤镜。
 
-所有玩家可见文字原则上为英文，包括 Gelato 和私人回忆；Dictionary 的实体歌词纸卡按 2026-09-24 最新要求改为英文“In the dictionary of love, ‘forever’ cannot be found.”，取消此前中文例外。Kiddos 用于系统文字，Juniper 用于物件题字；批准机票上的 Georgia Italic 路线文字是具体例外。除 Notes、lock pad 交互字和 Dictionary 玩家手写笔迹外，其余可见文字设计成素材；保留独立交互与无障碍语义。具体制作边界以 UI-RULES 的「Text artwork and Notes」为准。
+所有玩家可见文字原则上为英文，包括 Gelato 和私人回忆；Dictionary 书架上的实体歌词书签使用英文“In the dictionary of love, ‘forever’ cannot be found.”，取消此前中文例外。Kiddos 用于系统文字，Juniper 用于物件题字；批准机票上的 Georgia Italic 路线文字是具体例外。除 Notes、lock pad 交互字和 Dictionary 玩家手写笔迹外，其余可见文字设计成素材；保留独立交互与无障碍语义。具体制作边界以 UI-RULES 的「Text artwork and Notes」为准。
 
 ## 玩法语法
 
@@ -105,7 +105,7 @@ Rose 三片花瓣的最新位置：床中央偏左的毯子褶皱、台灯触发
 | 地点 | 证据 → 主动操作 → 结果 |
 | --- | --- |
 | Cinema | 从盒中单独拿取一组三张透明胶片；分别移动、翻面，通过交错的椅背、扶手与不对称过道接成完整座位图。Project 整组判定后才出现爱心，再选 C3、C4。初始胶片、票根与投影不含心形提示，不逐层反馈正确；保留旧档、十三收藏槽与回访投影。 |
-| Dictionary | 在旧书摊阅读歌词纸卡与缺词的字典，从笔架单独拿钢笔；选笔后在空白词条亲手写英文 `FOREVER`。判定实际笔迹，失败可修改，成功保留字迹、笔归架并获得 `dictionary`；歌词卡按最新要求使用英文。 |
+| Dictionary | 在旧书摊书架上点开夹在书里的歌词书签，阅读缺词的桌上字典，从笔架单独拿钢笔；选笔后在空白词条亲手写英文 `FOREVER`。判定实际笔迹，失败可修改，成功保留字迹、笔归架并获得 `dictionary`。右侧墙上的摩天轮画是前往 Ferris 的入口。 |
 | Ferris | 经典转盘 iPod 上拖拽还原五首歌，按 Play 整组判断；出票后单独拿取 ticket，从 Tools 选中并用于检票口，车厢才开放。进入后单独拿手机，主动选择后按快门，自拍保存为原 `ferris` 收藏。错误排列与通行事实持久保存，旧完成档免重玩。详见 [9 月 24 日接入记录](ferris/IMPLEMENTATION.md)。 |
 | Taxi | 车窗地标、路线卡与单行路线盘共同限定方向、必经 E 和关闭的 F 隧道；玩家绘制 `A→B→E→D→G`，错线可撤回。抵达后景色变化，收据承接回忆，保存 `taxi`，车门可回大厅。 |
 
