@@ -107,10 +107,10 @@ struct ToolButton: View {
         }.buttonStyle(.plain).accessibilityLabel(tool.label)
             .accessibilityValue(store.selectedTool == tool ? "Selected" : "Not selected")
             .accessibilityHint(tool.description)
-            .draggable("ivy-tool:" + tool.rawValue)
-            .simultaneousGesture(DragGesture(minimumDistance: 2).onChanged { _ in
-                if !showsName { flashName() }
-            })
+            .onDrag {
+                flashName()
+                return NSItemProvider(object: ("ivy-tool:" + tool.rawValue) as NSString)
+            }
             .overlay(alignment: .top) {
                 if showsName {
                     Text(tool.label).font(IvyType.hand(13)).fixedSize()

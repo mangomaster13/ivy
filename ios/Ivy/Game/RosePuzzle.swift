@@ -148,17 +148,20 @@ struct RosePetalTool: View {
         .overlay(RoundedRectangle(cornerRadius: 9).stroke(IvyType.cream.opacity(0.15)))
         .contentShape(Rectangle())
         .onTapGesture { flashName() }
-        .highPriorityGesture(DragGesture(minimumDistance: 4, coordinateSpace: .named("rose-drag"))
+        .gesture(LongPressGesture(minimumDuration: 0.3)
+            .sequenced(before: DragGesture(minimumDistance: 0, coordinateSpace: .named("rose-drag")))
             .onChanged { value in
+                guard case .second(true, let drag?) = value else { return }
                 guard available, store.collectingEgg == nil else { return }
                 if !showsName { flashName() }
                 store.draggedRosePetal = index
-                store.roseDragLocation = value.location
+                store.roseDragLocation = drag.location
             }
             .onEnded { value in
+                defer { store.draggedRosePetal = nil }
+                guard case .second(true, let drag?) = value else { return }
                 guard store.draggedRosePetal == index else { return }
-                if store.roseDropFrame.contains(value.location) { store.placeRosePetal(index) }
-                store.draggedRosePetal = nil
+                if store.roseDropFrame.contains(drag.location) { store.placeRosePetal(index) }
             })
         .overlay(alignment: .top) {
             if showsName {
