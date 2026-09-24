@@ -137,7 +137,7 @@ struct ExplorationProgress: Codable {
         for (key, value) in views {
             let allowed = key == "perfume" ? [0, 1, 2, 3, 4] :
                 (["corridor", "gelato", "bedroom"].contains(key) ? [-1, 0, 1] :
-                (["yard", "hall", "plane", "noodle"].contains(key) ? [0, 1] : [0]))
+                (["yard", "hall", "plane", "noodle", "ferris"].contains(key) ? [0, 1] : [0]))
             if !allowed.contains(value) { views[key] = 0 }
         }
         musicInput = Array(musicInput.filter { (0...2).contains($0) }.prefix(2))
@@ -150,12 +150,15 @@ extension GameStore {
     static func sceneViews(in room: Room) -> [Int] {
         switch room {
         case .corridor, .gelato: [-1, 0, 1]
-        case .yard, .hall, .plane, .bedroom, .noodle: [0, 1]
+        case .yard, .hall, .plane, .bedroom, .noodle, .ferris: [0, 1]
         case .perfume: [0, 1, 2, 3, 4]
         default: [0]
         }
     }
     var sideImageName: String? {
+        if room == .ferris, [.memory(.ferrisCabin), .memory(.ferrisCamera)].contains(elementReturnOverlay ?? overlay) {
+            return nil
+        }
         switch (room, sceneView) {
         case (.bedroom, -1): "memory-bath"
         case (.noodle, 1): bigTopCounterImageName
@@ -171,6 +174,8 @@ extension GameStore {
         case (.bedroom, 1): memories.bedroomLampOn == true ? "explore-bedroom-desk" : "explore-bedroom-desk-off"
         case (.gelato, -1): "explore-gelato-bench"
         case (.gelato, 1): "explore-gelato-service"
+        case (.ferris, 0): "ferris-promenade"
+        case (.ferris, 1): "ferris-ticket-booth"
         default: nil
         }
     }

@@ -79,7 +79,8 @@ extension GameStore {
             .init("Laboratory cabinet", 33, 9, 79, 70, .memory(.perfumeLab))]
         case (.cinema, 0): CinemaLayout.spots
         case (.dictionary, 0): DictionaryLayout.spots(penAvailable: !memories.picked.contains(.fountainPen) && !dictionary.solved)
-        case (.ferris, 0): FerrisLayout.spots
+        case (.ferris, 0): FerrisLayout.promenadeSpots
+        case (.ferris, 1): FerrisLayout.boothSpots
         case (.taxi, 0): TaxiLayout.spots(progress: taxi)
         default: []
         }

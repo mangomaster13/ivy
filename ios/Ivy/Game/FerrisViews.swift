@@ -1,17 +1,25 @@
 import SwiftUI
 
-/// All world objects use the existing 320 × 160 booth canvas and its support surfaces.
+/// The promenade, booth, gate and cabin each use the same 320 × 160 canvas.
 enum FerrisLayout {
-    static let ipod = CGRect(x: 161, y: 81, width: 16, height: 25)
-    static let dispenser = CGRect(x: 186, y: 109, width: 29, height: 14)
-    static let ticket = CGRect(x: 189, y: 116, width: 23, height: 12)
-    static let gate = CGRect(x: 112, y: 86, width: 28, height: 14)
-    static let door = CGRect(x: 182, y: 45, width: 48, height: 83)
-    static let phone = CGRect(x: 203, y: 113, width: 23, height: 14)
-    static let spots: [ExplorationSpot] = [
-        .init("Classic iPod", ipod.minX, ipod.minY, ipod.width, ipod.height, .memory(.ferris)),
-        .init("Ticket dispenser", dispenser.minX, dispenser.minY, dispenser.width, 22, .memory(.ferrisTicket)),
-        .init("Carriage entrance", 236, 85, 27, 46, .memory(.ferrisGate))
+    // The earbud wire connects both people to the iPod held by the yellow-shirt man.
+    static let earphones = CGRect(x: 85, y: 76, width: 60, height: 42)
+    // Booth front: the ticket emerges directly below the brass-edged physical slot.
+    static let dispenser = CGRect(x: 125, y: 112, width: 17, height: 16)
+    static let ticket = CGRect(x: 126, y: 117, width: 15, height: 10)
+    static let boothQueue = CGRect(x: 216, y: 70, width: 83, height: 67)
+    // Boarding plate: waist-high slot and carriage door are separate surfaces.
+    static let gate = CGRect(x: 132, y: 94, width: 18, height: 20)
+    static let door = CGRect(x: 226, y: 43, width: 35, height: 77)
+    // Cabin right cushion: both removable objects share one support surface.
+    static let phone = CGRect(x: 247, y: 129, width: 25, height: 15)
+    static let photo = CGRect(x: 246, y: 121, width: 28, height: 28)
+    static let promenadeSpots: [ExplorationSpot] = [
+        .init("Shared earphones", earphones.minX, earphones.minY, earphones.width, earphones.height, .memory(.ferris))
+    ]
+    static let boothSpots: [ExplorationSpot] = [
+        .init("Ticket dispenser", dispenser.minX, dispenser.minY, dispenser.width, dispenser.height, .memory(.ferrisTicket)),
+        .init("Carriage queue", boothQueue.minX, boothQueue.minY, boothQueue.width, boothQueue.height, .memory(.ferrisGate))
     ]
 }
 
@@ -21,9 +29,7 @@ struct FerrisWorld: View {
 
     var body: some View {
         ZStack(alignment: .topLeading) {
-            object("ferris-classic-ipod", rect: FerrisLayout.ipod)
-            object("ferris-dispenser", rect: FerrisLayout.dispenser)
-            if store.ferris.playlistSolved && !store.ferris.ticketTaken {
+            if store.sceneView == 1 && store.ferris.playlistSolved && !store.ferris.ticketTaken {
                 object("ferris-ride-ticket", rect: FerrisLayout.ticket)
             }
         }.allowsHitTesting(false).accessibilityHidden(true)
@@ -81,7 +87,7 @@ struct FerrisCloseupView: View {
             let origin = CGPoint(x: (size.width - 100 - screenWidth) / 2,
                                  y: (size.height - screenHeight) / 2)
             ZStack(alignment: .topLeading) {
-                InspectionBackdrop(surface: .defocusedScene("later-ferris-exterior-background"))
+                InspectionBackdrop(surface: .defocusedScene("ferris-promenade"))
                 // Screen and text share one authored surface; the source crop includes ivory bezel.
                 Image("ferris-ipod-screen").resizable().interpolation(.high)
                     .frame(width: screenWidth + 16, height: screenHeight + 16)
@@ -142,10 +148,10 @@ struct FerrisCloseupView: View {
     }
 
     private var ticket: some View {
-        SceneDetailStage(bounds: CGRect(x: 181, y: 105, width: 39, height: 27)) {
+        SceneDetailStage(bounds: CGRect(x: 116, y: 103, width: 40, height: 31)) {
             GeometryReader { geometry in
                 let scale = geometry.size.width / 320
-                Image("later-ferris-exterior-background").resizable().accessibilityHidden(true)
+                Image("ferris-ticket-booth").resizable().accessibilityHidden(true)
                 FerrisWorld(store: store, scale: scale)
                 if !store.ferris.ticketTaken {
                     target(FerrisLayout.ticket, scale: scale, label: "Take the Ferris wheel ticket", action: store.takeFerrisTicket)
@@ -158,12 +164,8 @@ struct FerrisCloseupView: View {
         FittedSceneStage {
             GeometryReader { geometry in
                 let scale = geometry.size.width / 320
-                Image(store.ferris.ticketUsed ? "later-ferris-cabin-open" : "later-ferris-cabin-closed")
+                Image(store.ferris.ticketUsed ? "ferris-boarding-open" : "ferris-boarding-closed")
                     .resizable().accessibilityHidden(true)
-                Image("ferris-dispenser").resizable().scaledToFit()
-                    .frame(width: FerrisLayout.gate.width * scale, height: FerrisLayout.gate.height * scale)
-                    .position(x: FerrisLayout.gate.midX * scale, y: FerrisLayout.gate.midY * scale)
-                    .accessibilityHidden(true)
                 if store.ferris.ticketUsed {
                     target(FerrisLayout.door, scale: scale, label: "Enter the carriage", action: store.enterFerrisCabin)
                 } else {
@@ -194,11 +196,11 @@ struct FerrisCloseupView: View {
                 }
                 if store.ferris.photoTaken {
                     Image("ferris-selfie").resizable().scaledToFit()
-                        .frame(width: 27 * scale, height: 27 * scale)
+                        .frame(width: FerrisLayout.photo.width * scale, height: FerrisLayout.photo.height * scale)
                         .rotationEffect(.degrees(-6))
-                        .position(x: FerrisLayout.phone.midX * scale, y: 113 * scale)
+                        .position(x: FerrisLayout.photo.midX * scale, y: FerrisLayout.photo.midY * scale)
                         .accessibilityHidden(true)
-                    target(CGRect(x: 200, y: 99, width: 29, height: 29), scale: scale,
+                    target(FerrisLayout.photo, scale: scale,
                            label: "Remember our selfie") { store.replayKeepsake(.ferris) }
                 } else {
                     target(CGRect(x: 86, y: 22, width: 148, height: 57), scale: scale,

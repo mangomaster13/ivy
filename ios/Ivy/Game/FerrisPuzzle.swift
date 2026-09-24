@@ -74,7 +74,8 @@ extension GameStore {
         }
         ferris.playlistSolved = true
         persistNow()
-        openMemory(.ferrisTicket)
+        backFromMemory()
+        turnView(1)
     }
 
     func takeFerrisTicket() {
