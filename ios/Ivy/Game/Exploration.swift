@@ -115,6 +115,8 @@ struct ExplorationProgress: Codable {
     mutating func sanitize() {
         if views["perfume"] == nil { views["perfume"] = views["supermarket"] }
         views.removeValue(forKey: "supermarket")
+        if views["dictionary"] == nil { views["dictionary"] = views["sunset"] }
+        views.removeValue(forKey: "sunset")
         if !validHotelCode { hotelCode = Array((0...9).shuffled().prefix(4)) }
         freezerTemperature = min(0, max(-18, freezerTemperature))
         scoops = Array(scoops.prefix(3))
@@ -286,7 +288,7 @@ extension GameStore {
         if !collected.contains(.noodle) { return "A warm bowl, an order slip. Big Top kept a little of our evening." }
         if !collected.contains(.perfume) { return "Beyond the groceries, a familiar scent is waiting." }
         if !collected.contains(.cinema) { return "Two cinema tickets still remember the dark and the screen." }
-        if !collected.contains(.sunset) { return "Outside the cinema, the camera is waiting for the last light." }
+        if !collected.contains(.dictionary) { return "Outside the cinema, the camera is waiting for the last light." }
         if !collected.contains(.ferris) { return "The ride tickets promise a quieter view above the city." }
         if !collected.contains(.taxi) { return "One last ride. The taxi meter has kept the end of our night." }
         return "Every keepsake is here. The pages still remember, whenever you want to return."

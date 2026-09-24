@@ -137,7 +137,7 @@ struct MemoryCloseupView: View {
         case .bath: .scene("memory-bath")
         case .blanket: .scene("memory-blanket-open")
         case .perfume: .scene("memory-perfume")
-        case .sunset: .scene("memory-sunset")
+        case .dictionary: .scene("memory-sunset")
         case .cinema: .scene("memory-cinema")
         case .taxi: .scene("memory-taxi")
         case .bigTop, .mexican: .scene("memory-noodle")

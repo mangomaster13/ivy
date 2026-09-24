@@ -15,7 +15,7 @@ enum EggId: String, CaseIterable, Codable, Identifiable {
     case noodle
     case perfume
     case cinema
-    case sunset
+    case dictionary
     case ferris
     case taxi
 
@@ -28,7 +28,7 @@ enum EggId: String, CaseIterable, Codable, Identifiable {
     }
 
     /// Independent transparent keepsake artwork shared by the bar and tap celebration.
-    var iconName: String { self == .noodle ? "bt-dinner" : self == .perfume ? "ll-perfume-trio" : self == .keycard ? "sheraton-keycard" : self == .city ? "city-jigsaw-master" : "keepsake-\(rawValue)" }
+    var iconName: String { self == .dictionary ? "later-dictionary-keepsake" : self == .noodle ? "bt-dinner" : self == .perfume ? "ll-perfume-trio" : self == .keycard ? "sheraton-keycard" : self == .city ? "city-jigsaw-master" : "keepsake-\(rawValue)" }
 
     /// Physical memory and puzzle artwork, separate from the transparent keepsake icon.
     var collectionImageName: String {
@@ -43,7 +43,7 @@ enum EggId: String, CaseIterable, Codable, Identifiable {
         case .noodle: "bt-dinner"
         case .taxi: "memory-taxi-receipt"
         case .ferris: "memory-ferris-ticket"
-        case .sunset: "memory-sunset"
+        case .dictionary: "memory-sunset"
         case .keycard: "sheraton-keycard"
         case .city: "city-jigsaw-master"
         default: iconName
@@ -54,7 +54,7 @@ enum EggId: String, CaseIterable, Codable, Identifiable {
         let container = try decoder.singleValueContainer()
         let value = try container.decode(String.self)
         // Previous yard revisions used ivy for the first slot. Keep old saves readable.
-        let current = value == "ivy" ? "letter" : value == "supermarket" ? "perfume" : value
+        let current = value == "ivy" ? "letter" : value == "supermarket" ? "perfume" : value == "sunset" ? "dictionary" : value
         guard let egg = Self(rawValue: current) else {
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Unknown egg: \(value)")
         }
@@ -78,14 +78,14 @@ enum Room: String, Codable {
     case noodle
     case perfume
     case cinema
-    case sunset
+    case dictionary
     case ferris
     case taxi
 
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let value = try container.decode(String.self)
-        guard let room = Self(rawValue: value == "supermarket" ? "perfume" : value) else {
+        guard let room = Self(rawValue: value == "supermarket" ? "perfume" : value == "sunset" ? "dictionary" : value) else {
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Unknown room: \(value)")
         }
         self = room
@@ -108,7 +108,7 @@ enum Room: String, Codable {
         case .noodle: "bt2-room"
         case .perfume: "ll4-street"
         case .cinema: "memory-cinema"
-        case .sunset: "memory-sunset"
+        case .dictionary: "memory-sunset"
         case .ferris: "memory-ferris"
         case .taxi: "memory-taxi"
         }
@@ -1037,7 +1037,7 @@ final class GameStore {
         } else if index > EggId.city.slotIndex {
             exploration = savedExploration
             memories = savedMemories
-            let roomOrder: [Room] = [.yard, .hall, .plane, .corridor, .bedroom, .gelato, .noodle, .perfume, .cinema, .sunset, .ferris, .taxi]
+            let roomOrder: [Room] = [.yard, .hall, .plane, .corridor, .bedroom, .gelato, .noodle, .perfume, .cinema, .dictionary, .ferris, .taxi]
             let targetRoomIndex = index == EggId.rose.slotIndex ? 4 : index - 1
             exploration.views = exploration.views.filter { key, _ in
                 (roomOrder.firstIndex { $0.rawValue == key } ?? roomOrder.count) < targetRoomIndex
@@ -1092,7 +1092,7 @@ final class GameStore {
                 memories.cinemaSeats = []
                 memories.cinemaDraft = ""
             }
-            if index <= EggId.sunset.slotIndex { memories.sunsetFrame = 0.15 }
+            if index <= EggId.dictionary.slotIndex { memories.sunsetFrame = 0.15 }
             if index <= EggId.ferris.slotIndex { memories.ferrisMatches = [] }
             if index <= EggId.taxi.slotIndex { memories.taxiDraft = "" }
         }
@@ -1139,7 +1139,7 @@ final class GameStore {
         case .noodle: .noodle
         case .perfume: .perfume
         case .cinema: .cinema
-        case .sunset: .sunset
+        case .dictionary: .dictionary
         case .ferris: .ferris
         case .taxi: .taxi
         }

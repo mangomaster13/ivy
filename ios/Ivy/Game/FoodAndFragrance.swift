@@ -418,13 +418,13 @@ extension GameStore {
     func migrateFoodAndFragrance() {
         if memories.bigTop == nil {
             var progress = BigTopProgress()
-            progress.signSolved = room == .noodle || [.perfume, .cinema, .sunset, .ferris, .taxi].contains(room)
-                || !collected.isDisjoint(with: [.noodle, .perfume, .cinema, .sunset, .ferris, .taxi])
+            progress.signSolved = room == .noodle || [.perfume, .cinema, .dictionary, .ferris, .taxi].contains(room)
+                || !collected.isDisjoint(with: [.noodle, .perfume, .cinema, .dictionary, .ferris, .taxi])
             progress.orderSolved = collected.contains(.noodle) || memories.opened.contains("bigTop")
             progress.signSolved = progress.signSolved || progress.orderSolved
             progress.menuPlaced = progress.orderSolved
             progress.menuTaken = progress.orderSolved
-            progress.streetUnlocked = collected.contains(.noodle) || [.perfume, .cinema, .sunset, .ferris, .taxi].contains(room)
+            progress.streetUnlocked = collected.contains(.noodle) || [.perfume, .cinema, .dictionary, .ferris, .taxi].contains(room)
             bigTop = progress
         }
         // Serving dinner unlocks the street independently of claiming the memory.
@@ -447,7 +447,7 @@ extension GameStore {
         if memories.perfumery == nil {
             var progress = PerfumeProgress()
             progress.arranged = collected.contains(.perfume) || memories.opened.contains("perfume")
-            progress.cinemaUnlocked = collected.contains(.perfume) || [.cinema, .sunset, .ferris, .taxi].contains(room)
+            progress.cinemaUnlocked = collected.contains(.perfume) || [.cinema, .dictionary, .ferris, .taxi].contains(room)
             if progress.arranged {
                 progress.brewed = Set(PerfumeFormula.bottles)
                 progress.arrangement = PerfumeFormula.bottles.map(Optional.some)

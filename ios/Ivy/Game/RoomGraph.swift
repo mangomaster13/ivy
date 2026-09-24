@@ -61,10 +61,10 @@ enum RoomGraph {
         case (.perfume, .perfumeBack): return .noodle
         case (.perfume, .perfumeForward): return .cinema
         case (.cinema, .cinemaBack): return .perfume
-        case (.cinema, .cinemaExit): return .sunset
-        case (.sunset, .sunsetBack): return .cinema
-        case (.sunset, .sunsetForward): return .ferris
-        case (.ferris, .ferrisBack): return .sunset
+        case (.cinema, .cinemaExit): return .dictionary
+        case (.dictionary, .sunsetBack): return .cinema
+        case (.dictionary, .sunsetForward): return .ferris
+        case (.ferris, .ferrisBack): return .dictionary
         case (.ferris, .ferrisForward): return .taxi
         case (.taxi, .taxiBack): return .ferris
         case (.taxi, .taxiDoor): return .hall
@@ -117,7 +117,7 @@ enum RoomGraph {
                 DiegeticHotspot(edge: .cinemaBack, rect: back, label: "Le Labo doorway"),
                 DiegeticHotspot(edge: .cinemaExit, rect: forward, label: "EXIT")
             ]
-        case .sunset:
+        case .dictionary:
             return [
                 DiegeticHotspot(edge: .sunsetBack, rect: back, label: "Cinema doors"),
                 DiegeticHotspot(edge: .sunsetForward, rect: forward, label: "Ferris silhouette")

@@ -33,9 +33,9 @@ final class DiegeticWalkTests: XCTestCase {
         let store = StoreHarness.make()
         store.room = .cinema
         store.tapDiegetic(.cinemaExit)
-        XCTAssertEqual(store.room, .sunset)
+        XCTAssertEqual(store.room, .dictionary)
         store.tapDiegetic(.cinemaExit)
-        XCTAssertEqual(store.room, .sunset)
+        XCTAssertEqual(store.room, .dictionary)
     }
 
     func testTaxiDoorClimbsToHall() {

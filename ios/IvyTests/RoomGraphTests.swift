@@ -12,7 +12,7 @@ final class RoomGraphTests: XCTestCase {
     func testCinemaExitGoesToSunset() {
         XCTAssertEqual(
             RoomGraph.destination(from: .cinema, edge: .cinemaExit, corridorUnlocked: true),
-            .sunset
+            .dictionary
         )
         XCTAssertNil(
             RoomGraph.destination(from: .cinema, edge: .ferrisForward, corridorUnlocked: true)
@@ -43,7 +43,7 @@ final class RoomGraphTests: XCTestCase {
     func testEveryHongKongRoomHasBackAndForwardExceptHallRules() {
         let rooms: [Room] = [
             .plane, .corridor, .bedroom, .gelato, .noodle,
-            .perfume, .cinema, .sunset, .ferris, .taxi
+            .perfume, .cinema, .dictionary, .ferris, .taxi
         ]
         for room in rooms {
             let edges = RoomGraph.hotspots(in: room).map(\.edge)

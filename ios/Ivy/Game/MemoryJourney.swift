@@ -68,7 +68,7 @@ struct MemoryProgress: Codable {
 enum MemoryPanel: String, CaseIterable {
     case gelatoOrder, gelatoNote
     case pot, drawer, linen, wholeBox, dispenser, flight, ticket, travelBook, yunnan, bouquet, city, bath, menu, tasting, keycard
-    case bigTop, mexican, perfume, cinema, sunset, ferris, taxi, blanket
+    case bigTop, mexican, perfume, cinema, dictionary, ferris, taxi, blanket
     case bigTopSign, bigTopMenuSearch, bigTopOrder, bigTopMenu, bigTopLedger, bigTopMirror, rainGutter
     case perfumeWood, perfumeBotanical, perfumeSpice, perfumeLab, perfumeFormula, perfumeMix
     var tools: [AdventureTool] {
@@ -93,7 +93,7 @@ enum MemoryPanel: String, CaseIterable {
         case .bigTopSign: .gelato
         case .perfume, .perfumeWood, .perfumeBotanical, .perfumeSpice, .perfumeLab, .perfumeFormula, .perfumeMix: .perfume
         case .cinema: .cinema
-        case .sunset: .sunset
+        case .dictionary: .dictionary
         case .ferris: .ferris
         case .taxi: .taxi
         }
@@ -341,7 +341,7 @@ extension GameStore {
         case (.memory(.bigTop), .noodle): collectDinner(); return
         case (.memory(.perfume), .perfume): collectPerfumes(); return
         case (.memory(.cinema), .cinema): allowed = memories.opened.contains("cinema")
-        case (.memory(.sunset), .sunset): allowed = memories.opened.contains("sunset")
+        case (.memory(.dictionary), .dictionary): allowed = memories.opened.contains("dictionary")
         case (.memory(.ferris), .ferris): allowed = memories.opened.contains("ferris")
         case (.memory(.taxi), .taxi): allowed = memories.opened.contains("taxi")
         default: allowed = false
@@ -354,7 +354,7 @@ extension GameStore {
         switch panel {
         case .bigTop, .perfume: return // Dedicated physical puzzle operations own these rewards.
         case .cinema: solved = memories.cinemaDraft.trimmingCharacters(in: .whitespacesAndNewlines).uppercased() == "HOPE" && memories.cinemaSeats == [2, 3]
-        case .sunset: solved = abs(memories.sunsetFrame - 0.65) <= 0.08
+        case .dictionary: solved = abs(memories.sunsetFrame - 0.65) <= 0.08
         case .ferris: solved = memories.ferrisMatches == [0, 1]
         case .taxi: solved = memories.taxiDraft.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "stay"
         default: return
@@ -364,6 +364,8 @@ extension GameStore {
     }
     func migrateMemories() {
         memories.sanitize()
+        if memories.opened.remove("sunset") != nil { memories.opened.insert("dictionary") }
+        if memories.opened.contains("dictionary") { collected.insert(.dictionary) }
         if memories.cityJigsaw == nil && memories.cityPieces == [2, 0, 3, 1] && !memories.citySolved {
             memories.cityJigsaw = []
         }
@@ -393,8 +395,8 @@ extension GameStore {
             memories.citySolved = true
         }
         if memories.legacyRoomAccess == nil {
-            memories.legacyRoomAccess = [.bedroom, .gelato, .noodle, .perfume, .cinema, .sunset, .ferris, .taxi].contains(room)
-                || !collected.isDisjoint(with: [.city, .rose, .gelato, .noodle, .perfume, .cinema, .sunset, .ferris, .taxi])
+            memories.legacyRoomAccess = [.bedroom, .gelato, .noodle, .perfume, .cinema, .dictionary, .ferris, .taxi].contains(room)
+                || !collected.isDisjoint(with: [.city, .rose, .gelato, .noodle, .perfume, .cinema, .dictionary, .ferris, .taxi])
         }
         if collected.contains(.keycard) { corridorUnlocked = true }
         exploration.tools.remove(.napkin)
