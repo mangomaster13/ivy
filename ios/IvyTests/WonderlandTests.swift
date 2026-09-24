@@ -3,6 +3,70 @@ import XCTest
 
 @MainActor
 final class WonderlandTests: XCTestCase {
+    func testPerfumeBenchWorksInSceneWithoutOpeningAnotherPage() {
+        let store = StoreHarness.make()
+        store.room = .perfume
+        store.exploration.views[Room.perfume.rawValue] = 4
+        let ingredients: [AdventureTool] = [.gaiacWood, .musk, .cedar, .bergamot]
+        store.perfumery.found.formUnion(ingredients)
+        ingredients.forEach(store.acquire)
+
+        XCTAssertFalse(store.explorationSpots.contains {
+            if case .memory(.perfumeMix) = $0.action { return true }
+            return false
+        })
+        store.blendPerfume()
+        XCTAssertEqual(store.sceneHint, "The mixing trays are empty.")
+        XCTAssertEqual(store.overlay, .none)
+        XCTAssertTrue(store.memoryNavigation.isEmpty)
+        XCTAssertNil(store.perfumery.output)
+
+        store.putIngredient(.gaiacWood, at: 0)
+        store.blendPerfume()
+        XCTAssertEqual(store.sceneHint, "The mixture is still incomplete.")
+        XCTAssertEqual(store.perfumery.mixture, [.gaiacWood, nil, nil])
+        store.putIngredient(.musk, at: 1)
+        store.putIngredient(.bergamot, at: 2)
+        store.blendPerfume()
+        XCTAssertEqual(store.perfumery.mixture, [.gaiacWood, .musk, .bergamot])
+        XCTAssertNil(store.perfumery.output)
+
+        store.putIngredient(.cedar, at: 2)
+        XCTAssertTrue(store.exploration.tools.contains(.bergamot))
+        store.removeIngredient(at: 1)
+        XCTAssertTrue(store.exploration.tools.contains(.musk))
+        store.putIngredient(.musk, at: 1)
+
+        store.openNotebook()
+        store.removeIngredient(at: 0)
+        store.blendPerfume()
+        XCTAssertEqual(store.perfumery.mixture, [.gaiacWood, .musk, .cedar])
+        XCTAssertNil(store.perfumery.output)
+        store.closeNotebook()
+        store.turnView(-1)
+        store.blendPerfume()
+        XCTAssertNil(store.perfumery.output)
+        store.turnView(1)
+        store.blendPerfume()
+        XCTAssertEqual(store.perfumery.output, .gaiac10)
+        XCTAssertTrue(store.perfumery.mixture.allSatisfy { $0 == nil })
+        XCTAssertTrue(Set(ingredients).isSubset(of: store.exploration.tools))
+        XCTAssertFalse(store.exploration.tools.contains(.gaiac10))
+
+        store.blendPerfume()
+        XCTAssertEqual(store.sceneHint, "A finished bottle is still under the press.")
+        XCTAssertEqual(store.perfumery.output, .gaiac10)
+        store.takePerfume()
+        store.takePerfume()
+        XCTAssertNil(store.perfumery.output)
+        XCTAssertTrue(store.exploration.tools.contains(.gaiac10))
+        XCTAssertEqual(store.perfumery.brewed, [.gaiac10])
+        XCTAssertEqual(store.overlay, .none)
+        XCTAssertEqual(store.sceneView, 4)
+        XCTAssertTrue(store.memoryNavigation.isEmpty)
+        XCTAssertTrue(store.collected.isEmpty)
+    }
+
     func testOwnedBedRoseUsesInventoryElementAndReturnsToScene() {
         let store = StoreHarness.make()
         store.room = .bedroom

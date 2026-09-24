@@ -335,9 +335,12 @@ extension GameStore {
         perfumery.formulaPage = min(2, max(0, perfumery.formulaPage + delta))
         discover(PerfumeFormula.all[perfumery.formulaPage].clue)
     }
+    private var canUsePerfumeBench: Bool {
+        canChangeFoodPuzzle && room == .perfume && !perfumery.arranged && !collected.contains(.perfume)
+            && ((overlay == .none && sceneView == 4) || overlay == .memory(.perfumeMix))
+    }
     func putIngredient(_ tool: AdventureTool, at slot: Int) {
-        guard canChangeFoodPuzzle else { return }
-        guard room == .perfume, overlay == .memory(.perfumeMix), !perfumery.arranged,
+        guard canUsePerfumeBench,
               perfumery.output == nil, (0..<3).contains(slot), tool.ingredient != nil,
               perfumery.found.contains(tool), exploration.tools.contains(tool) else { return }
         if let previous = perfumery.mixture[slot] { exploration.tools.insert(previous) }
@@ -345,22 +348,28 @@ extension GameStore {
         selectedTool = nil; dismissSceneHint(); persistNow()
     }
     func removeIngredient(at slot: Int) {
-        guard canChangeFoodPuzzle else { return }
-        guard room == .perfume, overlay == .memory(.perfumeMix), !perfumery.arranged,
+        guard canUsePerfumeBench,
               perfumery.output == nil, (0..<3).contains(slot), let tool = perfumery.mixture[slot] else { return }
         perfumery.mixture[slot] = nil; exploration.tools.insert(tool)
+        toolsVisible = true
         dismissSceneHint(); persistNow()
     }
     func blendPerfume() {
-        guard canChangeFoodPuzzle else { return }
-        guard room == .perfume, overlay == .memory(.perfumeMix), !perfumery.arranged,
-              perfumery.output == nil else { return }
+        guard canUsePerfumeBench else { return }
+        guard perfumery.output == nil else {
+            showSceneHint("A finished bottle is still under the press.", presentation: .interaction); return
+        }
         let ingredients = perfumery.mixture.compactMap { $0 }
+        guard ingredients.count == 3 else {
+            showSceneHint(ingredients.isEmpty ? "The mixing trays are empty." : "The mixture is still incomplete.",
+                          presentation: .interaction)
+            return
+        }
         guard let formula = PerfumeFormula.all.first(where: { $0.accepts(ingredients) }) else {
-            showInputError("Something feels out of place."); return
+            showSceneHint("Something feels out of place.", tone: .wrong, presentation: .interaction); return
         }
         guard !perfumery.brewed.contains(formula.bottle) else {
-            showInputError("We've bottled this one already."); return
+            showSceneHint("We've bottled this one already.", presentation: .interaction); return
         }
         exploration.tools.formUnion(ingredients)
         perfumery.mixture = [nil, nil, nil]
@@ -368,8 +377,7 @@ extension GameStore {
         selectedTool = nil; dismissSceneHint(); IvyHaptics.success(); persistNow()
     }
     func takePerfume() {
-        guard canChangeFoodPuzzle else { return }
-        guard room == .perfume, overlay == .memory(.perfumeMix), let bottle = perfumery.output else { return }
+        guard canUsePerfumeBench, let bottle = perfumery.output else { return }
         perfumery.output = nil; acquire(bottle); persistNow()
     }
     func placePerfume(_ bottle: AdventureTool, at slot: Int) {

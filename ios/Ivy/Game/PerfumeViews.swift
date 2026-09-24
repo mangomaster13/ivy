@@ -93,44 +93,16 @@ struct PerfumeCloseupView: View {
                 }
             }
             PerfumeTrayFronts()
-            ForEach(0..<3) { slot in
-                mixtureSlot(slot, size: size)
-                    .position(x: PerfumePlacement.trayCenters[slot] * scale, y: 111 * scale)
-            }
             if let bottle = store.perfumery.output {
-                Button(action: store.takePerfume) {
-                    FragranceBottleArtwork(tool: bottle, showLabel: false)
-                        .frame(width: PerfumePlacement.output.width * scale,
-                               height: PerfumePlacement.output.height * scale)
-                }.buttonStyle(.plain)
+                FragranceBottleArtwork(tool: bottle, showLabel: false)
+                    .frame(width: PerfumePlacement.output.width * scale,
+                           height: PerfumePlacement.output.height * scale)
                     .position(x: PerfumePlacement.output.midX * scale,
                               y: PerfumePlacement.output.midY * scale)
-                    .accessibilityLabel("Take " + bottle.label)
-                    .transition(.opacity)
+                    .allowsHitTesting(false).accessibilityHidden(true)
             }
-            Button(action: store.blendPerfume) {
-                Color.clear.frame(width: max(48, size.width * 0.19), height: max(48, size.height * 0.24))
-                    .contentShape(Rectangle())
-            }.buttonStyle(.plain)
-                .position(x: size.width * 0.81, y: size.height * 0.25)
-                .disabled(store.perfumery.output != nil || store.perfumery.arranged)
-                .accessibilityLabel("Press the bottling handle")
+            PerfumeBenchControls(store: store)
         }.animation(store.prefersReducedMotion ? .linear(duration: 0.12) : .easeOut(duration: 0.3), value: store.perfumery.output)
-    }
-
-    private func mixtureSlot(_ slot: Int, size: CGSize) -> some View {
-        let tool = store.perfumery.mixture[slot]
-        return Button {
-            if let selected = store.selectedTool, selected.ingredient != nil {
-                store.putIngredient(selected, at: slot)
-            } else { store.removeIngredient(at: slot) }
-        } label: {
-            Color.clear.frame(width: size.width * 0.18, height: max(48, size.height * 0.22))
-                .contentShape(Rectangle())
-        }.buttonStyle(.plain)
-            .accessibilityLabel(tool.map { "Mixture material: " + $0.label } ?? "Empty mixture tray \(slot + 1)")
-            .accessibilityAction(named: "Return ingredient") { store.removeIngredient(at: slot) }
-            .inventoryToolDrop(store: store, accepting: PerfumeIngredient.tools) { store.putIngredient($0, at: slot) }
     }
 
     private func presentation(size: CGSize) -> some View {
@@ -188,6 +160,63 @@ struct PerfumeCloseupView: View {
                 store.selectedPerfumeBottle = nil; store.placePerfume(tool, at: slot)
                 return true
             }
+    }
+}
+
+/// The worktop is already in view: use its objects without opening another page.
+struct PerfumeBenchControls: View {
+    let store: GameStore
+
+    var body: some View {
+        GeometryReader { geometry in
+            let size = geometry.size
+            let scale = size.width / 320
+            ZStack {
+                ForEach(0..<3) { slot in
+                    mixtureSlot(slot, size: size)
+                        .position(x: PerfumePlacement.trayCenters[slot] * scale, y: 111 * scale)
+                }
+                if let bottle = store.perfumery.output {
+                    Button(action: store.takePerfume) {
+                        Color.clear
+                            .frame(width: max(48, PerfumePlacement.output.width * scale),
+                                   height: max(48, PerfumePlacement.output.height * scale))
+                            .contentShape(Rectangle())
+                    }.buttonStyle(.plain)
+                        .position(x: PerfumePlacement.output.midX * scale,
+                                  y: PerfumePlacement.output.midY * scale)
+                        .accessibilityLabel("Take " + bottle.label)
+                }
+                Button(action: store.blendPerfume) {
+                    Color.clear.frame(width: max(48, size.width * 0.19), height: max(48, size.height * 0.24))
+                        .contentShape(Rectangle())
+                }.buttonStyle(.plain)
+                    .position(x: size.width * 0.81, y: size.height * 0.25)
+                    .accessibilityLabel("Press the bottling handle")
+            }
+            .disabled(store.perfumery.arranged || store.collected.contains(.perfume))
+        }
+    }
+
+    private func mixtureSlot(_ slot: Int, size: CGSize) -> some View {
+        let tool = store.perfumery.mixture[slot]
+        let available = store.perfumery.output == nil && !store.perfumery.arranged && !store.collected.contains(.perfume)
+        return Button {
+            if let selected = store.selectedTool, selected.ingredient != nil {
+                store.putIngredient(selected, at: slot)
+            } else if tool != nil {
+                store.removeIngredient(at: slot)
+            } else {
+                store.showSceneHint("The tray is empty.", presentation: .interaction)
+            }
+        } label: {
+            Color.clear.frame(width: max(48, size.width * 0.18), height: max(48, size.height * 0.22))
+                .contentShape(Rectangle())
+        }.buttonStyle(.plain)
+            .disabled(!available)
+            .accessibilityLabel(tool.map { "Mixture material: " + $0.label } ?? "Empty mixture tray \(slot + 1)")
+            .accessibilityAction(named: "Return ingredient") { store.removeIngredient(at: slot) }
+            .inventoryToolDrop(store: store, accepting: available ? PerfumeIngredient.tools : []) { store.putIngredient($0, at: slot) }
     }
 }
 

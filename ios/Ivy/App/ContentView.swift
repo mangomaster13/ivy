@@ -276,6 +276,10 @@ struct ContentView: View {
                 HotspotMarker(rect: spot.rect, scale: scale, label: spot.object.label,
                               action: { store.tapMemory(spot.object) })
             }
+            if store.room == .perfume, store.sceneView == 4 {
+                PerfumeBenchControls(store: store)
+                    .frame(width: 320 * scale, height: 160 * scale)
+            }
             RoseWorldPetals(store: store, scale: scale)
             if store.room == .hall, store.sceneView == 0 {
                 HotspotMarker(rect: HallLayout.garment, scale: scale, label: "Clothing on the hanger", action: store.tapVuori)
