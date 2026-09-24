@@ -302,6 +302,7 @@ final class GameStore {
     var returnToRecipe = false
     var returnToGelato = false
     var sceneHint = ""
+    var toolHelpText: String?
     var sceneHintTone: IvyMessageTone = .ordinary
     var sceneHintPresentation: IvyMessagePresentation = .puzzle
     var assembleHintTone: IvyMessageTone = .ordinary
@@ -1367,15 +1368,15 @@ final class GameStore {
         }
     }
 
-    /// Keep the typed answer and physical miss response without a text hint.
+    /// Keep the typed answer and show the same short miss feedback as other puzzles.
     private func registerAssembleMiss() {
         captionHideTask?.cancel()
         assembleHintTone = .wrong
         if overlay == .plaque {
-            plaqueHint = ""
+            plaqueHint = GameCopy.wrongAnswer
         } else {
             lyricFailCount += 1
-            lyricHint = ""
+            lyricHint = GameCopy.wrongAnswer
         }
         IvyHaptics.warning()
         shakeWorld()

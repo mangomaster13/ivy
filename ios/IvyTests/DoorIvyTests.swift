@@ -33,7 +33,7 @@ final class DoorNavigationTests: XCTestCase {
         XCTAssertFalse(store.doorOpened)
         XCTAssertTrue(store.collected.isEmpty)
         XCTAssertEqual(store.overlay, .lyric)
-        XCTAssertTrue(store.lyricHint.isEmpty)
+        XCTAssertEqual(store.lyricHint, GameCopy.wrongAnswer)
     }
 
     func testDoorOpensAfterKey() {
@@ -117,7 +117,7 @@ final class IvyFeedbackTests: XCTestCase {
         store.submitAssemble()
         XCTAssertEqual(store.plaqueDraft, "816")
         XCTAssertEqual(store.assembleHintTone, .wrong)
-        XCTAssertTrue(store.assembleHint.isEmpty)
+        XCTAssertEqual(store.assembleHint, GameCopy.wrongAnswer)
         store.backspaceAssemble()
         XCTAssertEqual(store.plaqueDraft, "81")
         XCTAssertTrue(store.assembleHint.isEmpty)
@@ -142,21 +142,22 @@ final class IvyFeedbackTests: XCTestCase {
         XCTAssertFalse(store.doorOpened)
     }
 
-    func testWordAndHotelErrorsKeepDraftsWithoutMessages() {
+    func testWordAndHotelErrorsKeepDraftsAndShowFeedback() {
         let store = StoreHarness.make()
         store.room = .bedroom
         store.overlay = .memory(.wholeBox)
         store.memories.wholeDraft = "whole"
         store.submitWhole()
         XCTAssertEqual(store.memories.wholeDraft, "whole")
-        XCTAssertEqual(store.sceneHintTone, .ordinary)
-        XCTAssertTrue(store.sceneHint.isEmpty)
+        XCTAssertEqual(store.sceneHintTone, .wrong)
+        XCTAssertEqual(store.sceneHint, GameCopy.wrongAnswer)
         store.room = .corridor
         store.overlay = .hotelLock
         store.exploration.hotelCode = [1, 2, 3, 4]
         store.corridorDigits = [0, 0, 0, 0]
         store.submitHotelCode()
-        XCTAssertEqual(store.sceneHintTone, .ordinary)
+        XCTAssertEqual(store.sceneHintTone, .wrong)
+        XCTAssertEqual(store.sceneHint, GameCopy.wrongAnswer)
         store.turnHotelWheel(0, by: 1)
         XCTAssertTrue(store.sceneHint.isEmpty)
     }

@@ -66,6 +66,10 @@ struct CityJigsawView: View {
                         .frame(width: geometry.size.width, height: geometry.size.height)
                     }
                 }
+                .overlay(alignment: .bottom) {
+                    SceneFeedback(store: store, height: 30)
+                        .padding(.bottom, 6)
+                }
                 .gameBackAction(store.backFromMemory)
             }
         }

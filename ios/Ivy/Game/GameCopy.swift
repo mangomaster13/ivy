@@ -1,7 +1,8 @@
 import Foundation
 
-/// Shared yard copy and accessible letter text. Keep puzzle answers out of player-facing hints.
+/// Shared game copy and accessible letter text. Keep puzzle answers out of player-facing hints.
 enum GameCopy {
+    static let wrongAnswer = "Not quite."
     /// Placeholder in the door field. Must not be the answer.
     static let lyricPlaceholder = "a line the house remembers"
 

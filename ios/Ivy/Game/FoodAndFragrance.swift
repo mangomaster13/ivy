@@ -200,7 +200,7 @@ extension GameStore {
         // The whole attempt resets together; individual positions never disclose correctness.
         bigTop.signDraft = ""
         IvyHaptics.warning()
-        dismissSceneHint(); persistNow()
+        showWrongAnswer(); persistNow()
     }
     func prepareBigTopMenu() {
         bigTop.prepareMenu()
@@ -245,7 +245,7 @@ extension GameStore {
         guard canChangeFoodPuzzle, room == .noodle, overlay == .memory(.bigTopMenuSearch),
               bigTop.menuDrawerOpen != true, !bigTop.menuTaken else { return }
         guard bigTop.drawerSymbols == BigTopMenu.drawerAnswer else {
-            dismissSceneHint()
+            showWrongAnswer()
             return
         }
         dismissSceneHint()
@@ -282,7 +282,7 @@ extension GameStore {
     func placeDinnerOrder() {
         guard canChangeFoodPuzzle else { return }
         guard room == .noodle, overlay == .memory(.bigTopMenu), bigTop.menuPlaced, !bigTop.orderSolved else { return }
-        guard bigTop.order == BigTopMenu.answer else { dismissSceneHint(); return }
+        guard bigTop.order == BigTopMenu.answer else { showWrongAnswer(); return }
         bigTop.orderSolved = true; bigTop.streetUnlocked = true
         memories.opened.insert("bigTop")
         dismissSceneHint(); IvyHaptics.success(); persistNow()
@@ -366,10 +366,10 @@ extension GameStore {
             return
         }
         guard let formula = PerfumeFormula.all.first(where: { $0.accepts(ingredients) }) else {
-            dismissSceneHint(); return
+            showWrongAnswer(); return
         }
         guard !perfumery.brewed.contains(formula.bottle) else {
-            dismissSceneHint(); return
+            showWrongAnswer(); return
         }
         exploration.tools.formUnion(ingredients)
         perfumery.mixture = [nil, nil, nil]
@@ -396,6 +396,8 @@ extension GameStore {
         if perfumery.arrangement == PerfumeFormula.bottles.map(Optional.some) {
             perfumery.arranged = true; memories.opened.insert("perfume"); IvyHaptics.success()
             collectPerfumes()
+        } else if perfumery.arrangement.allSatisfy({ $0 != nil }) {
+            showWrongAnswer()
         }
         persistNow()
     }

@@ -65,6 +65,10 @@ extension GameStore {
             memories.opened.insert("taxi")
             IvyHaptics.success()
             backFromMemory()
+        } else if node == 6 {
+            showWrongAnswer()
+        } else {
+            dismissSceneHint()
         }
         persistNow()
     }
@@ -73,6 +77,7 @@ extension GameStore {
         guard room == .taxi, overlay == .memory(.taxi), !taxi.arrived,
               taxi.route.count > 1 else { return }
         taxi.route.removeLast()
+        dismissSceneHint()
         persistNow()
     }
 

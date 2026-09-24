@@ -34,9 +34,7 @@ struct BigTopCloseupView: View {
                     }
                 }
                 .overlay(alignment: .bottom) {
-                    if panel != .bigTopSign {
-                        SceneFeedback(store: store, height: 30).allowsHitTesting(false)
-                    }
+                    SceneFeedback(store: store, height: 30).allowsHitTesting(false)
                 }
                 .gameBackAction(store.backFromMemory)
                 .task {

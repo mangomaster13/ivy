@@ -100,7 +100,7 @@ extension GameStore {
         guard room == .corridor, overlay == .hotelLock, !corridorUnlocked else { return }
         guard corridorDigits == exploration.hotelCode else {
             corridorMiss = true
-            dismissSceneHint()
+            showWrongAnswer()
             IvyHaptics.warning()
             return
         }
@@ -123,10 +123,15 @@ extension GameStore {
     }
 
     func showSceneHint(_ text: String, tone: IvyMessageTone = .ordinary, presentation: IvyMessagePresentation = .puzzle) {
+        toolHelpText = nil
         sceneHintPresentation = presentation
         sceneHintTone = tone
         sceneHint = text
         // Use the shared caption clock; repeated misses restart the hold.
         revealSceneCaption(text)
+    }
+
+    func showWrongAnswer() {
+        showSceneHint(GameCopy.wrongAnswer, tone: .wrong)
     }
 }

@@ -97,6 +97,10 @@ struct TaxiCloseupView: View {
                     .padding(.trailing, 8).padding(.bottom, 8)
             }
         }
+        .overlay(alignment: .bottom) {
+            SceneFeedback(store: store, height: 32)
+                .padding(.trailing, PuzzleActionLayout.width + 16)
+        }
     }
 
     private func touch(_ point: CGPoint, scale: CGFloat) {

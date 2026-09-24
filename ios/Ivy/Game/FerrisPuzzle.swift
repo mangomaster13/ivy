@@ -69,7 +69,7 @@ extension GameStore {
     func submitFerrisPlaylist() {
         guard ferrisActive, overlay == .memory(.ferris), !ferris.playlistSolved else { return }
         guard ferris.order == Array(0..<5) else {
-            dismissSceneHint()
+            showWrongAnswer()
             return
         }
         ferris.playlistSolved = true

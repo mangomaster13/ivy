@@ -287,7 +287,7 @@ extension GameStore {
     func submitWhole() {
         guard room == .bedroom, overlay == .memory(.wholeBox), !memories.opened.contains("wholeBox") else { return }
         let answer = memories.wholeDraft.lowercased().components(separatedBy: CharacterSet.letters.inverted).filter { !$0.isEmpty }.joined(separator: " ")
-        guard answer == "as a whole" else { dismissSceneHint(); return }
+        guard answer == "as a whole" else { showWrongAnswer(); return }
         withAnimation(prefersReducedMotion ? nil : .easeInOut(duration: 0.65)) { memories.opened.insert("wholeBox") }
         exploration.musicBoxOpened = true; sceneHint = ""; IvyHaptics.success(); persistNow()
     }
@@ -318,7 +318,8 @@ extension GameStore {
         } else if !exploration.clues.contains(.travelOrder) {
             showSceneHint("Something is still hidden beneath the pencil marks.", presentation: .interaction)
         } else {
-            dismissSceneHint()
+            if !memories.routeCorrect { showWrongAnswer() }
+            else { dismissSceneHint() }
             return canDepart
         }
         return false
@@ -354,6 +355,8 @@ extension GameStore {
         memories.cityBoard = board
         memories.citySolved = board.enumerated().allSatisfy { $0.element == $0.offset }
         if memories.citySolved { unlockAssemblyKeepsake(.city) }
+        else if board.allSatisfy({ $0 != nil }) { showWrongAnswer() }
+        else { dismissSceneHint() }
         persistNow()
     }
     func returnCityPiece(_ piece: Int) {
@@ -362,6 +365,7 @@ extension GameStore {
               let slot = board.firstIndex(where: { $0 == piece }) else { return }
         board[slot] = nil
         memories.cityBoard = board
+        dismissSceneHint()
         persistNow()
     }
     func moveCityLoosePiece(_ piece: Int, to position: Int) {

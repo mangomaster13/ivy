@@ -76,7 +76,7 @@ extension GameStore {
             }.value
             guard !Task.isCancelled, canWriteDictionary, dictionary.strokes == submitted else { return }
             guard recognized == "FOREVER" else {
-                dismissSceneHint()
+                showWrongAnswer()
                 return
             }
             dictionary.solved = true
@@ -87,7 +87,7 @@ extension GameStore {
             replayKeepsake(.dictionary)
         } catch {
             guard !Task.isCancelled, canWriteDictionary, dictionary.strokes == submitted else { return }
-            dismissSceneHint()
+            showSceneHint("I couldn't read that yet.", tone: .wrong)
         }
     }
 
