@@ -18,12 +18,27 @@ struct BigTopProgress: Codable {
     var tracingAngle: Double? = nil
     var tracingOffset: Double? = nil
     var menuDrawerOpen: Bool? = nil
+    var drawerSymbols: [Int]? = nil
+    var menuOrder: [Int]? = nil
     var menuTaken = false
     var menuPlaced = false
     var menuPage = 0
     var order: Set<Int> = []
     var orderSolved = false
     var streetUnlocked = false
+
+    mutating func prepareMenu() {
+        if menuOrder.map({ $0.count == BigTopMenu.availableIDs.count && Set($0) == Set(BigTopMenu.availableIDs) }) != true {
+            menuOrder = BigTopMenu.availableIDs.shuffled()
+        }
+        if drawerSymbols.map({ $0.count == 4 && $0.allSatisfy(BigTopMenu.symbols.indices.contains) }) != true {
+            drawerSymbols = [1, 3, 2, 4]
+        }
+        if menuTaken || menuPlaced || orderSolved { menuDrawerOpen = true }
+        if menuPlaced || orderSolved { menuTaken = true }
+        if orderSolved { menuPlaced = true; streetUnlocked = true }
+        else { order.formIntersection(BigTopMenu.availableIDs) }
+    }
 }
 
 struct PerfumeProgress: Codable {
@@ -45,7 +60,13 @@ enum BigTopMenu {
         "Choy Sum", "Chinese Broccoli", "Marinated Egg", "Fish Balls", "Soup of the Day",
         "Lemon Tea", "Ovaltine", "Milk Tea", "Coffee", "Lemon Water"
     ]
+    // Keep historical dish IDs stable: old drafts were saved as these indices.
+    static let availableIDs = [0, 1, 5, 6, 7, 8, 15, 16, 17, 19]
     static let answer: Set<Int> = [0, 5, 6, 15, 16]
+    static let symbols = ["bowl", "cup", "fish", "spoon", "leaf", "goose", "chopsticks", "teapot"]
+    static let drawerAnswer = [0, 5, 7, 2]
+    static let ledgerDescription = "Two rows of four. Top: bowl, cup, fish, spoon. Bottom: leaf, goose, chopsticks, teapot. A notch at top left; two screws at bottom right."
+    static let mirrorDescription = "Reflected two-row, four-column grid. Notch at top right; two screws at bottom left. A ring starts at top column four, joins bottom column three, then bottom column one, ending with an arrow at top column two. Columns counted from the left of the reflection."
 }
 
 struct PerfumeIngredient: Identifiable {
@@ -181,28 +202,64 @@ extension GameStore {
         IvyHaptics.warning()
         dismissSceneHint(); persistNow()
     }
-    func turnBigTopTracingPaper(_ angle: Double) {
-        guard canChangeFoodPuzzle else { return }
-        guard room == .noodle, overlay == .memory(.bigTopMenuSearch), !bigTop.menuTaken else { return }
-        bigTop.tracingAngle = min(360, max(0, angle)); persistNow()
+    func prepareBigTopMenu() {
+        bigTop.prepareMenu()
+        persistNow()
     }
-    func slideBigTopTracingPaper(_ offset: Double) {
-        guard canChangeFoodPuzzle else { return }
-        guard room == .noodle, overlay == .memory(.bigTopMenuSearch), !bigTop.menuTaken else { return }
-        bigTop.tracingOffset = min(70, max(-15, offset)); persistNow()
+    func takeBigTopTool(_ tool: AdventureTool) {
+        guard canChangeFoodPuzzle, room == .noodle, canExplore, sceneView == 1,
+              [.bigTopPencil, .bigTopInspectionMirror].contains(tool),
+              !bigTop.menuTaken, !bigTop.orderSolved,
+              !memories.picked.contains(tool), !memories.used.contains(tool) else { return }
+        acquire(tool)
+    }
+    func revealBigTopLedger() {
+        guard canChangeFoodPuzzle, room == .noodle, overlay == .memory(.bigTopLedger),
+              !exploration.clues.contains(.bigTopLedger), use(.bigTopPencil) else { return }
+        dismissSceneHint()
+        discover(.bigTopLedger)
+    }
+    func placeBigTopMirror() {
+        guard canChangeFoodPuzzle, room == .noodle, canExplore, sceneView == 1,
+              !exploration.clues.contains(.bigTopMirror), use(.bigTopInspectionMirror) else { return }
+        consume(.bigTopInspectionMirror)
+        discover(.bigTopMirror)
+        openMemory(.bigTopMirror)
+    }
+    func inspectBigTopMirror() {
+        guard room == .noodle, canExplore, sceneView == 1 else { return }
+        if exploration.clues.contains(.bigTopMirror) { openMemory(.bigTopMirror) }
+        else if selectedTool == .bigTopInspectionMirror { placeBigTopMirror() }
+        else { showSceneHint("There are scratches behind the wooden lip.", presentation: .interaction) }
+    }
+    func turnBigTopSymbol(_ index: Int, by step: Int = 1) {
+        guard canChangeFoodPuzzle, room == .noodle, overlay == .memory(.bigTopMenuSearch),
+              bigTop.menuDrawerOpen != true, (0..<4).contains(index), [-1, 1].contains(step) else { return }
+        bigTop.prepareMenu()
+        var symbols = bigTop.drawerSymbols ?? [1, 3, 2, 4]
+        symbols[index] = (symbols[index] + step + 8) % 8
+        bigTop.drawerSymbols = symbols
+        dismissSceneHint(); persistNow()
     }
     func openBigTopMenuDrawer() {
-        guard canChangeFoodPuzzle else { return }
-        guard room == .noodle, overlay == .memory(.bigTopMenuSearch), !bigTop.menuTaken else { return }
-        let angle = bigTop.tracingAngle ?? 0
-        guard abs(angle - 180) < 18, abs((bigTop.tracingOffset ?? 0) - 43) < 9 else { return }
-        bigTop.menuDrawerOpen = true; persistNow()
+        guard canChangeFoodPuzzle, room == .noodle, overlay == .memory(.bigTopMenuSearch),
+              bigTop.menuDrawerOpen != true, !bigTop.menuTaken else { return }
+        guard bigTop.drawerSymbols == BigTopMenu.drawerAnswer else {
+            showSceneHint("The drawer stays shut.", presentation: .interaction)
+            return
+        }
+        dismissSceneHint()
+        bigTop.menuDrawerOpen = true
+        IvyHaptics.success(); persistNow()
     }
     func takeBigTopMenu() {
         guard canChangeFoodPuzzle else { return }
         guard room == .noodle, overlay == .memory(.bigTopMenuSearch), bigTop.menuDrawerOpen == true,
               !bigTop.menuTaken, !bigTop.orderSolved else { return }
-        bigTop.menuTaken = true; bigTop.menuDrawerOpen = false
+        bigTop.menuTaken = true
+        for tool in [AdventureTool.bigTopPencil, .bigTopInspectionMirror] where exploration.tools.contains(tool) {
+            consume(tool)
+        }
         acquire(.dinnerMenu); persistNow()
     }
     func placeBigTopMenu() {
@@ -215,15 +272,10 @@ extension GameStore {
         memoryNavigation.removeAll { $0 == .bigTopOrder }
         persistNow()
     }
-    func turnDinnerPage(_ delta: Int) {
-        guard canChangeFoodPuzzle else { return }
-        guard room == .noodle, overlay == .memory(.bigTopMenu) else { return }
-        bigTop.menuPage = min(3, max(0, bigTop.menuPage + delta)); dismissSceneHint(); persistNow()
-    }
     func selectDish(_ index: Int) {
         guard canChangeFoodPuzzle else { return }
         guard room == .noodle, overlay == .memory(.bigTopMenu), bigTop.menuPlaced,
-              !bigTop.orderSolved, BigTopMenu.dishes.indices.contains(index) else { return }
+              !bigTop.orderSolved, BigTopMenu.availableIDs.contains(index) else { return }
         if bigTop.order.contains(index) { bigTop.order.remove(index) } else { bigTop.order.insert(index) }
         dismissSceneHint(); persistNow()
     }
@@ -377,13 +429,12 @@ extension GameStore {
         }
         // Serving dinner unlocks the street independently of claiming the memory.
         if bigTop.orderSolved { bigTop.streetUnlocked = true }
-        bigTop.menuPage = min(3, max(0, bigTop.menuPage))
-        bigTop.tracingAngle = min(360, max(0, bigTop.tracingAngle ?? 0))
-        bigTop.tracingOffset = min(70, max(-15, bigTop.tracingOffset ?? 0))
+        if collected.contains(.noodle) || memories.opened.contains("bigTop") { bigTop.orderSolved = true }
+        if exploration.tools.contains(.dinnerMenu) { bigTop.menuTaken = true }
+        bigTop.prepareMenu()
         if bigTop.signOrder.map({ $0.count == 6 && Set($0) == Set("BIGTOP") && !["BIGTOP", "POTGIB"].contains($0) }) != true {
             bigTop.signOrder = BigTopProgress.shuffledSign()
         }
-        bigTop.order = bigTop.order.intersection(BigTopMenu.dishes.indices)
         // Only the former per-letter feedback drafts are discarded. New attempts resume.
         if bigTop.wholeSignAttempt == nil {
             if bigTop.signDraft == "BIGTOP" { bigTop.signSolved = true }
@@ -418,6 +469,11 @@ extension GameStore {
         }
         if bigTop.menuTaken && !bigTop.menuPlaced && !bigTop.orderSolved { exploration.tools.insert(.dinnerMenu) }
         else { exploration.tools.remove(.dinnerMenu) }
+        if bigTop.menuTaken {
+            for tool in [AdventureTool.bigTopPencil, .bigTopInspectionMirror] where exploration.tools.contains(tool) {
+                consume(tool)
+            }
+        }
     }
     private func normalizedSlots(_ slots: [AdventureTool?], allowed: Set<AdventureTool>) -> [AdventureTool?] {
         var seen = Set<AdventureTool>()

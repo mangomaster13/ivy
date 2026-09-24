@@ -5,7 +5,7 @@ enum AdventureTool: String, Codable, CaseIterable, Identifiable {
     case brassKey, magnifier, cloth, napkin, sewingKit, coin, scoop, ticket
     // Preserve the old save identifier while replacing the physical tool.
     case eraser = "pencil"
-    case dinnerMenu
+    case dinnerMenu, bigTopPencil, bigTopInspectionMirror
     case gaiacWood, cedar, incense, oakmoss, patchouli, vetiver
     case bergamot, grapefruit, petitgrain, orangeBlossom, iris, violet, jasmine
     case cinnamon, pimentoBay, pinkPepper, cardamom, musk, crystalMoss, clearwood, ambroxyde
@@ -23,6 +23,8 @@ enum AdventureTool: String, Codable, CaseIterable, Identifiable {
         case .coin: "brass token"
         case .scoop: "tasting spoon"
         case .dinnerMenu: "Big Top menu"
+        case .bigTopPencil: "short pencil"
+        case .bigTopInspectionMirror: "inspection mirror"
         default: ingredient?.name ?? formula?.name ?? rawValue
         }
     }
@@ -53,6 +55,8 @@ enum AdventureTool: String, Codable, CaseIterable, Identifiable {
         case .coin: "A brass token engraved with a little spoon."
         case .scoop: "A proper scoop. Cold enough gelato should curl right into it."
         case .dinnerMenu: "A folded menu from Big Top."
+        case .bigTopPencil: "Soft graphite, worn along one side."
+        case .bigTopInspectionMirror: "A little mirror with a narrow wooden handle."
         default: ingredient != nil ? "A labelled bottle of " + label + "." : "A bottle of " + label + "."
         }
     }
@@ -61,6 +65,7 @@ enum AdventureTool: String, Codable, CaseIterable, Identifiable {
 enum AdventureClue: String, Codable, CaseIterable, Identifiable {
     case gardenDate, label, travelOrder, mirror, music, recipe, temperature, rainRelation
     case gaiacFormula, bergamoteFormula, mousseFormula, perfumeOrder, gelatoOrder, gelatoLeaves
+    case bigTopLedger, bigTopMirror
     var id: String { rawValue }
     var title: String {
         switch self {
@@ -78,6 +83,8 @@ enum AdventureClue: String, Codable, CaseIterable, Identifiable {
         case .bergamoteFormula: "Bergamote 22"
         case .mousseFormula: "Mousse de Chene 30"
         case .perfumeOrder: "the presentation box"
+        case .bigTopLedger: "marks on the next page"
+        case .bigTopMirror: "behind the wooden lip"
         }
     }
 }
@@ -136,7 +143,7 @@ extension GameStore {
     var sideImageName: String? {
         switch (room, sceneView) {
         case (.bedroom, -1): "memory-bath"
-        case (.noodle, 1): "bt2-counter-eight"
+        case (.noodle, 1): bigTop.menuDrawerOpen == true ? "bt3-counter-open" : "bt3-counter"
         case (.perfume, 1): "ll4-entry"
         case (.perfume, 2): perfumery.opened.contains("wood") ? "ll-wood-open" : "ll-wood"
         case (.perfume, 3): perfumery.opened.contains("botanical") ? "ll-botanical-room-open" : "ll-botanical"
@@ -233,6 +240,8 @@ extension GameStore {
         case .gaiacFormula, .bergamoteFormula, .mousseFormula:
             PerfumeFormula.all.first { $0.clue == clue }.map { $0.name + "\n" + $0.core.label + "\n" + $0.supporting.map(\.label).joined(separator: " · ") } ?? ""
         case .perfumeOrder: "X → XXII → XXX"
+        case .bigTopLedger: BigTopMenu.ledgerDescription
+        case .bigTopMirror: BigTopMenu.mirrorDescription
         }
     }
 

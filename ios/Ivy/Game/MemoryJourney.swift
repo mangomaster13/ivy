@@ -69,7 +69,7 @@ enum MemoryPanel: String, CaseIterable {
     case gelatoOrder, gelatoNote
     case pot, drawer, linen, wholeBox, dispenser, flight, ticket, travelBook, yunnan, bouquet, city, bath, menu, tasting, keycard
     case bigTop, mexican, perfume, cinema, sunset, ferris, taxi, blanket
-    case bigTopSign, bigTopMenuSearch, bigTopOrder, bigTopMenu, rainGutter
+    case bigTopSign, bigTopMenuSearch, bigTopOrder, bigTopMenu, bigTopLedger, bigTopMirror, rainGutter
     case perfumeWood, perfumeBotanical, perfumeSpice, perfumeLab, perfumeFormula, perfumeMix
     var tools: [AdventureTool] {
         switch self {
@@ -89,7 +89,7 @@ enum MemoryPanel: String, CaseIterable {
         case .wholeBox, .bouquet, .city, .bath, .blanket: .bedroom
         case .flight, .ticket, .travelBook, .yunnan: .plane
         case .dispenser, .menu, .tasting, .rainGutter, .gelatoOrder, .gelatoNote: .gelato
-        case .bigTop, .mexican, .bigTopMenuSearch, .bigTopOrder, .bigTopMenu: .noodle
+        case .bigTop, .mexican, .bigTopMenuSearch, .bigTopOrder, .bigTopMenu, .bigTopLedger, .bigTopMirror: .noodle
         case .bigTopSign: .gelato
         case .perfume, .perfumeWood, .perfumeBotanical, .perfumeSpice, .perfumeLab, .perfumeFormula, .perfumeMix: .perfume
         case .cinema: .cinema
@@ -144,6 +144,10 @@ extension GameStore {
         }
         if panel.room == .perfume, sceneView == 0 { return }
         switch panel {
+        case .bigTopLedger where !exploration.clues.contains(.bigTopLedger):
+            guard requireInteractionTool(.bigTopPencil, missing: "The next page kept a few faint impressions.") else { return }
+        case .bigTopMirror:
+            guard exploration.clues.contains(.bigTopMirror) else { return }
         case .bigTopOrder where !bigTop.menuPlaced:
             guard requireInteractionTool(.dinnerMenu, missing: "The clipboard is missing its menu.") else { return }
         case .drawer where !memories.opened.contains("drawer"):
@@ -155,6 +159,7 @@ extension GameStore {
         default: break
         }
         if panel == .bigTopMenu && !bigTop.menuPlaced { return }
+        if [.bigTopMenuSearch, .bigTopMenu].contains(panel) { prepareBigTopMenu() }
         if panel == .perfumeFormula { discover(PerfumeFormula.all[perfumery.formulaPage].clue) }
         if panel == .perfume { discover(.perfumeOrder) }
         if panel == .perfumeSpice { perfumery.opened.insert("spice"); persistNow() }

@@ -1,4 +1,11 @@
 # Production prompts
+## Menu wide layout iteration
+
+Adapt this approved EMPTY menu background to a WIDER, SHORTER landscape game viewport, output EXACTLY 2304 x 832 pixels (aspect ratio 2.7692:1). Recompose, never stretch objects. Keep same warm matte Ivy hand-painted pixel-storybook wood, cream paper, thin dark red border, two vertical folds and brass bell design. One very wide horizontal three-fold paper menu fully visible with all corners on table. Paper occupies x=1%..82%, y=2%..97%. Its blank printable area x=5%..79%, y=15%..93%, with three equally wide columns separated by folds at x=29.3% and 55.6%. Tiny BIG TOP centered in top margin y=8%; tiny goose stamp at paper bottom-right edge within border. All ten dish names and checkbox circles absent. All three columns blank. Bell on tabletop x=85%..98%, y=32%..78%, realistic small bell relative to paper. Remove excess surrounding tabletop and decorative objects to give paper maximum vertical height. Camera top-down with very slight front perspective. No other labels, no UI. This is an approved asset layout adaptation to preserve readable 48-point touch rows on landscape phones.
+
+## Menu compact final layout
+
+Production layout refinement for short landscape phones. Recompose approved empty Big Top menu to EXACT 1920 x 800 (2.4:1) canvas, no stretching of bell or illustration. Keep same three-column cream paper, two vertical folds, BIG TOP top heading, tiny goose stamp, red border, walnut table, brass bell. Paper fills x=1%..82% and y=1%..99%. Make top heading TINY in y=3%..9%; red border close to paper edge. Completely blank printable columns extend y=12%..95%, with folds at x=29% and55%. Bell stays entirely on the right, x85%..98%, center y55%. Remove excess tabletop above/below paper, remove any upper decoration. All paper corners visible. Preserve hand-painted matte warm wood, dark contours, blue teal shadows, no new text, no checkbox circles, no dishes, no UI. The aim is four 48-point high item rows inside paper at a 240-point image height.
 
 Built-in imagegen; 2026-09-24. Generated from approved proposals. Runtime exports are derived directly from these full-resolution source files by scripts/export_noodles.swift.
 

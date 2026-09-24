@@ -369,6 +369,9 @@ private struct ClueNotebookView: View {
             Spacer(minLength: 0)
             if let clue {
                 switch clue {
+                case .bigTopLedger, .bigTopMirror:
+                    BigTopEvidenceArtwork(mirrored: clue == .bigTopMirror, notebook: true)
+                        .frame(maxHeight: compact ? 105 : 150)
                 case .travelOrder:
                     TravelOrderSymbols(symbolSize: compact ? 27 : 33)
                 case .gelatoOrder:

@@ -4,6 +4,7 @@ enum ExplorationAction {
     case dryCloth, pot, postcard, drawer, journal, cloth, mirror, score, musicBox, recipe, dispenser, freezer
     case memory(MemoryPanel)
     case perfumeDoor, perfumeExit
+    case bigTopTool(AdventureTool), bigTopMirror
     case roseHidingPlace(Int)
     case ambient(String)
 }
@@ -89,7 +90,20 @@ extension GameStore {
             ] : []) + [
                 .init("Order clipboard", 208, 49, 25, 25, .memory(.bigTopOrder))
             ]
-        case (.noodle, 1): [.init("Eight-drawer menu cabinet", 141, 113, 109, 47, .memory(.bigTopMenuSearch))]
+        case (.noodle, 1):
+            [
+                .init("Ledger impressions", BigTopCounterLayout.ledger.minX, BigTopCounterLayout.ledger.minY,
+                      BigTopCounterLayout.ledger.width, BigTopCounterLayout.ledger.height, .memory(.bigTopLedger)),
+                .init("Counter observation slit", BigTopCounterLayout.slit.minX, BigTopCounterLayout.slit.minY,
+                      BigTopCounterLayout.slit.width, BigTopCounterLayout.slit.height, .bigTopMirror),
+                .init("Menu drawer", BigTopCounterLayout.drawer.minX, BigTopCounterLayout.drawer.minY,
+                      BigTopCounterLayout.drawer.width, BigTopCounterLayout.drawer.height, .memory(.bigTopMenuSearch))
+            ] + ([AdventureTool.bigTopPencil, .bigTopInspectionMirror].filter {
+                !bigTop.menuTaken && !memories.picked.contains($0)
+            }.map { tool in
+                let rect = tool == .bigTopPencil ? BigTopCounterLayout.pencil : BigTopCounterLayout.mirror
+                return ExplorationSpot(tool.label, rect.minX, rect.minY, rect.width, rect.height, .bigTopTool(tool))
+            })
         case (.perfume, 0): [.init("Le Labo shop door", 239, 52, 47, 78, .perfumeDoor)]
         case (.perfume, 1): [
             .init("Street door", 8, 23, 48, 106, .perfumeExit),
@@ -133,6 +147,8 @@ extension GameStore {
     func inspect(_ spot: ExplorationSpot) {
         guard canExplore else { return }
         switch spot.action {
+        case .bigTopTool(let tool): takeBigTopTool(tool)
+        case .bigTopMirror: inspectBigTopMirror()
         case .perfumeDoor: enterPerfumery()
         case .perfumeExit: leavePerfumery()
         case .roseHidingPlace(let index):

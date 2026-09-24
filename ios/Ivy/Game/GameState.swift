@@ -1074,9 +1074,11 @@ final class GameStore {
                 memories.bigTop = BigTopProgress()
                 memories.bigTopDraft = ""
                 memories.wholeDraft = ""
-                exploration.tools.remove(.dinnerMenu)
-                memories.picked.remove(.dinnerMenu)
-                memories.used.remove(.dinnerMenu)
+                let dinnerTools: Set<AdventureTool> = [.dinnerMenu, .bigTopPencil, .bigTopInspectionMirror]
+                exploration.tools.subtract(dinnerTools)
+                memories.picked.subtract(dinnerTools)
+                memories.used.subtract(dinnerTools)
+                exploration.clues.subtract([.bigTopLedger, .bigTopMirror])
             }
             if index <= EggId.perfume.slotIndex {
                 memories.perfumery = PerfumeProgress()

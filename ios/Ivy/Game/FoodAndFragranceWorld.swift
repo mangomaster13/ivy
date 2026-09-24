@@ -13,6 +13,9 @@ struct FoodAndFragranceWorld: View {
                     .rotationEffect(.degrees(5))
                     .position(x: 281 * scale, y: 28 * scale)
             }
+            if store.room == .noodle && store.sceneView == 1 {
+                BigTopCounterArtwork(store: store).frame(width: 320 * scale, height: 160 * scale)
+            }
             if store.room == .noodle && store.sceneView == 0 {
                 if store.bigTop.orderSolved {
                     Image("bt-dinner").resizable().interpolation(.high).scaledToFit()

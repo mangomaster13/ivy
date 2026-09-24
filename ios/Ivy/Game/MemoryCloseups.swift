@@ -16,7 +16,7 @@ struct MemoryCloseupView: View {
         return candidates.filter { store.exploration.tools.contains($0) }
     }
     var body: some View {
-        if [.bigTop, .bigTopSign, .bigTopMenuSearch, .bigTopOrder, .bigTopMenu].contains(panel) {
+        if [.bigTop, .bigTopSign, .bigTopMenuSearch, .bigTopOrder, .bigTopMenu, .bigTopLedger, .bigTopMirror].contains(panel) {
             BigTopCloseupView(store: store, panel: panel)
         } else if [.perfume, .perfumeWood, .perfumeBotanical, .perfumeSpice, .perfumeLab, .perfumeFormula, .perfumeMix].contains(panel) {
             PerfumeCloseupView(store: store, panel: panel)
@@ -152,9 +152,11 @@ struct MemoryCloseupView: View {
         case .gelatoNote: .scene("gelato-word-note")
         case .flight: .puzzle
         case .bigTopSign: .scene("bt2-neon-wall")
-        case .bigTopMenuSearch: .scene("bt2-counter-eight")
+        case .bigTopMenuSearch: .scene("bt3-counter")
+        case .bigTopLedger: .scene("bt3-ledger")
+        case .bigTopMirror: .scene("bt3-mirror")
         case .bigTopOrder: .scene("bt2-counter")
-        case .bigTopMenu: .scene("bt2-menu-open")
+        case .bigTopMenu: .scene("bt3-menu-compact")
         case .perfumeWood, .perfumeBotanical, .perfumeSpice, .perfumeLab: .scene("ll-cabinet")
         case .perfumeFormula, .perfumeMix: .scene("ll-bench")
         }

@@ -586,3 +586,88 @@ final class GelatoFlowTests: XCTestCase {
         for spot in store.memoryHotspots { XCTAssertFalse(exit.rect.intersects(spot.rect)) }
     }
 }
+
+@MainActor
+final class BigTopMenuPuzzleTests: XCTestCase {
+    func testToolsEvidenceDrawerAndPersistentOrder() throws {
+        let store = StoreHarness.make()
+        store.room = .noodle
+        store.exploration.views[Room.noodle.rawValue] = 1
+        store.openMemory(.bigTopLedger)
+        XCTAssertEqual(store.overlay, .none, "No inert tool-only page")
+        store.takeBigTopTool(.bigTopPencil)
+        store.takeBigTopTool(.bigTopInspectionMirror)
+        XCTAssertNil(store.selectedTool)
+        store.openMemory(.bigTopLedger)
+        store.revealBigTopLedger()
+        XCTAssertFalse(store.exploration.clues.contains(.bigTopLedger), "Holding is not using")
+        store.chooseTool(.bigTopPencil)
+        store.revealBigTopLedger()
+        XCTAssertTrue(store.exploration.clues.contains(.bigTopLedger))
+        store.backFromMemory()
+        store.chooseTool(.bigTopInspectionMirror)
+        store.inspectBigTopMirror()
+        XCTAssertEqual(store.overlay, .memory(.bigTopMirror))
+        XCTAssertTrue(store.exploration.clues.contains(.bigTopMirror))
+        XCTAssertFalse(store.exploration.tools.contains(.bigTopInspectionMirror))
+        store.backFromMemory()
+        store.openMemory(.bigTopMenuSearch)
+        let shuffle = store.bigTop.menuOrder
+        store.openBigTopMenuDrawer()
+        XCTAssertNotEqual(store.bigTop.menuDrawerOpen, true)
+        XCTAssertEqual(store.bigTop.drawerSymbols, [1, 3, 2, 4])
+        for (index, target) in BigTopMenu.drawerAnswer.enumerated() {
+            for _ in 0..<8 where store.bigTop.drawerSymbols?[index] != target { store.turnBigTopSymbol(index) }
+        }
+        store.openBigTopMenuDrawer()
+        XCTAssertEqual(store.bigTop.menuDrawerOpen, true)
+        XCTAssertFalse(store.exploration.tools.contains(.dinnerMenu), "Opening never picks up")
+        store.takeBigTopMenu()
+        XCTAssertTrue(store.exploration.tools.contains(.dinnerMenu))
+        XCTAssertFalse(store.exploration.tools.contains(.bigTopPencil))
+        store.backFromMemory()
+        store.openMemory(.bigTopOrder)
+        store.chooseTool(.dinnerMenu)
+        store.placeBigTopMenu()
+        XCTAssertEqual(store.overlay, .memory(.bigTopMenu))
+        store.selectDish(1)
+        store.placeDinnerOrder()
+        XCTAssertEqual(store.bigTop.order, [1])
+        XCTAssertFalse(store.bigTop.orderSolved)
+        store.selectDish(1)
+        for id in BigTopMenu.answer { store.selectDish(id) }
+        store.placeDinnerOrder()
+        XCTAssertTrue(store.bigTop.orderSolved)
+        XCTAssertTrue(store.bigTop.streetUnlocked)
+        let restored = try JSONDecoder().decode(BigTopProgress.self, from: JSONEncoder().encode(store.bigTop))
+        XCTAssertEqual(restored.menuOrder, shuffle)
+        XCTAssertEqual(restored.order, BigTopMenu.answer)
+        store.backFromMemory()
+        store.openMemory(.bigTop)
+        XCTAssertTrue(store.collected.contains(.noodle))
+    }
+
+    func testLegacyMenuProgressKeepsIdentityAndCompletion() throws {
+        // Missing optional new fields must not invalidate an existing save.
+        let legacy = Data("""
+        {"signDraft":"BIGTOP","signSolved":true,"menuRevealed":true,
+         "menuTaken":true,"menuPlaced":true,"menuPage":3,"order":[0,6,18],
+         "orderSolved":false,"streetUnlocked":true}
+        """.utf8)
+        var progress = try JSONDecoder().decode(BigTopProgress.self, from: legacy)
+        progress.prepareMenu()
+        XCTAssertEqual(progress.order, [0, 6])
+        XCTAssertEqual(progress.menuDrawerOpen, true)
+        XCTAssertTrue(progress.streetUnlocked)
+        XCTAssertEqual(Set(progress.menuOrder ?? []), Set(BigTopMenu.availableIDs))
+        let shuffle = progress.menuOrder
+        progress.prepareMenu()
+        XCTAssertEqual(progress.menuOrder, shuffle)
+        progress.orderSolved = true
+        progress.prepareMenu()
+        XCTAssertTrue(progress.orderSolved)
+        XCTAssertTrue(progress.menuPlaced)
+        XCTAssertEqual(AdventureTool(rawValue: "pencil"), .eraser)
+        XCTAssertNotEqual(AdventureTool.bigTopPencil.rawValue, "pencil")
+    }
+}

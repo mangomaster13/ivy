@@ -39,6 +39,14 @@ for name in ["counter", "counter-open", "menu", "ledger", "mirror"] {
         context.draw(original, in: CGRect(x: 0, y: 0, width: 640 * scale, height: 320 * scale))
     }
 }
+let wideMenu = read("menu-wide")
+try export("bt3-menu-wide", width: 720, height: 260) { context, scale in
+    context.draw(wideMenu, in: CGRect(x: 0, y: 0, width: 720 * scale, height: 260 * scale))
+}
+let compactMenu = read("menu-compact")
+try export("bt3-menu-compact", width: 720, height: 300) { context, scale in
+    context.draw(compactMenu, in: CGRect(x: 0, y: 0, width: 720 * scale, height: 300 * scale))
+}
 
 // Atlas is authored with transparent margins. Slice, then trim alpha, never redraw objects.
 let atlas = read("sprites")
@@ -79,11 +87,11 @@ let fontURL = root.appendingPathComponent("ios/Ivy/Fonts/Juniper-Regular.ttf")
 CTFontManagerRegisterFontsForURL(fontURL as CFURL, .process, nil)
 let descriptors = CTFontManagerCreateFontDescriptorsFromURL(fontURL as CFURL) as! [CTFontDescriptor]
 let font = CTFontCreateWithFontDescriptor(descriptors[0], 23, nil)
-let dishes: [(Int, String)] = [(0, "Half Roast\nGoose"), (1, "Quarter Roast\nGoose"), (5, "Steamed Rice"),
-    (6, "Rice Noodles"), (7, "Egg Fried Rice"), (8, "Wonton Noodles"), (15, "Lemon Tea"),
-    (16, "Ovaltine"), (17, "Milk Tea"), (19, "Lemon Water")]
+let dishes: [(Int, String)] = [(0, "Half\nRoast Goose"), (1, "Quarter\nRoast Goose"), (5, "Steamed\nRice"),
+    (6, "Rice\nNoodles"), (7, "Egg Fried\nRice"), (8, "Wonton\nNoodles"), (15, "Lemon Tea"),
+    (16, "Ovaltine"), (17, "Milk Tea"), (19, "Lemon\nWater")]
 for (id, title) in dishes {
-    try export("bt3-dish-\(id)", width: 188, height: 52) { context, scale in
+    try export("bt3-dish-\(id)", width: 146, height: 52) { context, scale in
         context.scaleBy(x: CGFloat(scale), y: CGFloat(scale))
         let lines = title.components(separatedBy: "\n")
         for (index, text) in lines.enumerated() {
