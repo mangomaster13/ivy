@@ -20,14 +20,14 @@ struct CityJigsawView: View {
             FittedSceneStage(aspectRatio: 2) {
                 ZStack {
                     Color("Night")
-                    InspectionBackdrop(surface: .scene("city-window-closeup"))
+                    InspectionBackdrop(surface: .scene("city-puzzle-overhead"))
                     GeometryReader { geometry in
                         let layout = CityGridLayout(size: geometry.size)
                         ZStack(alignment: .topLeading) {
                             ZStack(alignment: .topLeading) {
                                 Color.clear
                                 ForEach(0..<9) { slot in
-                                    Rectangle().stroke(IvyType.cream.opacity(0.09), lineWidth: 0.6)
+                                    Rectangle().stroke(IvyType.ink.opacity(0.35), lineWidth: 0.6)
                                         .frame(width: layout.cell, height: layout.cell)
                                         .contentShape(Rectangle())
                                         .position(layout.localCenter(slot))
@@ -43,18 +43,23 @@ struct CityJigsawView: View {
                                 }
                             }
                             .frame(width: layout.board.width, height: layout.board.height)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .clipShape(RoundedRectangle(cornerRadius: layout.cell * 0.025))
                             .position(x: layout.board.midX, y: layout.board.midY)
                             ForEach(Array(trayOrder.enumerated()), id: \.element) { index, piece in
                                 if !slots.contains(where: { $0 == piece }) {
                                     tile(piece, edge: layout.trayEdge, origin: layout.trayCenter(index), layout: layout)
+                                        .rotationEffect(.degrees(layout.trayAngle(index)))
+                                        .shadow(color: .black.opacity(0.45), radius: layout.cell * 0.018,
+                                                x: layout.cell * 0.014, y: layout.cell * 0.025)
+                                        .zIndex(selected == piece ? 10 : Double(index + 1))
                                         .opacity(dragging == piece ? 0 : 1)
                                         .position(layout.trayCenter(index))
                                 }
                             }
                             if let dragging {
                                 CityGridPiece(piece: dragging, edge: layout.cell)
-                                    .position(dragPoint).allowsHitTesting(false)
+                                    .shadow(color: .black.opacity(0.4), radius: layout.cell * 0.04, y: layout.cell * 0.06)
+                                    .position(dragPoint).allowsHitTesting(false).zIndex(20)
                             }
                         }
                         .coordinateSpace(name: "city-grid")
@@ -109,10 +114,12 @@ struct CityJigsawView: View {
 
 private struct CityGridLayout {
     let size: CGSize
-    // Source artwork is 1774×887; the painted tray opening and sill share this fit.
+    // Approved overhead canvas: 1774×887. Table supports every rotated tile.
+    // Square assembly sits inside the painted recess (178...850, 125...740),
+    // leaving side clearance; drawing, hit targets and drops share this transform.
     private var scale: CGFloat { size.width / 1774 }
     var board: CGRect {
-        CGRect(x: 470 * scale, y: 416 * scale, width: 288 * scale, height: 288 * scale)
+        CGRect(x: 208 * scale, y: 128 * scale, width: 612 * scale, height: 612 * scale)
     }
     var cell: CGFloat { board.width / 3 }
     var trayEdge: CGFloat { cell }
@@ -125,11 +132,14 @@ private struct CityGridLayout {
     }
     func trayCenter(_ slot: Int) -> CGPoint {
         let centers: [CGPoint] = [
-            CGPoint(x: 1010, y: 452), CGPoint(x: 1220, y: 460), CGPoint(x: 1460, y: 455),
-            CGPoint(x: 980, y: 590), CGPoint(x: 1200, y: 570), CGPoint(x: 1410, y: 595),
-            CGPoint(x: 1050, y: 735), CGPoint(x: 1260, y: 720), CGPoint(x: 1500, y: 725)
+            CGPoint(x: 1410, y: 205), CGPoint(x: 1080, y: 415), CGPoint(x: 1100, y: 655),
+            CGPoint(x: 1550, y: 585), CGPoint(x: 1495, y: 380), CGPoint(x: 1150, y: 265),
+            CGPoint(x: 1280, y: 600), CGPoint(x: 1440, y: 685), CGPoint(x: 1270, y: 425)
         ]
         return CGPoint(x: centers[slot].x * scale, y: centers[slot].y * scale)
+    }
+    func trayAngle(_ slot: Int) -> Double {
+        [18, 14, -18, 16, -21, -24, 18, -16, 14][slot]
     }
     func slot(at point: CGPoint) -> Int? {
         guard board.contains(point) else { return nil }
@@ -157,5 +167,6 @@ private struct CityGridPiece: View {
                 width: size.width * 3, height: size.height * 3))
         }
         .frame(width: edge, height: edge)
+        .overlay(Rectangle().strokeBorder(IvyType.cream.opacity(0.35), lineWidth: max(0.5, edge * 0.006)))
     }
 }
