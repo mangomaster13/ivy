@@ -65,7 +65,15 @@ struct IntroView: View {
                     }
 
                     if crawlComplete && yardReady {
-                        PuzzleButton("Enter", width: 120, action: enter)
+                        Button(action: enter) {
+                            Image("intro-enter-button")
+                                .interpolation(.high)
+                                .resizable()
+                                .frame(width: 400 * scale, height: 146 * scale)
+                                .frame(minWidth: 48, minHeight: 48)
+                                .contentShape(Rectangle())
+                        }.buttonStyle(StoryPressStyle(scale: 1))
+                            .accessibilityLabel("Enter")
                             .position(x: 352 * scale, y: 730 * scale)
                     }
                 }
