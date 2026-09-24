@@ -13,6 +13,7 @@ def declaration(path, name):
 
 source = 'import Foundation\nimport CoreGraphics\n'
 source += declaration('ios/Ivy/Game/WonderlandScenes.swift', 'SceneDetailCamera') + '\n'
+source += declaration('ios/Ivy/Game/GameChrome.swift', 'PuzzleActionLayout') + '\n'
 source += declaration('ios/Ivy/Game/DictionaryViews.swift', 'DictionaryCamera') + '\n'
 source += '''
 let details = [CGRect(x: 92, y: 108, width: 135, height: 49),
@@ -38,7 +39,12 @@ for height in stride(from: CGFloat(160), through: 480, by: 40) {
                              y: frame.minY + frame.height * 0.29,
                              width: frame.width * 0.31, height: frame.height * 0.30)
             assert(viewport.contains(ink))
-            assert(ink.maxY < height - 88, "Ink overlaps actions/feedback")
+            let interaction = PuzzleActionLayout.interactionRect(in: size)
+            assert(interaction.insetBy(dx: -0.001, dy: -0.001).contains(ink), "Ink overlaps the action rail or feedback")
+            let actions = PuzzleActionLayout.center(in: size)
+            assert(ink.maxX < actions.x - PuzzleActionLayout.width / 2)
+            assert(actions.y - (96 + PuzzleActionLayout.spacing) / 2 >= 0)
+            assert(actions.y + (96 + PuzzleActionLayout.spacing) / 2 <= height)
         }
     }
 '''

@@ -4,12 +4,12 @@ import SwiftUI
 enum DictionaryCamera {
     static func artworkFrame(in viewport: CGSize, writing: Bool) -> CGRect {
         let aspect: CGFloat = 16.0 / 9.0
+        let interaction = PuzzleActionLayout.interactionRect(in: viewport)
         let height = max(viewport.width / aspect, viewport.height,
-                         writing ? max(max(0, viewport.height - 100) / 0.34,
-                                       (viewport.height + 88) / 1.12) : 0)
+                         writing ? min(interaction.width / (aspect * 0.31), interaction.height / 0.30) : 0)
         let width = height * aspect
-        let x = writing ? viewport.width / 2 - width * 0.645 : (viewport.width - width) / 2
-        let y = writing ? (viewport.height - 88) / 2 - height * 0.44 : (viewport.height - height) / 2
+        let x = writing ? interaction.midX - width * 0.645 : (viewport.width - width) / 2
+        let y = writing ? interaction.midY - height * 0.44 : (viewport.height - height) / 2
         return CGRect(x: min(0, max(viewport.width - width, x)),
                       y: min(0, max(viewport.height - height, y)), width: width, height: height)
     }
@@ -75,30 +75,32 @@ struct DictionaryCloseupView: View {
                         .accessibilityLabel(store.clueText(.dictionaryLyric))
                 }
             } else {
-                // The book scene fills content. Controls reserve space inside that scene,
-                // rather than taking height away from the artwork a second time.
-                ZStack(alignment: .bottom) {
+                // Full-height writing space sits beside the shared action rail.
+                ZStack {
                     book
-                    VStack(spacing: 4) {
-                        HStack(spacing: 16) {
-                            if store.dictionary.solved {
-                                PuzzleButton("Remember") { store.replayKeepsake(.dictionary) }
-                            } else if !writingCloseup {
-                                PuzzleButton("Write", action: openWritingSurface)
-                            } else {
-                                PuzzleButton("Undo", action: store.undoDictionaryStroke)
-                                    .disabled(!store.canWriteDictionary || store.dictionary.strokes.isEmpty || submitting)
-                                PuzzleButton("Enter") {
-                                    submitting = true
-                                    submission = Task { @MainActor in
-                                        await store.submitDictionary()
-                                        submitting = false
-                                    }
-                                }.disabled(!store.canWriteDictionary || store.dictionary.strokes.isEmpty || submitting)
-                            }
-                        }.frame(height: 48)
+                    PuzzleActionRail {
+                        if store.dictionary.solved {
+                            PuzzleButton("Remember", width: PuzzleActionLayout.width) { store.replayKeepsake(.dictionary) }
+                        } else if !writingCloseup {
+                            PuzzleButton("Write", width: PuzzleActionLayout.width, action: openWritingSurface)
+                        } else {
+                            PuzzleButton("Undo", width: PuzzleActionLayout.width, action: store.undoDictionaryStroke)
+                                .disabled(!store.canWriteDictionary || store.dictionary.strokes.isEmpty || submitting)
+                            PuzzleButton("Enter", width: PuzzleActionLayout.width) {
+                                submitting = true
+                                submission = Task { @MainActor in
+                                    await store.submitDictionary()
+                                    submitting = false
+                                }
+                            }.disabled(!store.canWriteDictionary || store.dictionary.strokes.isEmpty || submitting)
+                        }
+                    }
+                    VStack {
+                        Spacer(minLength: 0)
                         SceneFeedback(store: store, height: 32).frame(height: 32)
                     }
+                    .padding(.leading, 12)
+                    .padding(.trailing, PuzzleActionLayout.width + PuzzleActionLayout.inset + PuzzleActionLayout.spacing)
                 }
             }
         }

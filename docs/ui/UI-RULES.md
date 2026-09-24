@@ -138,6 +138,12 @@ Scene edge arrows change the view within a location; physical objects open close
 
 References: [The Room](https://www.fireproofgames.com/games/the-room) for tactile exploration and [Cube Escape: The Lake](https://www.rustylake.com/room-escape-games/cube-escape-the-lake.html) for object/inventory interaction. These inform the principles; Ivy's hierarchy and controls are project-specific.
 
+## Contextual action placement · user revision 2026-09-24
+
+Buttons must take as little space as possible from the primary interaction. Free-standing puzzle actions use one fixed trailing rail inside content: 80 pt width, 8 pt from the right edge, vertically centered, with 12 pt spacing and at least 48 pt touch height. Secondary/reversible actions come above the primary submit action (Dictionary: Undo then Enter). Do not add a bottom button strip that shortens a drawing, rubbing or assembly surface. Keep the full scene background behind both areas and size the main interaction against the rail's exclusion area; do not place buttons over its active hit regions.
+
+`PuzzleActionLayout` and `PuzzleActionRail` own this placement. Dictionary Write/Remember/Undo/Enter and Gelato Enter/Taste use it. Reserve feedback separately at the bottom of the main interaction area without moving the rail when feedback appears. Back and page/view navigation retain their root gutters; physical controls such as Big Top's bell and drawer handle stay on their depicted objects. Native keyboard Done remains text submission; focused input may use the established centered layout. Apply this rule to subsequent free-standing puzzle action work, without adding redundant controls to scenes that do not need them.
+
 ## Feedback · approved revision
 
 Do not render scene/location name captions. Ordinary puzzle reactions are plain white Kiddos text at the bottom of the level, without a panel or foliage. Incorrect answers use warm ochre warning text and a small Kiddos exclamation mark, positioned 10 points above the ordinary subtitle baseline. Reserve their space so controls do not move; retain incorrect drafts until edited.

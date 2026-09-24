@@ -17,7 +17,7 @@ Use the existing `later-dictionary-*` imagesets. The formerly documented `art/la
 | Live ink | Runtime strokes | Normalized right-page bounds (0.49, 0.29, 0.31, 0.30); clear of spine and tray |
 | Keepsake | `later-dictionary-keepsake` | Existing eleventh collectible slot |
 
-The book and writing views now use `DictionaryCamera.artworkFrame` to cover the full root content while preserving the source aspect ratio. Ink, printed entries and gestures use that same transform; the bottom 88 pt are reserved inside the scene for controls and feedback. See [the closeup coverage fix](../../docs/ui/closeup-content-fix.md) for the camera, lyric-card support surface and actual verification scope.
+The book and writing views now use `DictionaryCamera.artworkFrame` to cover the full root content while preserving the source aspect ratio. Ink, printed entries and gestures use that same transform; the writing camera fits the area left of the shared right-hand action rail, reserving only the bottom feedback line. Undo sits above Enter; Write and Remember occupy the same rail. See [the closeup coverage fix](../../docs/ui/closeup-content-fix.md) for the camera, lyric-card support surface and actual verification scope.
 
 ## English card
 

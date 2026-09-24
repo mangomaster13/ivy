@@ -23,6 +23,34 @@ enum GameLayout {
     }
 }
 
+/// Contextual actions use one narrow trailing rail, separate from physical scene controls.
+enum PuzzleActionLayout {
+    static let width: CGFloat = 80
+    static let inset: CGFloat = 8
+    static let spacing: CGFloat = 12
+
+    static func center(in size: CGSize) -> CGPoint {
+        CGPoint(x: size.width - inset - width / 2, y: size.height / 2)
+    }
+
+    static func interactionRect(in size: CGSize) -> CGRect {
+        CGRect(x: 12, y: 12, width: max(0, size.width - width - inset - spacing - 12),
+               height: max(0, size.height - 52))
+    }
+}
+
+struct PuzzleActionRail<Content: View>: View {
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        GeometryReader { geometry in
+            VStack(spacing: PuzzleActionLayout.spacing) { content }
+                .frame(width: PuzzleActionLayout.width)
+                .position(PuzzleActionLayout.center(in: geometry.size))
+        }
+    }
+}
+
 /// Pages supply their own return behavior; only the root renders the button.
 struct GameBackAction {
     let perform: () -> Void

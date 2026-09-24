@@ -114,8 +114,7 @@ struct GelatoWordMenuView: View {
         GeometryReader { geometry in
             let width = geometry.size.width
             let height = geometry.size.height
-            let compact = width < 528
-            let actionPoint = CGPoint(x: width * 0.865, y: height * 0.72)
+            let actionPoint = PuzzleActionLayout.center(in: geometry.size)
             ZStack(alignment: .topLeading) {
                 ZStack(alignment: .topLeading) {
                     InspectionBackdrop(surface: .scene(imageName))
@@ -127,13 +126,13 @@ struct GelatoWordMenuView: View {
                 }
                 .frame(width: width, height: height)
                 if !enteringFlavor {
-                    if store.gelatoWords.flavorSolved {
-                        PuzzleButton("Taste", width: compact ? 92 : 112) { store.openMemory(.tasting) }
-                            .position(actionPoint)
-                    } else if !store.gelatoWords.chainSolved {
-                        PuzzleButton("Enter", width: compact ? 92 : 112, action: store.submitGelatoChain)
-                            .disabled(store.gelatoWords.order.count != 7)
-                            .position(actionPoint)
+                    PuzzleActionRail {
+                        if store.gelatoWords.flavorSolved {
+                            PuzzleButton("Taste", width: PuzzleActionLayout.width) { store.openMemory(.tasting) }
+                        } else if !store.gelatoWords.chainSolved {
+                            PuzzleButton("Enter", width: PuzzleActionLayout.width, action: store.submitGelatoChain)
+                                .disabled(store.gelatoWords.order.count != 7)
+                        }
                     }
                     SceneFeedback(store: store, height: 30)
                         .frame(width: geometry.size.width - 24, height: 30)
@@ -142,7 +141,7 @@ struct GelatoWordMenuView: View {
                 // Keep the same TextField identity while keyboard focus changes layout.
                 if store.gelatoWords.chainSolved && !store.gelatoWords.flavorSolved {
                     flavorInput
-                        .frame(width: enteringFlavor ? min(300, geometry.size.width - 32) : compact ? 92 : max(112, width * 0.20))
+                        .frame(width: enteringFlavor ? min(300, geometry.size.width - 32) : 92)
                         .position(enteringFlavor ? CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2) : actionPoint)
                 }
             }
@@ -155,7 +154,7 @@ struct GelatoWordMenuView: View {
     private func word(_ index: Int, width: CGFloat, height: CGFloat) -> some View {
         let point = GelatoWordArtwork.centers[index]
         let position = store.gelatoWords.order.firstIndex(of: index)
-        // Full artwork at 528×264 and the paper crop at 480×230 retain 48 pt targets.
+        // Word hit regions keep 48 pt targets on the complete scene.
         // Ordinals describe selection only; no per-word validity is rendered.
         return Button { store.selectGelatoWord(index) } label: {
             Color.clear
