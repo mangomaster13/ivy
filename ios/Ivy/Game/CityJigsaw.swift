@@ -114,11 +114,13 @@ struct CityJigsawView: View {
 private struct CityGridLayout {
     let size: CGSize
     // Approved overhead canvas: 1774×887. Table supports every rotated tile.
-    // Square assembly sits inside the painted recess (178...850, 125...740),
-    // leaving side clearance; drawing, hit targets and drops share this transform.
+    // Revised painted recess is approximately (202, 126), 618×608.
+    // Center a square working area with an 18-unit inset; the hand-painted
+    // side edges add only ~5 units. Drawing and drops share this transform.
     private var scale: CGFloat { size.width / 1774 }
     var board: CGRect {
-        CGRect(x: 208 * scale, y: 128 * scale, width: 612 * scale, height: 612 * scale)
+        CGRect(x: 207 * scale, y: 126 * scale, width: 608 * scale, height: 608 * scale)
+            .insetBy(dx: 18 * scale, dy: 18 * scale)
     }
     var cell: CGFloat { board.width / 3 }
     var trayEdge: CGFloat { cell }
