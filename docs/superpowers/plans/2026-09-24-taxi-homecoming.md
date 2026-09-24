@@ -26,14 +26,14 @@
 
 ### Task 2: Route and receipt
 
-- [ ] Add saved route, card and receipt facts with defensive old-save migration.
-- [ ] Replace the Taxi word answer with card, route board and receipt interactions.
-- [ ] Record the route card in Notes; use a whole-route result and Undo.
-- [ ] Review the touched source and diff without running tests or a build.
+- [x] Add saved route, card and receipt facts with defensive old-save migration.
+- [x] Replace the Taxi word answer with card, route board and receipt interactions.
+- [x] Record the route card in Notes; use a whole-route result and Undo.
+- [x] Review the touched source and diff without running tests or a build.
 
 ### Task 3: Homecoming
 
-- [ ] Show the cottage arrival state and enable the left car door after arrival.
-- [ ] Route that door to the opening Yard, then use the existing Yard door to reach Hall.
-- [ ] Add the approved closing line to the existing ending and update authoritative design docs.
-- [ ] Review the final diff, commit and push only Taxi work.
+- [x] Show the cottage arrival state and enable the left car door after arrival.
+- [x] Route that door to the opening Yard, then use the existing Yard door to reach Hall.
+- [x] Add the approved closing line to the existing ending and update authoritative design docs.
+- [x] Review the final diff, commit and push only Taxi work.

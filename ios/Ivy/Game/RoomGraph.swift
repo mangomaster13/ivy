@@ -67,7 +67,7 @@ enum RoomGraph {
         case (.ferris, .ferrisBack): return .dictionary
         case (.ferris, .ferrisForward): return .taxi
         case (.taxi, .taxiBack): return .ferris
-        case (.taxi, .taxiDoor): return .hall
+        case (.taxi, .taxiDoor): return .yard
         default: return nil
         }
     }
@@ -129,8 +129,8 @@ enum RoomGraph {
             ]
         case .taxi:
             return [
-                DiegeticHotspot(edge: .taxiBack, rect: back, label: "Rear window"),
-                DiegeticHotspot(edge: .taxiDoor, rect: forward, label: "Car door")
+                DiegeticHotspot(edge: .taxiBack, rect: CGRect(x: 0, y: 14, width: 39, height: 55), label: "Street back toward the pier"),
+                DiegeticHotspot(edge: .taxiDoor, rect: CGRect(x: 0, y: 77, width: 38, height: 63), label: "Left rear car door")
             ]
         }
     }

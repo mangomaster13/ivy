@@ -376,6 +376,9 @@ private struct ClueNotebookView: View {
                 case .cinemaTicket:
                     Image("later-cinema-ticket-clue").resizable().scaledToFit()
                         .accessibilityLabel(store.clueText(.cinemaTicket))
+                case .taxiRoute:
+                    Image("later-taxi-route-card").resizable().interpolation(.high).scaledToFit()
+                        .accessibilityLabel(store.clueText(.taxiRoute))
                 case .dictionaryEntries:
                     ZStack {
                         GelatoPaperExcerpt(image: "later-dictionary-open-book-background",

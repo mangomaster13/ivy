@@ -80,7 +80,7 @@ extension GameStore {
         case (.cinema, 0): CinemaLayout.spots
         case (.dictionary, 0): DictionaryLayout.spots(penAvailable: !memories.picked.contains(.fountainPen) && !dictionary.solved)
         case (.ferris, 0): FerrisLayout.spots
-        case (.taxi, 0): [.init("taxi meter", 95, 45, 135, 65, .memory(.taxi))]
+        case (.taxi, 0): TaxiLayout.spots(progress: taxi)
         default: []
         }
     }

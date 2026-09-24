@@ -28,7 +28,7 @@ enum EggId: String, CaseIterable, Codable, Identifiable {
     }
 
     /// Independent transparent keepsake artwork shared by the bar and tap celebration.
-    var iconName: String { self == .dictionary ? "later-dictionary-keepsake" : self == .noodle ? "bt-dinner" : self == .perfume ? "ll-perfume-trio" : self == .keycard ? "sheraton-keycard" : self == .city ? "city-jigsaw-master" : "keepsake-\(rawValue)" }
+    var iconName: String { self == .taxi ? "later-taxi-keepsake" : self == .dictionary ? "later-dictionary-keepsake" : self == .noodle ? "bt-dinner" : self == .perfume ? "ll-perfume-trio" : self == .keycard ? "sheraton-keycard" : self == .city ? "city-jigsaw-master" : "keepsake-\(rawValue)" }
 
     /// Physical memory and puzzle artwork, separate from the transparent keepsake icon.
     var collectionImageName: String {
@@ -41,7 +41,7 @@ enum EggId: String, CaseIterable, Codable, Identifiable {
         case .gelato: "memory-gelato-cup"
         case .cinema: "later-cinema-keepsake"
         case .noodle: "bt-dinner"
-        case .taxi: "memory-taxi-receipt"
+        case .taxi: "later-taxi-receipt-stay"
         case .ferris: "ferris-selfie"
         case .dictionary: "later-dictionary-keepsake"
         case .keycard: "sheraton-keycard"
@@ -110,7 +110,7 @@ enum Room: String, Codable {
         case .cinema: "later-cinema-projection-booth-background"
         case .dictionary: "later-dictionary-bookmark-stall"
         case .ferris: "later-ferris-exterior-background"
-        case .taxi: "memory-taxi"
+        case .taxi: "later-taxi-interior-background"
         }
     }
 }
@@ -202,6 +202,11 @@ final class GameStore {
             if underlying == .memory(.ferrisCabin) || underlying == .memory(.ferrisCamera) {
                 return "ferris-cabin-interior"
             }
+        }
+        if room == .taxi {
+            if taxi.receiptPrinted && !taxi.receiptTaken { return "later-taxi-interior-receipt-out" }
+            if taxi.arrived { return "later-taxi-interior-arrived" }
+            return taxi.cardTaken ? "later-taxi-interior-card-taken" : "later-taxi-interior-background"
         }
         if room == .cinema, cinema.filmInserted { return "cinema-booth-loaded" }
         if room == .corridor { return roomDoorIsOpen ? "hk-corridor-open-empty" : "hk-corridor-empty" }
@@ -739,6 +744,9 @@ final class GameStore {
         }
         if room == .cinema, edge == .cinemaExit, !cinema.exitUnlocked && !cinema.solved && !collected.contains(.cinema) {
             showSceneHint(cinema.projectionReady ? "Our seats are still waiting." : "The projector still has something to show us.", presentation: .interaction); return
+        }
+        if room == .taxi, edge == .taxiDoor, !taxi.arrived {
+            showSceneHint("The cab is still on its way.", presentation: .interaction); return
         }
         if room == .plane, edge == .planeDepart { openMemory(.flight); return }
         if room == .corridor, edge == .corridorForward, !roomDoorIsOpen {

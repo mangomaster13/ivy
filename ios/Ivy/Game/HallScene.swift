@@ -62,6 +62,8 @@ struct HallPrizeView: View {
                             .font(IvyType.script(22 * scale))
                         IvyType.inscription("a day for just the two of us.\nno plans to keep, no hurry home.\ni'll take care of the little things.")
                             .font(IvyType.script(16 * scale)).multilineTextAlignment(.center)
+                        IvyType.inscription("Love always leads me home—to you.")
+                            .font(IvyType.script(16 * scale))
                     }
                     .foregroundStyle(IvyType.ink).padding(24).transition(.opacity)
                 }

@@ -28,6 +28,8 @@ struct MemoryCloseupView: View {
             CinemaCloseupView(store: store, panel: panel)
         } else if [.ferris, .ferrisTicket, .ferrisGate, .ferrisCabin, .ferrisCamera].contains(panel) {
             FerrisCloseupView(store: store, panel: panel)
+        } else if [.taxi, .taxiCard, .taxiReceipt].contains(panel) {
+            TaxiCloseupView(store: store, panel: panel)
         } else if panel == .dictionary || panel == .dictionarySong {
             DictionaryCloseupView(store: store, panel: panel)
         } else if panel == .yunnan {
@@ -174,7 +176,7 @@ struct MemoryCloseupView: View {
         case .perfume: .scene("memory-perfume")
         case .dictionary, .dictionarySong: .scene("later-dictionary-open-book-background")
         case .cinema, .cinemaCase, .cinemaProjector, .cinemaTicket: .scene("later-cinema-projection-booth-background")
-        case .taxi: .scene("memory-taxi")
+        case .taxi, .taxiCard, .taxiReceipt: .scene(store.roomImageName)
         case .bigTop, .mexican: .scene("memory-noodle")
         case .ferris, .ferrisTicket, .ferrisGate, .ferrisCabin, .ferrisCamera: .scene("later-ferris-exterior-background")
         case .ticket: .puzzle

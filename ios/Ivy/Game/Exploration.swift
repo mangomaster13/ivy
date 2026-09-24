@@ -74,11 +74,12 @@ enum AdventureTool: String, Codable, CaseIterable, Identifiable {
 enum AdventureClue: String, Codable, CaseIterable, Identifiable {
     case gardenDate, label, travelOrder, mirror, music, recipe, temperature, rainRelation
     case gaiacFormula, bergamoteFormula, mousseFormula, perfumeOrder, gelatoOrder, gelatoLeaves
-    case bigTopLedger, bigTopMirror, dictionaryLyric, dictionaryEntries, cinemaTicket
+    case bigTopLedger, bigTopMirror, dictionaryLyric, dictionaryEntries, cinemaTicket, taxiRoute
     var id: String { rawValue }
     var title: String {
         switch self {
         case .cinemaTicket: "two seats, one memory"
+        case .taxiRoute: "a route back home"
         case .dictionaryLyric: "a song between pages"
         case .dictionaryEntries: "a missing word"
         case .gardenDate: "a date in the garden"
@@ -274,6 +275,7 @@ extension GameStore {
     func clueText(_ clue: AdventureClue) -> String {
         return switch clue {
         case .cinemaTicket: "HOPE. TWO SEATS, ONE MEMORY."
+        case .taxiRoute: "EAST FROM THE PIER. VIA THE LANTERN MARKET. TUNNEL CLOSED."
         case .dictionaryLyric: "In the dictionary of love, ‘forever’ cannot be found."
         case .dictionaryEntries: "FORETELL — to sense what may come.\nFORGIVE — to let a memory be gentle.\nAn entry is missing; the facing page is blank."
         case .gardenDate: "August. Seventeen.\nThe day the garden began to grow."

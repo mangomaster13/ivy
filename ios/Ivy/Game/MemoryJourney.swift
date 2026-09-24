@@ -31,6 +31,7 @@ struct MemoryProgress: Codable {
     var dictionary: DictionaryProgress? = nil
     var ferrisMatches: Set<Int> = [] // Legacy pair matching, migration only.
     var ferris: FerrisProgress? = nil
+    var taxi: TaxiProgress? = nil
     var bigTop: BigTopProgress? = nil
     var perfumery: PerfumeProgress? = nil
     // Stable clue identity survives new discoveries and decodes from older saves.
@@ -65,6 +66,7 @@ struct MemoryProgress: Codable {
         if let flavor, !(0..<4).contains(flavor) { self.flavor = nil }
         folds = folds.intersection([0, 1]); cinemaSeats = cinemaSeats.intersection(0..<6)
         ferrisMatches = ferrisMatches.intersection([0, 1]); sunsetFrame = min(1, max(0, sunsetFrame))
+        taxi?.sanitize()
     }
 }
 
@@ -73,7 +75,7 @@ enum MemoryPanel: String, CaseIterable {
     case cinemaCase, cinemaProjector, cinemaTicket
     case gelatoOrder, gelatoNote, dictionarySong
     case pot, drawer, linen, wholeBox, dispenser, flight, ticket, travelBook, yunnan, bouquet, city, bath, menu, tasting, keycard
-    case bigTop, mexican, perfume, cinema, dictionary, ferris, taxi, blanket
+    case bigTop, mexican, perfume, cinema, dictionary, ferris, taxi, taxiCard, taxiReceipt, blanket
     case bigTopSign, bigTopMenuSearch, bigTopOrder, bigTopMenu, bigTopLedger, bigTopMirror, rainGutter
     case perfumeWood, perfumeBotanical, perfumeSpice, perfumeLab, perfumeFormula, perfumeMix
     var tools: [AdventureTool] {
@@ -100,7 +102,7 @@ enum MemoryPanel: String, CaseIterable {
         case .cinema, .cinemaCase, .cinemaProjector, .cinemaTicket: .cinema
         case .dictionary, .dictionarySong: .dictionary
         case .ferris, .ferrisTicket, .ferrisGate, .ferrisCabin, .ferrisCamera: .ferris
-        case .taxi: .taxi
+        case .taxi, .taxiCard, .taxiReceipt: .taxi
         }
     }
 }
@@ -156,8 +158,18 @@ extension GameStore {
             replayKeepsake(.cinema)
             return
         }
+        if panel == .taxiReceipt, collected.contains(.taxi) {
+            replayKeepsake(.taxi)
+            return
+        }
         if panel.room == .perfume, sceneView == 0 { return }
         switch panel {
+        case .taxi where !taxi.cardTaken:
+            showSceneHint("A folded route card sits in the seat pocket.", presentation: .interaction)
+            return
+        case .taxiReceipt where !taxi.arrived:
+            showSceneHint("The cab is still on its way.", presentation: .interaction)
+            return
         case .ferrisTicket where !ferris.playlistSolved:
             showSceneHint("The ticket is waiting on a few familiar songs.", presentation: .interaction)
             return
@@ -216,6 +228,11 @@ extension GameStore {
         if panel == .cinemaTicket { discover(.cinemaTicket) }
         if panel == .dictionary { discover(.dictionaryEntries) }
         if panel == .dictionarySong { discover(.dictionaryLyric) }
+        if panel == .taxiCard, taxi.cardTaken { discover(.taxiRoute) }
+        if panel == .taxiReceipt && !taxi.receiptPrinted {
+            taxi.receiptPrinted = true
+            persistNow()
+        }
         if panel == .menu { discover(.recipe) }
         if panel == .gelatoOrder { discover(.gelatoOrder) }
         if panel == .gelatoNote { discover(.gelatoLeaves) }
@@ -389,30 +406,20 @@ extension GameStore {
         case (.memory(.cinema), .cinema): allowed = memories.opened.contains("cinema")
         case (.memory(.dictionary), .dictionary): allowed = memories.opened.contains("dictionary")
         case (.memory(.ferris), .ferris): return // The camera owns this keepsake.
-        case (.memory(.taxi), .taxi): allowed = memories.opened.contains("taxi")
+        case (.memory(.taxiReceipt), .taxi): takeTaxiReceipt(); return
         default: allowed = false
         }
         guard allowed, collectingEgg == nil else { return }; collect(egg)
     }
     func solveLater(_ panel: MemoryPanel) {
-        guard room == panel.room, overlay == .memory(panel) else { return }
-        let solved: Bool
-        switch panel {
-        case .bigTop, .perfume: return // Dedicated physical puzzle operations own these rewards.
-        case .cinema: return // Projection and whole-seat submission own completion.
-        case .dictionary: return // Only actual handwriting can solve the word.
-        case .ferris: return // Playlist, ticket and shutter have dedicated guarded actions.
-        case .taxi: solved = memories.taxiDraft.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "stay"
-        default: return
-        }
-        guard solved else { dismissSceneHint(); IvyHaptics.warning(); return }
-        withAnimation { memories.opened.insert(panel.rawValue) }; sceneHint = ""; persistNow()
+        // Retired word-answer entry point; existing callers cannot bypass physical puzzles.
     }
     func migrateMemories() {
         memories.sanitize()
         migrateDictionary()
         migrateCinema()
         migrateFerris()
+        migrateTaxi()
         if memories.cityJigsaw == nil && memories.cityPieces == [2, 0, 3, 1] && !memories.citySolved {
             memories.cityJigsaw = []
         }
