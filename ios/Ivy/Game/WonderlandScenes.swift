@@ -234,7 +234,7 @@ struct HotelLockView: View {
                                     }
                                     .shadow(color: IvyType.ink.opacity(0.55), radius: 0, x: 0, y: 3)
                             }
-                            PuzzleButton("enter", width: 264, action: store.submitHotelCode)
+                            PuzzleButton("enter", width: 112, action: store.submitHotelCode)
                         }
                         .frame(width: 264)
                     }

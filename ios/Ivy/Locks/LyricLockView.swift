@@ -8,6 +8,8 @@ struct LyricLockView: View {
                 .font(IvyType.script(23))
                 .foregroundStyle(IvyType.cream)
                 .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .minimumScaleFactor(0.75)
                 .padding(.vertical, 4)
         }
     }

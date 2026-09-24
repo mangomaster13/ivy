@@ -322,128 +322,118 @@ struct PixelPlateButton: View {
     }
 }
 
-/// Supplied letter tiles stay in one screen; validation lives in the bottom subtitle slot.
+/// Answer entry shares the painted input; the system keyboard supplies characters.
 struct AssembleLockScreen<Clue: View>: View {
     @Bindable var store: GameStore
     @ViewBuilder let clue: Clue
+    @State private var isEditing = false
 
     var body: some View {
         GeometryReader { geometry in
-            let columns = store.assembleKind?.columns ?? 4
-            let rows = (store.assemblePad.count + columns - 1) / columns
-            let keysHeight = CGFloat(rows * 48 + max(0, rows - 1) * 8)
-            let enterBesideInput = geometry.size.height < keysHeight + 48 + 8 + 48
-            let keysWidth = CGFloat(columns * 48 + (columns - 1) * 8)
-            let inputWidth = min(320, max(200, geometry.size.width - keysWidth - 72))
+            let compact = geometry.size.height < 190 && !isEditing
+            let layout = compact ? AnyLayout(HStackLayout(spacing: 12)) : AnyLayout(VStackLayout(spacing: 8))
             ZStack(alignment: .topLeading) {
                 InspectionBackdrop(surface: .puzzle)
-                VStack(spacing: 0) {
-                    HStack(spacing: 32) {
-                        VStack(spacing: 8) {
-                            clue
-                            PuzzleInputLine(text: store.assembleDraft, backspace: store.backspaceAssemble)
-                                .frame(width: columns == 3 ? min(180, inputWidth) : inputWidth)
-                            if enterBesideInput {
-                                LockConfirmButton(width: columns == 3 ? min(180, inputWidth) : inputWidth,
-                                                  action: store.submitAssemble)
-                            }
-                        }
-                        .frame(width: inputWidth)
-                        SuppliedKeyGrid(glyphs: store.assemblePad, columns: columns,
-                                        append: store.appendAssembleGlyph, submit: store.submitAssemble,
-                                        showsEnter: !enterBesideInput)
+                VStack(spacing: 8) {
+                    Spacer(minLength: 0)
+                    layout {
+                        if !isEditing { clue.frame(maxWidth: .infinity) }
+                        input.frame(width: isEditing ? min(320, geometry.size.width - 32)
+                                                     : compact ? min(240, geometry.size.width * 0.55)
+                                                               : min(320, geometry.size.width - 64))
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    PuzzleFeedbackText(text: store.assembleHint, tone: store.assembleHintTone)
-                        .frame(height: 32)
-                }
-                .padding(.horizontal, 20).padding(.vertical, 8)
-            }
-        }.statusBarHidden(true)
-            .gameBackAction(store.cancelOverlay)
-    }
-}
-
-/// Fixed geometry: flexible columns must never inflate gaps between hand-cut keys.
-struct SuppliedKeyGrid: View {
-    let glyphs: [String]
-    let columns: Int
-    let append: (String) -> Void
-    let submit: () -> Void
-    var spaces = false
-    var showsEnter = true
-    private var width: CGFloat { CGFloat(columns * 48 + (columns - 1) * 8) }
-    var body: some View {
-        VStack(spacing: 8) {
-            LazyVGrid(columns: Array(repeating: GridItem(.fixed(48), spacing: 8), count: columns), spacing: 8) {
-                ForEach(Array(glyphs.enumerated()), id: \.offset) { _, glyph in
-                    Button { append(glyph) } label: {
-                        Image("ivy-keycap").resizable().interpolation(.high)
-                            .frame(width: 84, height: 84)
-                            .overlay { Text(glyph).font(IvyType.hand(25)).foregroundStyle(IvyType.ink) }
-                            .frame(width: 48, height: 48)
-                            .contentShape(Rectangle())
+                    Spacer(minLength: 0)
+                    if !isEditing {
+                        PuzzleFeedbackText(text: store.assembleHint, tone: store.assembleHintTone)
+                            .frame(height: 32)
                     }
-                    .buttonStyle(StoryPressStyle(scale: 1))
-                    .accessibilityLabel(glyph)
-                    .frame(width: 48, height: 48)
                 }
+                .padding(.horizontal, 24).padding(.vertical, 12)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            if showsEnter {
-                HStack(spacing: 8) {
-                    if spaces { wideKey("space") { append(" ") } }
-                    LockConfirmButton(width: spaces ? (width - 8) / 2 : width, action: submit)
-                }
-            }
-        }.frame(width: width)
-    }
-    private func wideKey(_ label: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(label).font(IvyType.hand(21)).foregroundStyle(IvyType.ink)
-                .frame(maxWidth: .infinity).frame(height: 48)
-                .background(HandcutKey().fill(IvyType.cream))
-                .overlay(HandcutKey().stroke(IvyType.ink.opacity(0.65), lineWidth: 1))
-        }.buttonStyle(StoryPressStyle(scale: 1))
-    }
-}
-
-struct LockConfirmButton: View {
-    let width: CGFloat
-    let action: () -> Void
-    var body: some View {
-        Button(action: action) {
-            Image("ivy-confirm").resizable().interpolation(.high)
-                .frame(width: width / 0.83, height: 80)
-                .frame(width: width, height: 48)
-                .contentShape(Rectangle())
         }
-        .buttonStyle(StoryPressStyle(scale: 1))
-        .accessibilityLabel("Enter")
+        .onChange(of: store.assembleDraft) { _, _ in
+            store.clearAssembleFeedback()
+            store.schedulePersist()
+        }
+        .statusBarHidden(true)
+        .gameBackAction(store.cancelOverlay)
+    }
+
+    private var input: some View {
+        PuzzleInputLine(text: Binding(get: { store.assembleDraft }, set: { store.assembleDraft = $0 }),
+                        limit: LockLayout.staveCap,
+                        mode: store.assembleKind == .plaque ? .digits : .letters,
+                        submit: store.submitAssemble,
+                        onFocusChange: { isEditing = $0 })
+    }
+}
+
+enum PuzzleInputMode: Equatable {
+    case letters, phrase, digits
+
+    func filtered(_ value: String, limit: Int) -> String {
+        var result = ""
+        for character in value.lowercased() {
+            let allowed = switch self {
+            case .letters: "abcdefghijklmnopqrstuvwxyz".contains(character)
+            case .phrase: "abcdefghijklmnopqrstuvwxyz".contains(character) ||
+                (character == " " && !result.isEmpty && !result.hasSuffix(" "))
+            case .digits: "0123456789".contains(character)
+            }
+            if allowed { result.append(character) }
+            if result.count == limit { break }
+        }
+        return result
     }
 }
 
 struct PuzzleInputLine: View {
-    let text: String
-    let backspace: () -> Void
+    @Binding var text: String
+    let limit: Int
+    let mode: PuzzleInputMode
+    let submit: () -> Void
+    var onFocusChange: (Bool) -> Void = { _ in }
+    @FocusState private var focused: Bool
+
+    init(text: Binding<String>, limit: Int, mode: PuzzleInputMode,
+         submit: @escaping () -> Void, onFocusChange: @escaping (Bool) -> Void = { _ in }) {
+        self._text = text
+        self.limit = limit
+        self.mode = mode
+        self.submit = submit
+        self.onFocusChange = onFocusChange
+    }
+
     var body: some View {
-        HStack(spacing: 4) {
-            Text(text).font(IvyType.hand(20))
-                .lineLimit(1)
-                .frame(maxWidth: .infinity)
-                .accessibilityLabel(text.isEmpty ? "Empty answer" : "Assembled: " + text)
-            Button(action: backspace) {
-                Image(systemName: "delete.left").font(.system(size: 23, weight: .regular))
-                    .frame(width: 48, height: 48).contentShape(Rectangle())
-            }.buttonStyle(.plain).disabled(text.isEmpty)
-                .opacity(text.isEmpty ? 0.4 : 1).accessibilityLabel("Delete last character")
-        }.foregroundStyle(IvyType.cream).padding(.leading, 12).padding(.trailing, 4)
-            .frame(height: 48)
-            .background {
-                GeometryReader { geometry in
-                    Image("ivy-input-well").resizable().interpolation(.high)
-                        .frame(width: geometry.size.width / 0.85, height: 94)
-                        .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+        GeometryReader { geometry in
+            TextField("", text: Binding(get: { text }, set: { text = mode.filtered($0, limit: limit) }),
+                      prompt: Text("…"))
+                .textFieldStyle(.plain)
+                .font(IvyType.script(min(23, max(16, geometry.size.width * 0.1))))
+                .foregroundStyle(IvyType.cream)
+                .multilineTextAlignment(.center)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .keyboardType(mode == .digits ? .numbersAndPunctuation : .asciiCapable)
+                .submitLabel(.done)
+                .onSubmit {
+                    focused = false
+                    submit()
                 }
-            }
+                .focused($focused)
+                .padding(.horizontal, 20)
+                .frame(width: geometry.size.width, height: 48)
+                .background {
+                    Image("ivy-input-v2").resizable().interpolation(.high)
+                        .frame(width: geometry.size.width * 228 / 220, height: 76)
+                        .position(x: geometry.size.width / 2, y: 26)
+                }
+                .accessibilityLabel("Answer")
+                .accessibilityValue(text.isEmpty ? "Empty" : text)
+                .onChange(of: focused) { _, value in onFocusChange(value) }
+                .preference(key: GameTextInputFocusKey.self, value: focused)
+        }
+        .frame(height: 48)
     }
 }

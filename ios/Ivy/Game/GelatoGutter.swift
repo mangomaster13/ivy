@@ -67,7 +67,7 @@ struct GelatoGutterView: View {
     @Bindable var store: GameStore
 
     var body: some View {
-        FittedSceneStage(aspectRatio: 2) {
+        SceneDetailStage(bounds: CGRect(x: 20, y: 24, width: 210, height: 105)) {
             ZStack {
                 InspectionBackdrop(surface: .scene("gelato-gutter-empty"))
                 GelatoGutterArtwork(store: store)
@@ -102,7 +102,7 @@ struct GelatoGutterArtwork: View {
                             .onChanged { value in
                                 let start = dragStarts[index] ?? store.gelatoWater.currentAngles[index]
                                 if dragStarts[index] == nil { dragStarts[index] = start }
-                                store.setGelatoAngle(index, to: start + Double(value.translation.width / 2.5))
+                                store.setGelatoAngle(index, to: start + Double(value.translation.width / (2.5 * scale)))
                             }
                             .onEnded { _ in
                                 dragStarts[index] = nil

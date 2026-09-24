@@ -4,6 +4,7 @@ import SwiftUI
 struct MemoryCloseupView: View {
     @Bindable var store: GameStore
     let panel: MemoryPanel
+    @State private var isEnteringText = false
     private var isContainer: Bool { [.pot, .drawer, .linen, .dispenser].contains(panel) || (panel == .wholeBox && store.memories.opened.contains("wholeBox")) }
     private var relevantTools: [AdventureTool] {
         let candidates: [AdventureTool]
@@ -57,9 +58,10 @@ struct MemoryCloseupView: View {
                             if panel == .drawer || panel == .dispenser { store.openContainer(panel) }
                         }
                 }
-                SceneFeedback(store: store)
+                if !isEnteringText { SceneFeedback(store: store) }
             }.foregroundStyle(IvyType.cream)
         }
+        .onPreferenceChange(GameTextInputFocusKey.self) { isEnteringText = $0 }
     }
     }
     @ViewBuilder private func content(height: CGFloat) -> some View {
@@ -209,59 +211,38 @@ struct MemoryCloseupView: View {
 
 }
 
-/// Deliberate letter selection only; never invokes the system keyboard.
-/// The box and inscription share the artwork coordinates; controls stay native.
+/// The box and inscription share the artwork coordinates; only the answer well is interactive.
 private struct WholeBoxPuzzleView: View {
     @Bindable var store: GameStore
-    private let keyboardWidth: CGFloat = 272
+    @State private var isEnteringText = false
 
     var body: some View {
         FittedSceneStage {
             GeometryReader { geometry in
                 let size = geometry.size
-                let compact = size.height < 280
-                let stackedActions = size.height >= 324
-                let controlsHeight: CGFloat = compact ? 160 : (stackedActions ? 272 : 216)
-                let controlsX = size.width - keyboardWidth / 2 - 16
-                let controlsY = (size.height - 52) / 2
 
                 ZStack(alignment: .topLeading) {
                     InspectionBackdrop(surface: .scene("memory-box-puzzle"))
-                    IvyType.inscription("i love u")
-                        .font(IvyType.script(min(36, size.width * 0.052)))
-                        .foregroundStyle(IvyType.ink)
-                        .position(x: size.width * 0.23, y: size.height * 0.43)
-
-                    if compact {
-                        answer
-                            .frame(width: min(220, size.width * 0.42))
-                            .position(x: size.width * 0.23, y: 28)
+                    if !isEnteringText {
+                        IvyType.inscription("i love u")
+                            .font(IvyType.script(min(36, size.width * 0.052)))
+                            .foregroundStyle(IvyType.ink)
+                            .position(x: size.width * 0.23, y: size.height * 0.43)
                     }
-
-                    VStack(spacing: 8) {
-                        if !compact { answer }
-                        LazyVGrid(columns: Array(repeating: GridItem(.fixed(48), spacing: 8), count: 5), spacing: 8) {
-                            ForEach(Array("aswholevri").map(String.init), id: \.self) { glyph in
-                                PuzzleButton(glyph, width: 48) { append(glyph) }
-                                    .frame(width: 48, height: 48)
-                            }
+                    PuzzleInputLine(text: $store.memories.wholeDraft, limit: 10,
+                                    mode: .phrase, submit: store.submitWhole,
+                                    onFocusChange: { isEnteringText = $0 })
+                        .frame(width: isEnteringText ? min(300, size.width - 32) : min(300, size.width * 0.42))
+                        .position(x: size.width * (isEnteringText ? 0.56 : 0.73), y: size.height * 0.43)
+                    if !isEnteringText {
+                        VStack {
+                            Spacer(minLength: 0)
+                            SceneFeedback(store: store, height: 32)
+                                .frame(height: 32)
+                                .padding(.bottom, 8)
                         }
-                        if stackedActions {
-                            PuzzleButton("space", width: keyboardWidth) { append(" ") }
-                            PuzzleButton("Enter", width: keyboardWidth, action: store.submitWhole)
-                        } else {
-                            HStack(spacing: 8) {
-                                PuzzleButton("space", width: 132) { append(" ") }
-                                PuzzleButton("Enter", width: 132, action: store.submitWhole)
-                            }
-                        }
+                        .frame(width: size.width, height: size.height)
                     }
-                    .frame(width: keyboardWidth, height: controlsHeight)
-                    .position(x: controlsX, y: controlsY)
-
-                    SceneFeedback(store: store)
-                        .frame(width: size.width - 32)
-                        .position(x: size.width / 2, y: size.height - 26)
                 }
             }
         }
@@ -271,62 +252,19 @@ private struct WholeBoxPuzzleView: View {
             store.persistNow()
         }
     }
-
-    private var answer: some View {
-        HStack(spacing: 4) {
-            Text(store.memories.wholeDraft.isEmpty ? "…" : store.memories.wholeDraft)
-                .font(IvyType.hand(26))
-                .lineLimit(1)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .accessibilityLabel(store.memories.wholeDraft.isEmpty ? "Empty answer" : "Assembled: " + store.memories.wholeDraft)
-            Button {
-                if !store.memories.wholeDraft.isEmpty { store.memories.wholeDraft.removeLast() }
-            } label: {
-                Image(systemName: "delete.left")
-                    .font(.system(size: 23, weight: .regular))
-                    .frame(width: 48, height: 48)
-                    .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .disabled(store.memories.wholeDraft.isEmpty)
-            .opacity(store.memories.wholeDraft.isEmpty ? 0.4 : 1)
-            .accessibilityLabel("Delete last character")
-        }
-        .foregroundStyle(IvyType.ink)
-        .padding(.leading, 12).padding(.trailing, 4)
-        .background(HandcutKey().fill(IvyType.cream))
-        .overlay(HandcutKey().stroke(IvyType.ink.opacity(0.65), lineWidth: 1))
-    }
-
-    private func append(_ glyph: String) {
-        guard store.memories.wholeDraft.count < 10 else { return }
-        if glyph == " " && (store.memories.wholeDraft.isEmpty || store.memories.wholeDraft.hasSuffix(" ")) { return }
-        store.memories.wholeDraft += glyph
-    }
 }
 
 struct WordAnswer: View {
     @Binding var text: String
-    let placeholder: String
-    let glyphs: String
     var limit: Int = 12
-    var spaces = false
     var feedbackStore: GameStore? = nil
     let submit: () -> Void
-    var body: some View {
-        VStack(spacing: 8) {
-            PuzzleInputLine(text: text) { if !text.isEmpty { text.removeLast() } }
-            SuppliedKeyGrid(glyphs: Array(glyphs).map(String.init), columns: 5, append: { glyph in
-                guard text.count < limit else { return }
-                if glyph == " " && (text.isEmpty || text.hasSuffix(" ")) { return }
-                text += glyph
-            }, submit: submit, spaces: spaces)
+    var onFocusChange: (Bool) -> Void = { _ in }
 
-        }
-        // The enclosing closeup owns the reserved feedback row. Duplicating it
-        // here pushes this fixed-size keyboard outside short landscape stages.
-        .background(HandcutKey().fill(IvyType.ink.opacity(0.93)))
-        .frame(minWidth: 272, maxWidth: 430)
+    var body: some View {
+        PuzzleInputLine(text: $text, limit: limit, mode: .letters,
+                        submit: submit, onFocusChange: onFocusChange)
+        .frame(maxWidth: 300)
         .onChange(of: text) { _, _ in feedbackStore?.dismissSceneHint() }
     }
 }

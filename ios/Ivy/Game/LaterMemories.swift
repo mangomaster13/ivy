@@ -6,6 +6,7 @@ struct LaterMemoryView: View {
     @State private var firstScent: Int?
     @State private var ferryTicket: Int?
     @State private var receipt = false
+    @State private var editingAnswer = false
     private var solved: Bool { store.memories.opened.contains(panel.rawValue) }
     var body: some View {
         VStack(spacing: 18) {
@@ -52,12 +53,16 @@ struct LaterMemoryView: View {
         case .taxi:
             if solved { reward(.taxi, "take the printed receipt") }
             else {
-                HStack(spacing: 24) {
-                    VStack(spacing: 18) {
-                        IvyType.inscription("don't go just yet").font(IvyType.script(30))
-                        Text("One word.\nThe opposite of leave.").multilineTextAlignment(.center)
-                    }.frame(maxWidth: 250)
-                    WordAnswer(text: $store.memories.taxiDraft, placeholder: "tell the meter", glyphs: "tysavelorn", limit: 4, feedbackStore: store) { store.solveLater(.taxi) }
+                VStack(spacing: 12) {
+                    if !editingAnswer {
+                        VStack(spacing: 18) {
+                            IvyType.inscription("don't go just yet").font(IvyType.script(30))
+                            Text("One word.\nThe opposite of leave.").multilineTextAlignment(.center)
+                        }.frame(maxWidth: 250)
+                    }
+                    WordAnswer(text: $store.memories.taxiDraft, limit: 4,
+                               feedbackStore: store, submit: { store.solveLater(.taxi) },
+                               onFocusChange: { editingAnswer = $0 })
                         .onChange(of: store.memories.taxiDraft) { _, _ in store.persistNow() }
                 }
 
