@@ -48,7 +48,7 @@ extension GameStore {
     func submitGelatoChain() {
         guard canChangeGelatoWords, !gelatoWords.chainSolved else { return }
         guard gelatoWords.order == GelatoWordProgress.answer else {
-            showInputError("The words don't quite join up.")
+            dismissSceneHint()
             return
         }
         gelatoWords.chainSolved = true
@@ -64,7 +64,7 @@ extension GameStore {
     func submitGelatoFlavor() {
         guard canChangeGelatoWords, gelatoWords.chainSolved, !gelatoWords.flavorSolved else { return }
         guard GelatoWordProgress.normalized(gelatoWords.flavorDraft) == "jasmine" else {
-            showInputError("That isn't the flavour I remember.")
+            dismissSceneHint()
             return
         }
         gelatoWords.flavorSolved = true

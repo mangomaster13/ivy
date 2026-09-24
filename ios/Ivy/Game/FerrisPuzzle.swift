@@ -69,7 +69,7 @@ extension GameStore {
     func submitFerrisPlaylist() {
         guard ferrisActive, overlay == .memory(.ferris), !ferris.playlistSolved else { return }
         guard ferris.order == Array(0..<5) else {
-            showSceneHint("These songs remember a different order.", tone: .wrong, presentation: .interaction)
+            dismissSceneHint()
             return
         }
         ferris.playlistSolved = true
@@ -87,10 +87,7 @@ extension GameStore {
     func useFerrisTicket() {
         guard ferrisActive, overlay == .memory(.ferrisGate), ferris.playlistSolved,
               ferris.ticketTaken, !ferris.ticketUsed else { return }
-        guard use(.ferrisTicket) else {
-            showSceneHint("Your ticket belongs in the gate.", presentation: .interaction)
-            return
-        }
+        guard use(.ferrisTicket) else { return }
         ferris.ticketUsed = true
         consume(.ferrisTicket)
         dismissSceneHint()
@@ -113,7 +110,7 @@ extension GameStore {
         if ferris.photoTaken { replayKeepsake(.ferris); return }
         guard ferris.phoneTaken, selectedTool == .ferrisPhone,
               exploration.tools.contains(.ferrisPhone) else {
-            showSceneHint("A photograph, before we go back down.", presentation: .interaction)
+            hintForTool(.ferrisPhone)
             return
         }
         openMemory(.ferrisCamera)
@@ -121,8 +118,9 @@ extension GameStore {
 
     func takeFerrisSelfie() {
         guard ferrisActive, overlay == .memory(.ferrisCamera), ferris.ticketUsed,
-              ferris.phoneTaken, !ferris.photoTaken, selectedTool == .ferrisPhone,
-              exploration.tools.contains(.ferrisPhone) else { return }
+              !ferris.photoTaken else { return }
+        guard ferris.phoneTaken, selectedTool == .ferrisPhone,
+              exploration.tools.contains(.ferrisPhone) else { hintForTool(.ferrisPhone); return }
         ferris.photoTaken = true
         memories.opened.insert("ferris")
         collected.insert(.ferris)

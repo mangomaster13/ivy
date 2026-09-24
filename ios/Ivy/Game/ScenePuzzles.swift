@@ -75,9 +75,9 @@ extension GameStore {
         case .lock:
             if !corridorUnlocked { corridorMiss = false; overlay = .hotelLock }
             else if !collected.contains(.keycard) { openMemory(.keycard) }
-            else { showSceneHint("The door remembers us now.", presentation: .interaction) }
+            else { dismissSceneHint() }
         case .keycard:
-            guard corridorUnlocked else { showSceneHint("The room hasn't remembered us yet.", tone: .wrong); return }
+            guard corridorUnlocked else { return }
             openMemory(.keycard)
         case .window: openMemory(.city)
         case .rose: openMemory(.bouquet)
@@ -100,7 +100,7 @@ extension GameStore {
         guard room == .corridor, overlay == .hotelLock, !corridorUnlocked else { return }
         guard corridorDigits == exploration.hotelCode else {
             corridorMiss = true
-            showInputError("Not our door. Not yet.")
+            dismissSceneHint()
             IvyHaptics.warning()
             return
         }

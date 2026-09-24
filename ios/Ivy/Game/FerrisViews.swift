@@ -168,11 +168,11 @@ struct FerrisCloseupView: View {
                     target(FerrisLayout.door, scale: scale, label: "Enter the carriage", action: store.enterFerrisCabin)
                 } else {
                     target(FerrisLayout.door, scale: scale, label: "Closed carriage door") {
-                        store.showSceneHint("The gate is waiting for a ticket.", presentation: .interaction)
+                        store.showSceneHint("The gate hasn't let us through yet.", presentation: .interaction)
                     }
                     target(FerrisLayout.gate, scale: scale, label: "Use your ticket in the gate", accepting: [.ferrisTicket]) {
                         if store.ferris.ticketTaken { store.useFerrisTicket() }
-                        else { store.showSceneHint("The gate is waiting for a ticket.", presentation: .interaction) }
+                        else { store.hintForTool(.ferrisTicket) }
                     }
                 }
             }
@@ -200,7 +200,7 @@ struct FerrisCloseupView: View {
                         .accessibilityHidden(true)
                     target(CGRect(x: 200, y: 99, width: 29, height: 29), scale: scale,
                            label: "Remember our selfie") { store.replayKeepsake(.ferris) }
-                } else if store.ferris.phoneTaken {
+                } else {
                     target(CGRect(x: 86, y: 22, width: 148, height: 57), scale: scale,
                            label: "Take a selfie by the window", accepting: [.ferrisPhone], action: store.openFerrisCamera)
                 }
@@ -225,7 +225,6 @@ struct FerrisCloseupView: View {
             PuzzleActionRail {
                 if !store.ferris.photoTaken {
                     PuzzleButton("Photo", width: PuzzleActionLayout.width, action: store.takeFerrisSelfie)
-                        .disabled(store.selectedTool != .ferrisPhone)
                         .accessibilityLabel("Shutter: take our selfie")
                 }
             }

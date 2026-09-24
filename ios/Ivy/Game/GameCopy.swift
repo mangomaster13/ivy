@@ -5,17 +5,8 @@ enum GameCopy {
     /// Placeholder in the door field. Must not be the answer.
     static let lyricPlaceholder = "a line the house remembers"
 
-    /// Yard vine breadcrumb; leaves the missing phrase for the player.
-    static let vineHints = [
-        "some songs know how to finish a sentence."
-    ]
-
     /// Locked door before the mailbox letter is collected. Names the paper, not the puzzle.
-    static let doorNeedsLetter = "a letter waits before the story begins."
-    /// Wrong mailbox stave after Enter. Same line every miss.
-    static let plaqueWrong = "not that day. try our beginning."
-    /// Wrong door stave after Enter. Same line every miss.
-    static let lyricWrong = "almost. let the song finish the thought."
+    static let doorNeedsLetter = "A letter is still waiting in the mailbox."
 
     /// Cancel control on the input board.
     static let cancel = "Cancel"

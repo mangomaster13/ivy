@@ -122,6 +122,7 @@ struct DictionaryCloseupView: View {
     private func openWritingSurface() {
         if store.dictionary.solved { store.replayKeepsake(.dictionary); return }
         guard store.requireInteractionTool(.fountainPen, missing: "The page is waiting for ink.") else { return }
+        guard store.selectedTool == .fountainPen else { store.hintForTool(.fountainPen); return }
         writingCloseup = true
     }
 
@@ -199,7 +200,7 @@ struct DictionaryCloseupView: View {
                     drawingStroke = false
                     store.persistNow()
                     if !store.dictionary.solved && !store.canWriteDictionary {
-                        store.showSceneHint("The page is waiting for ink.", presentation: .interaction)
+                        store.hintForTool(.fountainPen)
                     }
                 })
             .inventoryToolDrop(store: store, accepting: store.dictionary.solved ? [] : [.fountainPen])

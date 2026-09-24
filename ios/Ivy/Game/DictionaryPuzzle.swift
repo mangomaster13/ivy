@@ -76,7 +76,7 @@ extension GameStore {
             }.value
             guard !Task.isCancelled, canWriteDictionary, dictionary.strokes == submitted else { return }
             guard recognized == "FOREVER" else {
-                showInputError("The word is still unfinished.")
+                dismissSceneHint()
                 return
             }
             dictionary.solved = true
@@ -87,7 +87,7 @@ extension GameStore {
             replayKeepsake(.dictionary)
         } catch {
             guard !Task.isCancelled, canWriteDictionary, dictionary.strokes == submitted else { return }
-            showInputError("The ink is hard to read. Your marks are still here.")
+            dismissSceneHint()
         }
     }
 

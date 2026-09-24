@@ -122,6 +122,8 @@ struct PerfumeCloseupView: View {
         return Button {
             if let held = store.selectedTool, held.formula != nil {
                 store.selectedPerfumeBottle = nil; store.placePerfume(held, at: slot)
+            } else if store.selectedTool?.ingredient != nil {
+                store.showSceneHint("These spaces are shaped for finished bottles.", presentation: .interaction)
             } else if let moving = store.selectedPerfumeBottle {
                 if moving != bottle { store.placePerfume(moving, at: slot) }
                 store.selectedPerfumeBottle = nil
@@ -155,8 +157,13 @@ struct PerfumeCloseupView: View {
             .dropDestination(for: String.self) { items, _ in
                 guard let token = items.first, token.hasPrefix("ivy-tool:"),
                       let tool = AdventureTool(rawValue: String(token.dropFirst("ivy-tool:".count))),
-                      tool.formula != nil,
                       store.exploration.tools.contains(tool) || store.perfumery.arrangement.contains(tool) else { return false }
+                guard tool.formula != nil else {
+                    if tool.ingredient != nil {
+                        store.showSceneHint("These spaces are shaped for finished bottles.", presentation: .interaction)
+                    }
+                    return false
+                }
                 store.selectedPerfumeBottle = nil; store.placePerfume(tool, at: slot)
                 return true
             }
@@ -207,7 +214,7 @@ struct PerfumeBenchControls: View {
             } else if tool != nil {
                 store.removeIngredient(at: slot)
             } else {
-                store.showSceneHint("The tray is empty.", presentation: .interaction)
+                store.dismissSceneHint()
             }
         } label: {
             Color.clear.frame(width: max(48, size.width * 0.18), height: max(48, size.height * 0.22))

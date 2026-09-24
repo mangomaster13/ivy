@@ -70,7 +70,7 @@ extension GameStore {
         guard vuoriDraft == VuoriPuzzle.answer else {
             vuoriDraft = ""
             vuoriMiss = true
-            showInputError("That doesn't feel familiar.")
+            dismissSceneHint()
             IvyHaptics.warning()
             schedulePersist()
             return

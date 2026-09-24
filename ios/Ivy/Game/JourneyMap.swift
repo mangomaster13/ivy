@@ -92,8 +92,10 @@ struct JourneyMapView: View {
                             .foregroundStyle(IvyType.cream.opacity(0.6))
                         selection(2, selected: store.memories.destination != nil)
                     }
-                    PuzzleButton(departing ? "on our way…" : "depart") { departing = true }
-                        .disabled(!store.canDepart || departing)
+                    PuzzleButton(departing ? "on our way…" : "depart") {
+                        departing = store.prepareFlightDeparture()
+                    }
+                        .disabled(departing)
                         .opacity(store.canDepart ? 1 : 0.45)
                 }.frame(width: controlsWidth, height: min(300, geometry.size.height))
             }

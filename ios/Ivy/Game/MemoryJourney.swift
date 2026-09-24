@@ -159,30 +159,30 @@ extension GameStore {
         if panel.room == .perfume, sceneView == 0 { return }
         switch panel {
         case .ferrisTicket where !ferris.playlistSolved:
-            showSceneHint("The iPod still holds our songs.", presentation: .interaction)
+            showSceneHint("The ticket is waiting on a few familiar songs.", presentation: .interaction)
             return
         case .ferrisCabin where !ferris.ticketUsed:
-            showSceneHint("The gate is waiting for a ticket.", presentation: .interaction)
+            showSceneHint("The gate hasn't let us through yet.", presentation: .interaction)
             return
         case .ferrisCamera:
             guard ferris.ticketUsed else { return }
             if ferris.photoTaken { replayKeepsake(.ferris); return }
             guard ferris.phoneTaken, selectedTool == .ferrisPhone,
-                  exploration.tools.contains(.ferrisPhone) else { return }
+                  exploration.tools.contains(.ferrisPhone) else { hintForTool(.ferrisPhone); return }
         case .cinemaProjector where !cinema.filmInserted && !cinema.solved:
-            guard requireInteractionTool(.cinemaFilm, missing: "The projector has an empty gate.") else { return }
+            guard requireInteractionTool(.cinemaFilm, missing: "An empty space where the film should be.") else { return }
         case .bigTopLedger where !exploration.clues.contains(.bigTopLedger):
-            guard requireInteractionTool(.bigTopPencil, missing: "The next page kept a few faint impressions.") else { return }
+            guard requireInteractionTool(.bigTopPencil, missing: "Faint impressions linger in the paper.") else { return }
         case .bigTopMirror:
             guard exploration.clues.contains(.bigTopMirror) else { return }
         case .bigTopOrder where !bigTop.menuPlaced:
             guard requireInteractionTool(.dinnerMenu, missing: "The clipboard is missing its menu.") else { return }
         case .drawer where !memories.opened.contains("drawer"):
-            guard requireInteractionTool(.brassKey, missing: "The drawer is locked.") else { return }
+            guard requireInteractionTool(.brassKey, missing: "A small keyhole beneath the handle.") else { return }
         case .dispenser where !memories.opened.contains("dispenser"):
-            guard requireInteractionTool(.coin, missing: "The cabinet's coin slot is empty.") else { return }
+            guard requireInteractionTool(.coin, missing: "A small slot, just the size of a token.") else { return }
         case .tasting where !collected.contains(.gelato):
-            guard requireInteractionTool(.scoop, missing: "I haven't got a spoon yet.") else { return }
+            guard requireInteractionTool(.scoop, missing: "Just missing a spoon.") else { return }
         default: break
         }
         if panel == .bigTopMenu && !bigTop.menuPlaced { return }
@@ -197,7 +197,7 @@ extension GameStore {
                 return
             }
             guard exploration.tools.contains(.ticket) else {
-                showSceneHint("I don't have my ticket yet.", presentation: .interaction)
+                showSceneHint("A ticket is missing from this journey.", presentation: .interaction)
                 return
             }
         }
@@ -270,7 +270,7 @@ extension GameStore {
     func submitWhole() {
         guard room == .bedroom, overlay == .memory(.wholeBox), !memories.opened.contains("wholeBox") else { return }
         let answer = memories.wholeDraft.lowercased().components(separatedBy: CharacterSet.letters.inverted).filter { !$0.isEmpty }.joined(separator: " ")
-        guard answer == "as a whole" else { showInputError("You once asked what I loved about you."); return }
+        guard answer == "as a whole" else { dismissSceneHint(); return }
         withAnimation(prefersReducedMotion ? nil : .easeInOut(duration: 0.65)) { memories.opened.insert("wholeBox") }
         exploration.musicBoxOpened = true; sceneHint = ""; IvyHaptics.success(); persistNow()
     }
@@ -292,6 +292,21 @@ extension GameStore {
         sceneHint = ""
         persistNow()
     }
+    func prepareFlightDeparture() -> Bool {
+        guard room == .plane, overlay == .memory(.flight), !isHallTransitioning else { return false }
+        if !exploration.tools.contains(.ticket) {
+            showSceneHint("A ticket is missing from this journey.", presentation: .interaction)
+        } else if memories.origin == nil || memories.destination == nil {
+            showSceneHint("The journey still needs its beginning and end.", presentation: .interaction)
+        } else if !exploration.clues.contains(.travelOrder) {
+            showSceneHint("Something is still hidden beneath the pencil marks.", presentation: .interaction)
+        } else {
+            dismissSceneHint()
+            return canDepart
+        }
+        return false
+    }
+
     func departFlight() {
         guard room == .plane, overlay == .memory(.flight), canDepart, !isHallTransitioning else { return }
         memories.flightDeparted = true
@@ -349,7 +364,7 @@ extension GameStore {
               !isHallTransitioning, collectingEgg == nil, !collected.contains(.gelato),
               gelatoWords.flavorSolved, index == 2 else { return }
         guard selectedTool == .scoop, exploration.tools.contains(.scoop) else {
-            showSceneHint("The little cup is waiting.", presentation: .interaction)
+            hintForTool(.scoop)
             return
         }
         memories.flavor = 2
@@ -360,7 +375,7 @@ extension GameStore {
     }
     func recallGelatoJoke() {
         guard room == .gelato, overlay == .memory(.tasting), collected.contains(.gelato), collectingEgg == nil else { return }
-        showSceneHint("The menu said jasmine. You said it tasted like cum.", presentation: .interaction)
+        replayKeepsake(.gelato)
     }
     func collectPhysical(_ egg: EggId) {
         guard case .memory(let panel) = overlay, room == panel.room else { return }
@@ -390,7 +405,7 @@ extension GameStore {
         case .taxi: solved = memories.taxiDraft.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "stay"
         default: return
         }
-        guard solved else { showInputError("Not quite. This memory feels different."); IvyHaptics.warning(); return }
+        guard solved else { dismissSceneHint(); IvyHaptics.warning(); return }
         withAnimation { memories.opened.insert(panel.rawValue) }; sceneHint = ""; persistNow()
     }
     func migrateMemories() {

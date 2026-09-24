@@ -260,7 +260,7 @@ struct AdventurePanelView: View {
         HStack(spacing: 16) {
             RubbingSurface(progress: store.rubbingBinding(clue), material: clue == .travelOrder ? .graphite : .rain,
                            revealed: store.exploration.clues.contains(clue), canRub: store.selectedTool == tool,
-                           toolImage: tool.imageName, label: instruction, save: store.persistNow, completion: action) {
+                           toolImage: tool.imageName, label: instruction, save: store.persistNow, completion: action, blocked: { store.hintForTool(tool) }) {
                 IvyType.inscription(clue == .travelOrder ? "moon → leaf → star → drop" : "pale fruit · jasmine")
                     .font(IvyType.script(25)).foregroundStyle(IvyType.ink).multilineTextAlignment(.center)
             }.frame(height: 110).padding(18).frame(maxWidth: 350)

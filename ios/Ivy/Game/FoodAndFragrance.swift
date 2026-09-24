@@ -230,7 +230,7 @@ extension GameStore {
         guard room == .noodle, canExplore, sceneView == 1 else { return }
         if exploration.clues.contains(.bigTopMirror) { openMemory(.bigTopMirror) }
         else if selectedTool == .bigTopInspectionMirror { placeBigTopMirror() }
-        else { showSceneHint("There are scratches behind the wooden lip.", presentation: .interaction) }
+        else { hintForTool(.bigTopInspectionMirror) }
     }
     func turnBigTopSymbol(_ index: Int, by step: Int = 1) {
         guard canChangeFoodPuzzle, room == .noodle, overlay == .memory(.bigTopMenuSearch),
@@ -245,7 +245,7 @@ extension GameStore {
         guard canChangeFoodPuzzle, room == .noodle, overlay == .memory(.bigTopMenuSearch),
               bigTop.menuDrawerOpen != true, !bigTop.menuTaken else { return }
         guard bigTop.drawerSymbols == BigTopMenu.drawerAnswer else {
-            showSceneHint("The drawer stays shut.", presentation: .interaction)
+            dismissSceneHint()
             return
         }
         dismissSceneHint()
@@ -282,7 +282,7 @@ extension GameStore {
     func placeDinnerOrder() {
         guard canChangeFoodPuzzle else { return }
         guard room == .noodle, overlay == .memory(.bigTopMenu), bigTop.menuPlaced, !bigTop.orderSolved else { return }
-        guard bigTop.order == BigTopMenu.answer else { showInputError("That wasn't our order."); return }
+        guard bigTop.order == BigTopMenu.answer else { dismissSceneHint(); return }
         bigTop.orderSolved = true; bigTop.streetUnlocked = true
         memories.opened.insert("bigTop")
         dismissSceneHint(); IvyHaptics.success(); persistNow()
@@ -357,19 +357,19 @@ extension GameStore {
     func blendPerfume() {
         guard canUsePerfumeBench else { return }
         guard perfumery.output == nil else {
-            showSceneHint("A finished bottle is still under the press.", presentation: .interaction); return
+            showSceneHint("A finished bottle is still beneath the press.", presentation: .interaction); return
         }
         let ingredients = perfumery.mixture.compactMap { $0 }
         guard ingredients.count == 3 else {
-            showSceneHint(ingredients.isEmpty ? "The mixing trays are empty." : "The mixture is still incomplete.",
+            showSceneHint(ingredients.isEmpty ? "The mixing trays are still empty." : "Something is still missing from the mixture.",
                           presentation: .interaction)
             return
         }
         guard let formula = PerfumeFormula.all.first(where: { $0.accepts(ingredients) }) else {
-            showSceneHint("Something feels out of place.", tone: .wrong, presentation: .interaction); return
+            dismissSceneHint(); return
         }
         guard !perfumery.brewed.contains(formula.bottle) else {
-            showSceneHint("We've bottled this one already.", presentation: .interaction); return
+            dismissSceneHint(); return
         }
         exploration.tools.formUnion(ingredients)
         perfumery.mixture = [nil, nil, nil]

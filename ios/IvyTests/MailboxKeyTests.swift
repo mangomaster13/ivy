@@ -37,7 +37,7 @@ final class MailboxKeyTests: XCTestCase {
         XCTAssertFalse(store.mailboxOpened)
         XCTAssertEqual(store.plaqueDraft, "929")
         XCTAssertEqual(store.overlay, .plaque)
-        XCTAssertEqual(store.plaqueHint, GameCopy.plaqueWrong)
+        XCTAssertTrue(store.plaqueHint.isEmpty)
     }
 
     func testFilledLetterSlotRereadsWithoutAnotherCollection() {

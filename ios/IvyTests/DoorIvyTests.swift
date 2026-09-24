@@ -33,7 +33,7 @@ final class DoorNavigationTests: XCTestCase {
         XCTAssertFalse(store.doorOpened)
         XCTAssertTrue(store.collected.isEmpty)
         XCTAssertEqual(store.overlay, .lyric)
-        XCTAssertEqual(store.lyricHint, GameCopy.lyricWrong)
+        XCTAssertTrue(store.lyricHint.isEmpty)
     }
 
     func testDoorOpensAfterKey() {
@@ -84,16 +84,29 @@ final class DoorNavigationTests: XCTestCase {
 
 @MainActor
 final class IvyFeedbackTests: XCTestCase {
-    func testPuzzleValidationReplacesInteractionPresentation() {
+    func testBlockedToolActionHintsWithoutUsingOrConsumingTheTool() {
         let store = StoreHarness.make()
-        store.showSceneHint("The ivy rustles.", presentation: .interaction)
+        store.room = .hall
+        store.openMemory(.drawer)
+        XCTAssertEqual(store.overlay, .none)
+        XCTAssertEqual(store.sceneHint, "A small keyhole beneath the handle.")
+        store.acquire(.brassKey)
+        store.openMemory(.drawer)
+        store.openContainer(.drawer)
+        XCTAssertEqual(store.sceneHint, "Something in your bag might fit.")
         XCTAssertEqual(store.sceneHintPresentation, .interaction)
-        store.showInputError("Not our door. Not yet.")
-        XCTAssertEqual(store.sceneHintPresentation, .puzzle)
-        XCTAssertEqual(store.sceneHintTone, .wrong)
-        store.showSceneHint("A memory returns.", tone: .success)
-        XCTAssertEqual(store.sceneHintPresentation, .puzzle)
-        store.dismissSceneHint()
+        XCTAssertFalse(store.memories.opened.contains("drawer"))
+        XCTAssertTrue(store.exploration.tools.contains(.brassKey))
+        store.chooseTool(.brassKey)
+        store.openContainer(.drawer)
+        XCTAssertTrue(store.memories.opened.contains("drawer"))
+        XCTAssertFalse(store.exploration.tools.contains(.brassKey))
+        XCTAssertTrue(store.sceneHint.isEmpty)
+        store.backFromMemory()
+        store.openMemory(.drawer)
+        XCTAssertEqual(store.overlay, .memory(.drawer))
+        XCTAssertTrue(store.sceneHint.isEmpty)
+        store.tapMiss()
         XCTAssertTrue(store.sceneHint.isEmpty)
     }
 
@@ -104,7 +117,7 @@ final class IvyFeedbackTests: XCTestCase {
         store.submitAssemble()
         XCTAssertEqual(store.plaqueDraft, "816")
         XCTAssertEqual(store.assembleHintTone, .wrong)
-        XCTAssertEqual(store.assembleHint, GameCopy.plaqueWrong)
+        XCTAssertTrue(store.assembleHint.isEmpty)
         store.backspaceAssemble()
         XCTAssertEqual(store.plaqueDraft, "81")
         XCTAssertTrue(store.assembleHint.isEmpty)
@@ -129,31 +142,33 @@ final class IvyFeedbackTests: XCTestCase {
         XCTAssertFalse(store.doorOpened)
     }
 
-    func testWordAndHotelErrorsUseAutumnFeedback() {
+    func testWordAndHotelErrorsKeepDraftsWithoutMessages() {
         let store = StoreHarness.make()
         store.room = .bedroom
         store.overlay = .memory(.wholeBox)
         store.memories.wholeDraft = "whole"
         store.submitWhole()
         XCTAssertEqual(store.memories.wholeDraft, "whole")
-        XCTAssertEqual(store.sceneHintTone, .wrong)
-        XCTAssertFalse(store.sceneHint.isEmpty)
+        XCTAssertEqual(store.sceneHintTone, .ordinary)
+        XCTAssertTrue(store.sceneHint.isEmpty)
         store.room = .corridor
         store.overlay = .hotelLock
         store.exploration.hotelCode = [1, 2, 3, 4]
         store.corridorDigits = [0, 0, 0, 0]
         store.submitHotelCode()
-        XCTAssertEqual(store.sceneHintTone, .wrong)
+        XCTAssertEqual(store.sceneHintTone, .ordinary)
         store.turnHotelWheel(0, by: 1)
         XCTAssertTrue(store.sceneHint.isEmpty)
     }
 
-    func testOldTimedMessageCannotClearNewValidation() async throws {
+    func testDecorativeTapsStaySilentWithASelectedTool() {
         let store = StoreHarness.make()
-        store.showSceneHint("A quiet room.")
-        store.showInputError("Not our door. Not yet.")
-        try await Task.sleep(for: .milliseconds(5250))
-        XCTAssertEqual(store.sceneHint, "Not our door. Not yet.")
-        XCTAssertEqual(store.sceneHintTone, .wrong)
+        store.acquire(.brassKey)
+        store.chooseTool(.brassKey)
+        store.tapMiss()
+        store.tapYardIvy()
+        XCTAssertTrue(store.sceneHint.isEmpty)
+        XCTAssertEqual(store.overlay, .none)
+        XCTAssertEqual(store.selectedTool, .brassKey)
     }
 }

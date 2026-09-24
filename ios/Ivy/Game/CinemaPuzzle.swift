@@ -142,7 +142,7 @@ extension GameStore {
         guard cinemaActive, overlay == .memory(.cinema), cinema.filmInserted,
               !cinema.projectionReady else { return }
         guard cinema.aligned else {
-            showInputError("The picture is still in pieces.")
+            dismissSceneHint()
             return
         }
         // Keep the player's assembled picture in place; only reveal the heart.
@@ -163,7 +163,7 @@ extension GameStore {
     func submitCinemaSeats() {
         guard cinemaActive, overlay == .memory(.cinema), !cinema.solved else { return }
         guard cinema.complete else {
-            showInputError("The picture is still in pieces.")
+            dismissSceneHint()
             return
         }
         cinema.solved = true

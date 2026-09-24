@@ -53,7 +53,7 @@ extension GameStore {
               (index == 0 && overlay == .memory(.blanket)) ||
               (index == 1 && canExplore && sceneView == 1) else { return }
         guard !collected.contains(.rose), !roseProgress.found.contains(index) else {
-            showSceneHint(index == 0 ? "A little warmth, caught in the folds." : "A small pool of gold.", presentation: .interaction)
+            dismissSceneHint()
             return
         }
         var progress = roseProgress
@@ -79,7 +79,7 @@ extension GameStore {
         progress.revealed.insert(index)
         withAnimation(prefersReducedMotion ? nil : .easeOut(duration: 0.2)) { memories.rose = progress }
         IvyHaptics.light()
-        showSceneHint("A little piece of something we kept.", presentation: .interaction)
+        dismissSceneHint()
         persistNow()
     }
 
@@ -195,7 +195,14 @@ struct RoseAssemblyView: View {
     var body: some View {
         ElementMemoryComposition(store: store, image: "rose-bouquet", title: EggId.rose.memoryTitle,
                                  line: EggId.rose.memoryLine, progress: reveal, assembly: true,
-                                 petals: store.rosePetals)
+                                 petals: store.rosePetals, onObjectTap: {
+                                     guard !complete else { return }
+                                     let hasPetal = !store.roseProgress.found.subtracting(store.rosePetals).isEmpty
+                                     store.showSceneHint(hasPetal
+                                         ? "There may be a matching petal in your bag."
+                                         : "A few petals are still missing.", presentation: .interaction)
+                                 })
+            .overlay(alignment: .bottom) { SceneFeedback(store: store, height: 30) }
             .background {
                 GeometryReader { geometry in
                     let height = min(330, geometry.size.height * 0.96)

@@ -194,7 +194,7 @@ extension GameStore {
 
     func acquire(_ tool: AdventureTool) {
         guard !memories.used.contains(tool), exploration.tools.insert(tool).inserted else {
-            showSceneHint("Already tucked safely in your satchel."); return
+            return
         }
         memories.picked.insert(tool)
         toolsVisible = true
@@ -213,9 +213,45 @@ extension GameStore {
         return true
     }
 
+    /// Called only by an attempted tool action; inspecting readable objects stays silent.
+    func hintForTool(_ tool: AdventureTool) {
+        let held = exploration.tools.contains(tool)
+        let line: String
+        switch tool {
+        case .brassKey:
+            line = held ? "Something in your bag might fit." : "A small keyhole beneath the handle."
+        case .eraser:
+            line = held ? "Something in your bag might clear the marks." : "These pencil marks might rub away."
+        case .cloth:
+            line = held ? "Something in your bag might clear the glass." : "The mist needs something soft and dry."
+        case .coin:
+            line = held ? "Something in your bag might fit the slot." : "A small slot, just the size of a token."
+        case .scoop:
+            line = held ? "Something in your bag might help with the first bite." : "Just missing a spoon."
+        case .bigTopPencil:
+            line = held ? "Something in your bag might bring them out." : "Faint impressions linger in the paper."
+        case .bigTopInspectionMirror:
+            line = held ? "Something in your bag might catch the reflection." : "The marks are just out of sight."
+        case .dinnerMenu:
+            line = held ? "The menu in your bag would fit here." : "The clipboard is missing its menu."
+        case .cinemaFilm:
+            line = held ? "The films in your bag might belong here." : "An empty space where the film should be."
+        case .fountainPen:
+            line = held ? "There is a little ink waiting in your bag." : "The page is waiting for ink."
+        case .ferrisTicket:
+            line = held ? "The ticket in your bag might open the way."
+                : (ferris.playlistSolved ? "A ticket is waiting in the dispenser." : "The gate is waiting for a ticket.")
+        case .ferrisPhone:
+            line = held ? "Something in your bag could keep this moment." : "A phone is resting on the seat."
+        default: return
+        }
+        showSceneHint(line, presentation: .interaction)
+    }
+
     @discardableResult
     func use(_ tool: AdventureTool) -> Bool {
         guard selectedTool == tool, exploration.tools.contains(tool) else {
+            hintForTool(tool)
             IvyHaptics.light()
             return false
         }
@@ -323,7 +359,7 @@ extension GameStore {
         guard use(.cloth) else { return }
         discover(.mirror)
         consume(.cloth)
-        showSceneHint("Four signs. Four numbers. But which comes first?", tone: .success)
+        dismissSceneHint()
     }
 
     func playMusicNote(_ note: Int) {
@@ -336,10 +372,10 @@ extension GameStore {
                 exploration.musicBoxOpened = true
                 memories.opened.insert("wholeBox")
                 openMemory(.wholeBox)
-                showSceneHint("The melody opened a little secret.", presentation: .interaction)
+                dismissSceneHint()
                 IvyHaptics.success()
             } else {
-                showSceneHint("The melody trails off. The score is beside the box.", tone: .wrong)
+                dismissSceneHint()
             }
             exploration.musicInput = []
         }
@@ -357,7 +393,7 @@ extension GameStore {
     func setFreezer(_ delta: Int) {
         guard room == .gelato, overlay == .adventure(.freezer) else { return }
         exploration.freezerTemperature = min(0, max(-18, exploration.freezerTemperature + delta))
-        showSceneHint(exploration.freezerTemperature == -12 ? "A quiet hum. Ready to scoop." : "The dial settles.")
+        dismissSceneHint()
         persistNow()
     }
 

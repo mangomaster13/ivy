@@ -60,6 +60,7 @@ struct RubbingSurface<Content: View>: View {
     let label: String
     let save: () -> Void
     let completion: () -> Void
+    var blocked: () -> Void = {}
     @ViewBuilder let content: Content
     @State private var contact: CGPoint?
     @State private var active = false
@@ -107,6 +108,7 @@ struct RubbingSurface<Content: View>: View {
                     progress.append(value.location, size: geometry.size)
                     contact = value.location
                 }.onEnded { _ in
+                    if !revealed && !canRub { blocked(); return }
                     guard active else { return }
                     active = false; contact = nil; save()
                     if progress.isComplete(vertical: material == .condensation) { completion() }
@@ -114,7 +116,8 @@ struct RubbingSurface<Content: View>: View {
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel(label)
                 .accessibilityAction(named: "Reveal with selected tool") {
-                    if canRub && !revealed { completion() }
+                    guard !revealed else { return }
+                    if canRub { completion() } else { blocked() }
                 }
                 .onDisappear { if active { save() } }
         }
@@ -232,7 +235,7 @@ struct MirrorRubbingCloseup: View {
                     RubbingSurface(progress: store.rubbingBinding(.mirror), material: .condensation,
                                    revealed: store.exploration.clues.contains(.mirror), canRub: store.selectedTool == .cloth,
                                    toolImage: AdventureTool.cloth.imageName, label: store.exploration.clues.contains(.mirror) ? store.clueText(.mirror) : "Misted mirror",
-                                   save: store.persistNow, completion: store.wipeMirror) {
+                                   save: store.persistNow, completion: store.wipeMirror, blocked: { store.hintForTool(.cloth) }) {
                         VStack(spacing: 10) {
                             ForEach([2, 0, 3, 1], id: \.self) { index in
                                 HStack(spacing: 14) {
@@ -293,7 +296,7 @@ struct TicketRubbingView: View {
                 RubbingSurface(progress: store.rubbingBinding(.travelOrder), material: .graphite,
                                revealed: store.exploration.clues.contains(.travelOrder), canRub: store.selectedTool == .eraser,
                                toolImage: AdventureTool.eraser.imageName, label: "Graphite-marked ticket",
-                               save: store.persistNow, completion: store.traceTicket) {
+                               save: store.persistNow, completion: store.traceTicket, blocked: { store.hintForTool(.eraser) }) {
                     TravelOrderSymbols(symbolSize: min(33, w * 0.068))
                 }.frame(width: w * 0.73, height: h * 0.35)
                     .position(x: w * 0.43, y: h * 0.70)

@@ -381,7 +381,7 @@ final class GameStore {
                 if review == "vuori-linked" { overlay = .vuori; vuoriDraft = "vuo" }
                 if review == "vuori-wrong" {
                     overlay = .vuori; vuoriDraft = "lvaou"; vuoriMiss = true
-                    sceneHint = "That doesn't feel familiar."; sceneHintTone = .wrong
+                    dismissSceneHint()
                 }
                 if review == "vuori-memory" || review == "vuori-bar" {
                     collected.insert(.vuori)
@@ -534,31 +534,31 @@ final class GameStore {
                 room = .yard; exploration.views[room.rawValue] = 1
             case "prompts-short":
                 room = .yard; exploration.views[room.rawValue] = 1
-                sceneHint = "The ivy rustles."; sceneHintPresentation = .interaction
+                hintForTool(.brassKey)
             case "prompts-long":
-                sceneHint = "Some words hide behind clouds. Some stay with you."; sceneHintPresentation = .interaction
+                hintForTool(.cloth)
             case "prompts-wrap":
-                sceneHint = "Some words hide behind clouds. Some stay with you. The house keeps a little warmth for the two of us, even on the longest nights."; sceneHintPresentation = .interaction
+                hintForTool(.scoop)
             case "prompts-success":
-                sceneHint = "A new clue is in your notebook."; sceneHintTone = .success
+                dismissSceneHint()
             case "prompts-wrong":
-                sceneHint = "This key does not fit."; sceneHintTone = .wrong
+                dismissSceneHint()
             case "prompts-mailbox":
                 overlay = .plaque; plaquePad = AssembleKind.plaque.glyphs
-                plaqueDraft = "816"; plaqueHint = GameCopy.plaqueWrong; assembleHintTone = .wrong
+                plaqueDraft = "816"; plaqueHint = ""; assembleHintTone = .wrong
                 plaqueHintRevealed = true; plateIvyOpacity = 0
             case "prompts-door":
                 overlay = .lyric; lyricPad = AssembleKind.lyric.glyphs
-                lyricDraft = "ivy"; lyricHint = GameCopy.lyricWrong; assembleHintTone = .wrong
+                lyricDraft = "ivy"; lyricHint = ""; assembleHintTone = .wrong
             case "prompts-word":
                 room = .bedroom; overlay = .memory(.wholeBox)
-                memories.wholeDraft = "whole"; showInputError("You once asked what I loved about you.")
+                memories.wholeDraft = "whole"; dismissSceneHint()
             case "prompts-closeup":
                 room = .hall; overlay = .memory(.drawer)
-                sceneHint = "This key does not fit."; sceneHintTone = .wrong
+                dismissSceneHint()
             case "prompts-hotel":
                 room = .corridor; overlay = .hotelLock
-                showInputError("Not our door. Not yet.")
+                dismissSceneHint()
             default: break
             }
         }
@@ -655,16 +655,10 @@ final class GameStore {
         schedulePersist()
     }
 
-    /// Vine never asks for the password; it only talks.
+    /// Decorative ivy has no dialogue.
     func tapYardIvy() {
         IvyHaptics.soft()
-        let lines = GameCopy.vineHints
-        let index = min(vineHintIndex, lines.count - 1)
-        say(lines[index])
-        if vineHintIndex < lines.count {
-            vineHintIndex += 1
-        }
-        schedulePersist()
+        dismissSceneHint()
     }
 
     /// Mailbox is the date key. After `817`, tapping it rereads the letter.
@@ -706,7 +700,7 @@ final class GameStore {
     func tapLottery() {
         guard room == .hall, !isHallTransitioning, collectingEgg == nil else { return }
         guard lotteryReady else {
-            showSceneHint("The little machine is waiting for all thirteen memories.", tone: .wrong)
+            showSceneHint("A few places are still waiting for their memories.", presentation: .interaction)
             IvyHaptics.soft()
             return
         }
@@ -729,7 +723,7 @@ final class GameStore {
     /// Sky, stones, unused furniture. Soft haptic only.
     func tapMiss() {
         IvyHaptics.soft()
-        showSceneHint(selectedTool == nil ? ambientLine : "Nothing here needs the " + selectedTool!.label + ".", tone: selectedTool == nil ? .ordinary : .wrong, presentation: .interaction)
+        dismissSceneHint()
     }
 
     /// Walk a diegetic object; the hotel door requires committed room access.
@@ -737,13 +731,13 @@ final class GameStore {
         guard canExplore, sceneView == 0 else { return }
         if room == .gelato, edge == .gelatoForward, !bigTop.signSolved { openMemory(.bigTopSign); return }
         if room == .noodle, edge == .noodleForward, !bigTop.orderSolved && !bigTop.streetUnlocked && !collected.contains(.noodle) {
-            showSceneHint("Our table is still waiting.", presentation: .interaction); return
+            showSceneHint("Our table is still waiting for its order.", presentation: .interaction); return
         }
         if room == .perfume, edge == .perfumeForward, !perfumery.cinemaUnlocked && !collected.contains(.perfume) {
-            showSceneHint("That familiar scent, somewhere nearby.", presentation: .interaction); return
+            showSceneHint("Our perfume box isn't quite ready yet.", presentation: .interaction); return
         }
         if room == .cinema, edge == .cinemaExit, !cinema.exitUnlocked && !cinema.solved && !collected.contains(.cinema) {
-            showSceneHint("The last picture is still waiting.", presentation: .interaction); return
+            showSceneHint(cinema.projectionReady ? "Our seats are still waiting." : "The projector still has something to show us.", presentation: .interaction); return
         }
         if room == .plane, edge == .planeDepart { openMemory(.flight); return }
         if room == .corridor, edge == .corridorForward, !roomDoorIsOpen {
@@ -850,8 +844,7 @@ final class GameStore {
         if assembleDraft == kind.answer {
             finishAssemble(kind)
         } else {
-            let hint = kind == .plaque ? GameCopy.plaqueWrong : GameCopy.lyricWrong
-            registerAssembleMiss(hint)
+            registerAssembleMiss()
             schedulePersist()
         }
     }
@@ -1344,15 +1337,15 @@ final class GameStore {
         }
     }
 
-    /// Shared miss path: keep the typed text, bump the oral hint.
-    private func registerAssembleMiss(_ hint: String) {
+    /// Keep the typed answer and physical miss response without a text hint.
+    private func registerAssembleMiss() {
         captionHideTask?.cancel()
         assembleHintTone = .wrong
         if overlay == .plaque {
-            plaqueHint = hint
+            plaqueHint = ""
         } else {
             lyricFailCount += 1
-            lyricHint = hint
+            lyricHint = ""
         }
         IvyHaptics.warning()
         shakeWorld()
@@ -1405,14 +1398,6 @@ final class GameStore {
         plaqueHint = ""
         lyricHint = ""
         assembleHintTone = .ordinary
-    }
-
-    /// Input validation remains visible until the player edits or leaves the puzzle.
-    func showInputError(_ text: String) {
-        sceneHintPresentation = .puzzle
-        captionHideTask?.cancel()
-        sceneHintTone = .wrong
-        sceneHint = text
     }
 
     /// 2pt shake; skipped visually when Reduce Motion is on at the call site.

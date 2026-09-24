@@ -16,14 +16,14 @@ final class WonderlandTests: XCTestCase {
             return false
         })
         store.blendPerfume()
-        XCTAssertEqual(store.sceneHint, "The mixing trays are empty.")
+        XCTAssertEqual(store.sceneHint, "The mixing trays are still empty.")
         XCTAssertEqual(store.overlay, .none)
         XCTAssertTrue(store.memoryNavigation.isEmpty)
         XCTAssertNil(store.perfumery.output)
 
         store.putIngredient(.gaiacWood, at: 0)
         store.blendPerfume()
-        XCTAssertEqual(store.sceneHint, "The mixture is still incomplete.")
+        XCTAssertEqual(store.sceneHint, "Something is still missing from the mixture.")
         XCTAssertEqual(store.perfumery.mixture, [.gaiacWood, nil, nil])
         store.putIngredient(.musk, at: 1)
         store.putIngredient(.bergamot, at: 2)
@@ -54,7 +54,7 @@ final class WonderlandTests: XCTestCase {
         XCTAssertFalse(store.exploration.tools.contains(.gaiac10))
 
         store.blendPerfume()
-        XCTAssertEqual(store.sceneHint, "A finished bottle is still under the press.")
+        XCTAssertEqual(store.sceneHint, "A finished bottle is still beneath the press.")
         XCTAssertEqual(store.perfumery.output, .gaiac10)
         store.takePerfume()
         store.takePerfume()
