@@ -8,10 +8,11 @@ import UniformTypeIdentifiers
 // Production asset packaging, not a build or validation pass. Sources are never modified.
 let root = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
 let sources = root.appendingPathComponent("art/ferris/playlist")
+let sceneSources = root.appendingPathComponent("art/ferris/sequence")
 let catalog = root.appendingPathComponent("ios/Ivy/Assets.xcassets/Scenes/Ferris")
 
-func load(_ filename: String) -> CGImage {
-    let url = sources.appendingPathComponent(filename)
+func load(_ filename: String, from folder: URL = sources) -> CGImage {
+    let url = folder.appendingPathComponent(filename)
     guard let source = CGImageSourceCreateWithURL(url as CFURL, nil),
           let image = CGImageSourceCreateImageAtIndex(source, 0, nil) else { fatalError("Missing \(filename)") }
     return image
@@ -44,10 +45,17 @@ for (source, name, width) in [
     ("classic-cutout.png", "ferris-classic-ipod", 256),
     ("ticket-cutout.png", "ferris-ride-ticket", 320),
     ("phone-cutout.png", "ferris-selfie-phone", 256),
-    ("dispenser-source.png", "ferris-dispenser", 320),
-    ("cabin-source.png", "ferris-cabin-interior", 591),
-    ("selfie-provisional-source.png", "ferris-selfie", 384)
+    ("dispenser-source.png", "ferris-dispenser", 320)
 ] { try export(load(source), name: name, width: width) }
+
+for (source, name, width) in [
+    ("promenade-source.png", "ferris-promenade", 592),
+    ("booth-source.png", "ferris-ticket-booth", 592),
+    ("gate-closed-source.png", "ferris-boarding-closed", 592),
+    ("gate-open-source.png", "ferris-boarding-open", 592),
+    ("cabin-empty-source.png", "ferris-cabin-interior", 592),
+    ("selfie-cartoon-source.png", "ferris-selfie", 418)
+] { try export(load(source, from: sceneSources), name: name, width: width) }
 
 // Tight physical LCD camera crop from the unchanged high-resolution source.
 let ipod = load("classic-source.png")
