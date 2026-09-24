@@ -16,9 +16,9 @@
 
 ## Milestones
 
-- [ ] State and save compatibility: add FerrisPuzzle.swift, optional MemoryProgress.ferris, tool identities, retirement of solveLater ferris, reset integration, and one XCTest in the existing test target. Persist whole-list drafts; reject invalid reorder indices; gate pickup, ticket use, cabin entry and shutter in GameStore.
-- [ ] Scene and assets: add FerrisViews.swift and Xcode source entries, scene hotspots, tool art, whole-list drag and accessibility reorder, ticket dispenser and gate, cabin phone pickup and selected-tool camera, selfie Element. Keep every track visible without scrolling; use a close screen camera on compact viewports, with physical Play control beside the screen if necessary.
-- [ ] Update current gameplay/status documents, record art provenance and manual acceptance steps, inspect the diff, commit and push the finished integration. No claims of runtime verification.
+- [x] State and save compatibility: add FerrisPuzzle.swift, optional MemoryProgress.ferris, tool identities, retirement of solveLater ferris, reset integration, and one XCTest in the existing test target. Persist whole-list drafts; reject invalid reorder indices; gate pickup, ticket use, cabin entry and shutter in GameStore.
+- [x] Scene and assets: add FerrisViews.swift and Xcode source entries, scene hotspots, tool art, whole-list drag and accessibility reorder, ticket dispenser and gate, cabin phone pickup and selected-tool camera, selfie Element. Keep every track visible without scrolling; use a close screen camera on compact viewports, with the shared Play action beside the screen. The user chose the classic click-wheel body; the scene retains it and the puzzle camera focuses its LCD.
+- [x] Update current gameplay/status documents, record art provenance and manual acceptance steps, inspect the diff. No claims of runtime verification; the final integration is committed and pushed at delivery.
 
 ## Manual acceptance after delivery
 

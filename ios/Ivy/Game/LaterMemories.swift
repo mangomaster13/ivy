@@ -4,7 +4,6 @@ struct LaterMemoryView: View {
     @Bindable var store: GameStore
     let panel: MemoryPanel
     @State private var firstScent: Int?
-    @State private var ferryTicket: Int?
     @State private var receipt = false
     @State private var editingAnswer = false
     private var solved: Bool { store.memories.opened.contains(panel.rawValue) }
@@ -25,31 +24,7 @@ struct LaterMemoryView: View {
             }.foregroundStyle(IvyType.ink).padding(30).background(IvyType.cream, in: RoundedRectangle(cornerRadius: 8))
         case .perfume: PerfumeCloseupView(store: store, panel: .perfume)
         case .cinema: CinemaCloseupView(store: store, panel: .cinema)
-        case .ferris:
-            Text("☾ · leaf").multilineTextAlignment(.center)
-            if solved {
-                Image(systemName: "ferriswheel").font(.system(size: 80)).foregroundStyle(IvyType.cream)
-                reward(.ferris, "take the ride keepsake")
-            } else {
-                HStack(spacing: 24) {
-                    ForEach(0..<2) { i in
-                        if !store.memories.ferrisMatches.contains(i) {
-                            Button(i == 0 ? "☾ ticket" : "leaf ticket") { ferryTicket = i }
-                                .padding(12).background(IvyType.cream.opacity(ferryTicket == i ? 0.3 : 0.1), in: RoundedRectangle(cornerRadius: 8))
-                        }
-                    }
-                }
-                HStack(spacing: 18) {
-                    ForEach(0..<3) { carriage in
-                        Button(["☾ + leaf", "star + drop", "leaf + star"][carriage]) {
-                            guard let ticket = ferryTicket else { IvyHaptics.light(); return }
-                            guard carriage == 0 else { store.showSceneHint("The marks don't match.", tone: .wrong); return }
-                            store.memories.ferrisMatches.insert(ticket); ferryTicket = nil; store.persistNow()
-                        }.frame(minHeight: 60).padding(.horizontal, 12).background(IvyType.cream.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
-                    }
-                }
-                Button("open the carriage") { store.solveLater(.ferris) }.frame(minHeight: 44)
-            }
+        case .ferris: FerrisCloseupView(store: store, panel: .ferris)
         case .taxi:
             if solved { reward(.taxi, "take the printed receipt") }
             else {

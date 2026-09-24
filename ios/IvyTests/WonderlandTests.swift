@@ -558,7 +558,7 @@ final class ExplorationCompatibilityTests: XCTestCase {
 final class LaterMemoryTests: XCTestCase {
     func testAllLaterRewardsRequireSolvingAndPhysicalPickup() {
         let s = StoreHarness.make()
-        let cases: [(Room, MemoryPanel, EggId)] = [(.noodle,.bigTop,.noodle),(.perfume,.perfume,.perfume),(.cinema,.cinema,.cinema),(.ferris,.ferris,.ferris),(.taxi,.taxi,.taxi)]
+        let cases: [(Room, MemoryPanel, EggId)] = [(.noodle,.bigTop,.noodle),(.perfume,.perfume,.perfume),(.cinema,.cinema,.cinema),(.taxi,.taxi,.taxi)]
         for (room, panel, egg) in cases {
             s.room = room; s.openMemory(panel); s.collectPhysical(egg)
             XCTAssertFalse(s.collected.contains(egg))
@@ -566,7 +566,6 @@ final class LaterMemoryTests: XCTestCase {
             case .bigTop: s.memories.bigTopDraft = "BIGTOP"
             case .perfume: s.memories.scents = [10,30,22]
             case .cinema: s.memories.cinemaDraft = "hope"; s.memories.cinemaSeats = [2,3]
-            case .ferris: s.memories.ferrisMatches = [0,1]
             case .taxi: s.memories.taxiDraft = "stay"
             default: break
             }

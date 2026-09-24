@@ -16,6 +16,8 @@ When the user supplies a photograph as a visual reference for a scene, object, s
 
 ## Text artwork and Notes — user revision 2026-09-20
 
+Ferris 的 iPod 曲目按用户 2026-09-24 提供的原名保留，包括 `林忆莲 — 也许`；这是这五首歌曲名称的局部例外，不把其他界面或反馈改为中文。歌曲题字独立导出，交互与无障碍名称保持可读。
+
 Outside Notes, interactive lock-pad text and the player's live handwriting in Dictionary, visible lettering must be designed artwork, not ad hoc native text over an illustration. This includes physical recipe books, signs, product labels, perfume-box inscriptions and Dictionary's printed lyric card. Notes and lock pads retain native interactive text; Dictionary's written strokes are drawn and saved from the player's input, not preprinted as completion art. This revision supersedes earlier requirements for native display lettering outside those exceptions; preserve approved wording, type style, interaction and accessibility semantics when changing its rendering.
 
 Design lettering within the actual writable surface, with margins for borders, folds, spine and perspective. Deliver it in the approved object artwork or as a designed transparent lettering asset sharing the object's coordinates and transform. Do not substitute a plain text overlay, clip overflow, truncate names or use tiny type. New/revised artwork follows the existing design-preview approval workflow. Notes text still obeys physical page bounds. Notes and scene backgrounds cover the full root-owned content viewport without stretching physical artwork.

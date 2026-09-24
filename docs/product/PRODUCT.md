@@ -16,7 +16,7 @@ Ivy 是送给一个人的私人横屏 iPhone 回忆解谜游戏。院子和大�
 | --- | --- | --- |
 | 香水店与收藏 | 房间与收藏枚举均已改 `perfume`，旧值可解码 | 玩家场景称 Le Labo，收藏 ID 改 `perfume`；读取旧存档并迁移 |
 | 影院后的关卡 | Dictionary 书摊、手写词条和 `dictionary` ID 已接入；旧 `sunset` 完成事实迁移 | 用户验收笔迹识别、修改、保存及回访 |
-| 后四站 | Cinema 已接入三层胶片叠图、整组提交后显心与选座，运行验收待完成；Ferris、Taxi 仍使用早期简版操作 | 采用[已确认设计](../gameplay/2026-09-23-later-eggs-tool-design.md)；已交付的素材尚未接入 |
+| 后四站 | Cinema 已接入三层胶片叠图、整组提交后显心与选座，运行验收待完成；Ferris 已接入经典 iPod 排歌、检票与自拍，人物仍为示意且未验收；Taxi 仍使用早期简版操作 | 采用[已确认设计](../gameplay/2026-09-23-later-eggs-tool-design.md)；Ferris 详见 [9 月 24 日记录](../gameplay/ferris/IMPLEMENTATION.md) |
 | Gelato / Big Top | 连续转轴水路、灯管整串判定和八格描图纸已接入源码，设备游玩待验收 | 保留已确认的空间与证据链；具体防穷举机制见[已批准方案](../gameplay/2026-09-23-anti-greedy-puzzles.md) |
 
 表中的旧名称仅用于说明迁移来源，不是新玩法名称。本轮源码接入与用户游玩验收分别记录。
@@ -51,7 +51,7 @@ Ivy 是送给一个人的私人横屏 iPhone 回忆解谜游戏。院子和大�
 | Gelato | 同一户外摊位、White Loquat & Jasmine、`gelato` | 采用“雨水流路＋原料关系”：雨水揭示标记，玩家根据原料约束定位口味，再主动试吃确认 |
 | Big Top | 六灯管、实体菜单、五道原点单、`noodle` | 灯管归位完成后才切景；场景 1 点单，场景 2 搜寻证据；菜单用空间推理找到 |
 | Le Labo | 三款完整名称、核心＋两辅助、灌装、装盒、`perfume` | 目标 20 种原料，从现有 21 种中移除一个非必需干扰项；旧 `supermarket` 收藏进度迁至 `perfume`；盒上使用对应产品数字的罗马数字 X / XXII / XXX，不表示槽号；icon 仅东京 10 |
-| Cinema / Dictionary / Ferris / Taxi | 后四个收藏槽与既有进度 | 替换简单占位：胶片叠图选座、字典手写 `FOREVER`、配重力矩、受约束路线；具体证据和操作见[后四站设计稿](../gameplay/2026-09-23-later-eggs-tool-design.md) |
+| Cinema / Dictionary / Ferris / Taxi | 后四个收藏槽与既有进度 | 替换简单占位：胶片叠图选座、字典手写 `FOREVER`、iPod 歌序与检票自拍、受约束路线；具体证据和操作见[后四站设计稿](../gameplay/2026-09-23-later-eggs-tool-design.md) |
 
 后四站的道具与谜题设计已确认、分层素材已交付，仍待接入运行游戏。装置与线索属于游戏化表达，不自动成为私人经历事实。
 

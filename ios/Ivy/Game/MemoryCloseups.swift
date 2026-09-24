@@ -27,6 +27,8 @@ struct MemoryCloseupView: View {
             GelatoCloseupView(store: store, panel: panel)
         } else if [.cinema, .cinemaCase, .cinemaProjector, .cinemaTicket].contains(panel) {
             CinemaCloseupView(store: store, panel: panel)
+        } else if [.ferris, .ferrisTicket, .ferrisGate, .ferrisCabin, .ferrisCamera].contains(panel) {
+            FerrisCloseupView(store: store, panel: panel)
         } else if panel == .dictionary || panel == .dictionarySong {
             DictionaryCloseupView(store: store, panel: panel)
         } else if panel == .yunnan {
@@ -147,7 +149,7 @@ struct MemoryCloseupView: View {
         case .cinema, .cinemaCase, .cinemaProjector, .cinemaTicket: .scene("later-cinema-projection-booth-background")
         case .taxi: .scene("memory-taxi")
         case .bigTop, .mexican: .scene("memory-noodle")
-        case .ferris, .ferrisTicket, .ferrisGate, .ferrisCabin, .ferrisCamera: .scene("memory-ferris")
+        case .ferris, .ferrisTicket, .ferrisGate, .ferrisCabin, .ferrisCamera: .scene("later-ferris-exterior-background")
         case .ticket: .puzzle
         case .travelBook: .scene("memory-travel-book")
         case .yunnan: .scene("explore-plane-window")
@@ -270,7 +272,7 @@ struct WordAnswer: View {
 }
 
 extension AdventureTool {
-    var imageName: String { self == .cinemaFilm ? "cinema-film-blank" : self == .fountainPen ? "later-dictionary-fountain-pen" : isFragranceTool ? fragranceImageName : self == .dinnerMenu ? "bt2-menu-cover" : self == .ticket ? "ticket-paper" : self == .sewingKit ? "memory-twine" : self == .eraser ? "tool-eraser" : self == .napkin ? "tool-cloth" : "tool-" + rawValue }
+    var imageName: String { self == .ferrisTicket ? "ferris-ride-ticket" : self == .ferrisPhone ? "ferris-selfie-phone" : self == .cinemaFilm ? "cinema-film-blank" : self == .fountainPen ? "later-dictionary-fountain-pen" : isFragranceTool ? fragranceImageName : self == .dinnerMenu ? "bt2-menu-cover" : self == .ticket ? "ticket-paper" : self == .sewingKit ? "memory-twine" : self == .eraser ? "tool-eraser" : self == .napkin ? "tool-cloth" : "tool-" + rawValue }
 }
 extension GameStore {
     func traceTicket() {

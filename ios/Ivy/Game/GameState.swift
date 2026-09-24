@@ -42,7 +42,7 @@ enum EggId: String, CaseIterable, Codable, Identifiable {
         case .cinema: "later-cinema-keepsake"
         case .noodle: "bt-dinner"
         case .taxi: "memory-taxi-receipt"
-        case .ferris: "memory-ferris-ticket"
+        case .ferris: "ferris-selfie"
         case .dictionary: "later-dictionary-keepsake"
         case .keycard: "sheraton-keycard"
         case .city: "city-jigsaw-master"
@@ -109,7 +109,7 @@ enum Room: String, Codable {
         case .perfume: "ll4-street"
         case .cinema: "later-cinema-projection-booth-background"
         case .dictionary: "later-dictionary-stall-background"
-        case .ferris: "memory-ferris"
+        case .ferris: "later-ferris-exterior-background"
         case .taxi: "memory-taxi"
         }
     }
@@ -197,6 +197,12 @@ final class GameStore {
     var roomImageName: String {
         if let sideImageName { return sideImageName }
         if room == .yard { return yardImageName }
+        if room == .ferris {
+            let underlying = elementReturnOverlay ?? overlay
+            if underlying == .memory(.ferrisCabin) || underlying == .memory(.ferrisCamera) {
+                return "ferris-cabin-interior"
+            }
+        }
         if room == .cinema, cinema.filmInserted { return "cinema-booth-loaded" }
         if room == .corridor { return roomDoorIsOpen ? "hk-corridor-open-empty" : "hk-corridor-empty" }
         return room.imageName

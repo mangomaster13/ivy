@@ -15,6 +15,11 @@ final class FerrisPuzzleTests: XCTestCase {
         store.openMemory(.ferrisCabin)
         XCTAssertEqual(store.overlay, .none)
         store.openMemory(.ferris)
+        store.memories.ferrisMatches = [0, 1]
+        store.solveLater(.ferris)
+        store.collectPhysical(.ferris)
+        XCTAssertFalse(store.collected.contains(.ferris), "The retired ticket pair must not bypass the camera")
+        store.memories.ferrisMatches = []
         store.submitFerrisPlaylist()
         XCTAssertFalse(store.ferris.playlistSolved)
         store.moveFerrisSong(0, to: 0)

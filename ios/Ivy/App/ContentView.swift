@@ -268,6 +268,7 @@ struct ContentView: View {
             FoodAndFragranceWorld(store: store, scale: scale)
             if store.room == .cinema { CinemaWorld(store: store, scale: scale) }
             if store.room == .dictionary { DictionaryWorld(store: store, scale: scale) }
+            if store.room == .ferris { FerrisWorld(store: store, scale: scale) }
             canvasTapLayer(scale: scale)
             ForEach(store.explorationSpots) { spot in
                 HotspotMarker(rect: spot.rect, scale: scale, label: spot.id, action: { store.inspect(spot) })

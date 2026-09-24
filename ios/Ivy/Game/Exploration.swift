@@ -189,6 +189,7 @@ extension GameStore {
         if tool == .ticket { openMemory(.ticket); return }
         selectedTool = selectedTool == tool ? nil : tool
         sceneHint = ""
+        if tool == .ferrisPhone, selectedTool == tool, overlay == .memory(.ferrisCabin) { openFerrisCamera() }
     }
 
     func acquire(_ tool: AdventureTool) {
@@ -304,7 +305,7 @@ extension GameStore {
         if !collected.contains(.perfume) { return "Beyond the groceries, a familiar scent is waiting." }
         if !collected.contains(.cinema) { return "Two cinema tickets still remember the dark and the screen." }
         if !collected.contains(.dictionary) { return "The old bookstall has kept a song and an unfinished page." }
-        if !collected.contains(.ferris) { return "The ride tickets promise a quieter view above the city." }
+        if !collected.contains(.ferris) { return "Five songs on an iPod, and two places above the city." }
         if !collected.contains(.taxi) { return "One last ride. The taxi meter has kept the end of our night." }
         return "Every keepsake is here. The pages still remember, whenever you want to return."
     }

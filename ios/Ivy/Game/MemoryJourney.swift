@@ -364,7 +364,7 @@ extension GameStore {
         case (.memory(.perfume), .perfume): collectPerfumes(); return
         case (.memory(.cinema), .cinema): allowed = memories.opened.contains("cinema")
         case (.memory(.dictionary), .dictionary): allowed = memories.opened.contains("dictionary")
-        case (.memory(.ferris), .ferris): allowed = memories.opened.contains("ferris")
+        case (.memory(.ferris), .ferris): return // The camera owns this keepsake.
         case (.memory(.taxi), .taxi): allowed = memories.opened.contains("taxi")
         default: allowed = false
         }
@@ -377,7 +377,7 @@ extension GameStore {
         case .bigTop, .perfume: return // Dedicated physical puzzle operations own these rewards.
         case .cinema: return // Projection and whole-seat submission own completion.
         case .dictionary: return // Only actual handwriting can solve the word.
-        case .ferris: solved = memories.ferrisMatches == [0, 1]
+        case .ferris: return // Playlist, ticket and shutter have dedicated guarded actions.
         case .taxi: solved = memories.taxiDraft.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "stay"
         default: return
         }
