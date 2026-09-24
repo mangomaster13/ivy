@@ -59,7 +59,7 @@ struct GelatoCloseupView: View {
     var body: some View {
         // A restored legacy overlay may render before openMemory redirects it.
         // Keep both the cup artwork and its flavour accessibility label gated.
-        if panel == .menu || (panel == .tasting && !store.gelatoWords.flavorSolved && !kept) {
+        if (panel == .menu || panel == .tasting) && !store.gelatoWords.flavorSolved && !kept {
             GelatoWordMenuView(store: store)
         } else {
             GelatoStage(store: store, image: image, back: store.backFromMemory) { stage in

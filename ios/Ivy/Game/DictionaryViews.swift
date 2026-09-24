@@ -79,11 +79,7 @@ struct DictionaryCloseupView: View {
                 ZStack {
                     book
                     PuzzleActionRail {
-                        if store.dictionary.solved {
-                            PuzzleButton("Remember", width: PuzzleActionLayout.width) { store.replayKeepsake(.dictionary) }
-                        } else if !writingCloseup {
-                            PuzzleButton("Write", width: PuzzleActionLayout.width, action: openWritingSurface)
-                        } else {
+                        if writingCloseup && !store.dictionary.solved {
                             PuzzleButton("Undo", width: PuzzleActionLayout.width, action: store.undoDictionaryStroke)
                                 .disabled(!store.canWriteDictionary || store.dictionary.strokes.isEmpty || submitting)
                             PuzzleButton("Enter", width: PuzzleActionLayout.width) {
@@ -124,7 +120,8 @@ struct DictionaryCloseupView: View {
     }
 
     private func openWritingSurface() {
-        guard store.dictionary.solved || store.requireInteractionTool(.fountainPen, missing: "The page is waiting for ink.") else { return }
+        if store.dictionary.solved { store.replayKeepsake(.dictionary); return }
+        guard store.requireInteractionTool(.fountainPen, missing: "The page is waiting for ink.") else { return }
         writingCloseup = true
     }
 
@@ -153,13 +150,13 @@ struct DictionaryCloseupView: View {
                     .frame(width: size.width * rect.width, height: size.height * rect.height)
                     .allowsHitTesting(writingCloseup)
                     .position(x: size.width * rect.midX, y: size.height * rect.midY)
-                if !writingCloseup {
+                if !writingCloseup || store.dictionary.solved {
                     Button(action: openWritingSurface) {
                         Color.clear.contentShape(Rectangle())
                     }.buttonStyle(.plain)
                         .frame(width: max(48, size.width * rect.width), height: max(48, size.height * rect.height))
                         .position(x: size.width * rect.midX, y: size.height * rect.midY)
-                        .accessibilityLabel("Look closer at the dictionary entry")
+                        .accessibilityLabel(store.dictionary.solved ? "Remember the dictionary" : "Look closer at the dictionary entry")
                 }
             }
             .frame(width: size.width, height: size.height, alignment: .topLeading)

@@ -136,6 +136,7 @@ extension GameStore {
         if requestedPanel == .bigTop && !bigTop.orderSolved { panel = .bigTopMenuSearch }
         else if requestedPanel == .bigTopOrder && bigTop.menuPlaced { panel = .bigTopMenu }
         else if requestedPanel == .rainGutter { panel = .gelatoOrder }
+        else if requestedPanel == .menu && collected.contains(.gelato) { panel = .tasting }
         else if requestedPanel == .tasting && !gelatoWords.flavorSolved && !collected.contains(.gelato) { panel = .menu }
         else { panel = requestedPanel }
         guard room == panel.room, !isHallTransitioning, collectingEgg == nil else { return }
@@ -145,6 +146,14 @@ extension GameStore {
         }
         if panel == .bouquet, collected.contains(.rose) {
             replayKeepsake(.rose)
+            return
+        }
+        if panel == .dictionary, collected.contains(.dictionary) {
+            replayKeepsake(.dictionary)
+            return
+        }
+        if panel == .cinema, collected.contains(.cinema) {
+            replayKeepsake(.cinema)
             return
         }
         if panel.room == .perfume, sceneView == 0 { return }
@@ -336,7 +345,7 @@ extension GameStore {
     // Legacy entry points cannot bypass the complete-chain and typed-answer gates.
     func confirmMenu() { submitGelatoChain() }
     func taste(_ index: Int) {
-        guard room == .gelato, overlay == .memory(.tasting), !isIntro,
+        guard room == .gelato, (overlay == .memory(.tasting) || overlay == .memory(.menu)), !isIntro,
               !isHallTransitioning, collectingEgg == nil, !collected.contains(.gelato),
               gelatoWords.flavorSolved, index == 2 else { return }
         guard selectedTool == .scoop, exploration.tools.contains(.scoop) else {

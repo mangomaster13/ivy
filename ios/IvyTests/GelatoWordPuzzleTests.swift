@@ -38,7 +38,7 @@ final class GelatoWordPuzzleTests: XCTestCase {
         store.submitGelatoFlavor()
         XCTAssertTrue(store.gelatoWords.flavorSolved)
         XCTAssertFalse(store.collected.contains(.gelato))
-        store.openMemory(.tasting)
+        XCTAssertEqual(store.overlay, .memory(.menu), "The served cup replaces the menu without a Taste navigation step")
         store.taste(2)
         XCTAssertFalse(store.collected.contains(.gelato), "Holding the spoon must not auto-select it")
         store.chooseTool(.scoop)
@@ -49,7 +49,7 @@ final class GelatoWordPuzzleTests: XCTestCase {
         XCTAssertFalse(store.exploration.tools.contains(.scoop))
         store.finishCollection(.gelato)
         store.cancelOverlay()
-        store.openMemory(.tasting)
+        store.openMemory(.menu)
         XCTAssertEqual(store.overlay, .observation(.gelato))
         XCTAssertNil(store.collectingEgg)
     }

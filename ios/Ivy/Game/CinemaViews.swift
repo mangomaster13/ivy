@@ -208,7 +208,15 @@ struct CinemaCloseupView: View {
                 .frame(width: geometry.size.width, height: geometry.size.height, alignment: .topLeading)
                 .clipped() // One scene camera shared by the cloth, ink and seat targets.
 
-                if store.cinema.projectionReady && !store.cinema.solved {
+                if store.cinema.solved {
+                    Button { store.replayKeepsake(.cinema) } label: {
+                        Color.clear.contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .frame(width: area.width, height: area.height)
+                    .position(x: area.midX, y: area.midY)
+                    .accessibilityLabel("Remember the cinema")
+                } else if store.cinema.projectionReady {
                     seatTargets(area: area, zoom: zoom, origin: origin)
                 } else if !store.cinema.projectionReady {
                     Color.clear.contentShape(Rectangle())
@@ -231,7 +239,7 @@ struct CinemaCloseupView: View {
                 }
                 PuzzleActionRail {
                     if store.cinema.solved {
-                        PuzzleButton("Remember", width: PuzzleActionLayout.width) { store.replayKeepsake(.cinema) }
+                        EmptyView()
                     } else if store.cinema.projectionReady {
                         PuzzleButton("Enter", width: PuzzleActionLayout.width, action: store.submitCinemaSeats)
                             .disabled(store.cinema.seats.count != 2)

@@ -95,9 +95,7 @@ struct FerrisCloseupView: View {
                 .frame(width: screenWidth, height: screenHeight)
                 .position(x: origin.x + screenWidth / 2, y: origin.y + screenHeight / 2)
                 PuzzleActionRail {
-                    if store.ferris.playlistSolved {
-                        PuzzleButton("Ticket", width: PuzzleActionLayout.width) { store.openMemory(.ferrisTicket) }
-                    } else {
+                    if !store.ferris.playlistSolved {
                         if let song = selectedSong, let index = store.ferris.order.firstIndex(of: song) {
                             PuzzleButton("Up", width: PuzzleActionLayout.width) { store.moveFerrisSong(song, to: index - 1) }
                                 .disabled(index == 0)
@@ -215,15 +213,17 @@ struct FerrisCloseupView: View {
             InspectionBackdrop(surface: .defocusedScene("ferris-cabin-interior"))
             GeometryReader { geometry in
                 let available = PuzzleActionLayout.interactionRect(in: geometry.size)
-                Image("ferris-selfie").resizable().interpolation(.high).scaledToFit()
-                    .frame(width: available.width, height: geometry.size.height - 16)
+                Button { if store.ferris.photoTaken { store.replayKeepsake(.ferris) } } label: {
+                    Image("ferris-selfie").resizable().interpolation(.high).scaledToFit()
+                        .frame(width: available.width, height: geometry.size.height - 16)
+                }
+                    .buttonStyle(.plain)
+                    .disabled(!store.ferris.photoTaken)
                     .position(x: available.midX, y: geometry.size.height / 2)
-                    .accessibilityLabel("Both of us, with the harbour behind us")
+                    .accessibilityLabel(store.ferris.photoTaken ? "Remember our selfie" : "Both of us, with the harbour behind us")
             }
             PuzzleActionRail {
-                if store.ferris.photoTaken {
-                    PuzzleButton("Remember", width: PuzzleActionLayout.width) { store.replayKeepsake(.ferris) }
-                } else {
+                if !store.ferris.photoTaken {
                     PuzzleButton("Photo", width: PuzzleActionLayout.width, action: store.takeFerrisSelfie)
                         .disabled(store.selectedTool != .ferrisPhone)
                         .accessibilityLabel("Shutter: take our selfie")

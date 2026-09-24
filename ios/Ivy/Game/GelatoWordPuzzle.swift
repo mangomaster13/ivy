@@ -127,9 +127,7 @@ struct GelatoWordMenuView: View {
                 .frame(width: width, height: height)
                 if !enteringFlavor {
                     PuzzleActionRail {
-                        if store.gelatoWords.flavorSolved {
-                            PuzzleButton("Taste", width: PuzzleActionLayout.width) { store.openMemory(.tasting) }
-                        } else if !store.gelatoWords.chainSolved {
+                        if !store.gelatoWords.chainSolved {
                             PuzzleButton("Enter", width: PuzzleActionLayout.width, action: store.submitGelatoChain)
                                 .disabled(store.gelatoWords.order.count != 7)
                         }
