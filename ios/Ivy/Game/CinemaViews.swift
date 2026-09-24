@@ -1,18 +1,22 @@
 import SwiftUI
 
-/// Authored booth canvas: 320 × 160. The ticket rests on the right-hand table.
+/// Authored booth canvas: 320 × 160. Ticket footprint sits on the projector tabletop.
 enum CinemaLayout {
-    static let ticket = CGRect(x: 268, y: 124, width: 24, height: 12)
+    static let ticket = CGRect(x: 163, y: 106, width: 20, height: 10)
     static let spots: [ExplorationSpot] = [
         .init("Film case on the shelf", 137, 26, 39, 16, .memory(.cinemaCase)),
         .init("Projector", 83, 29, 78, 90, .memory(.cinemaProjector)),
         .init("Projection screen", 251, 14, 64, 82, .memory(.cinema)),
         .init("Ticket stub", ticket.minX, ticket.minY, ticket.width, ticket.height, .memory(.cinemaTicket))
     ]
-    static let diagram = CGRect(x: 178, y: 35, width: 300, height: 200)
-    static func seatCenter(_ seat: Int) -> CGPoint {
-        CGPoint(x: diagram.minX + diagram.width * ((384 + CGFloat(seat % 5) * 208) / 1536),
-                y: diagram.minY + diagram.height * ((274 + CGFloat(seat / 5) * 209) / 1024))
+    // Entire diagram plus the permitted ±55 / ±35 displacement stays on the cloth
+    // (x150...538, y27...237) of the 591 × 296 screen background.
+    static let diagram = CGRect(x: 226, y: 64, width: 204, height: 136)
+    static let seatSpacing = CGSize(width: diagram.width * 208 / 1536,
+                                    height: diagram.height * 209 / 1024)
+    static func seatCenter(_ seat: Int, offset: CGPoint = .zero) -> CGPoint {
+        CGPoint(x: offset.x + diagram.minX + diagram.width * ((384 + CGFloat(seat % 5) * 208) / 1536),
+                y: offset.y + diagram.minY + diagram.height * ((274 + CGFloat(seat / 5) * 209) / 1024))
     }
 }
 
@@ -26,6 +30,8 @@ struct CinemaWorld: View {
                 .position(x: 286 * scale, y: 58 * scale)
             Image("later-cinema-ticket-clue").resizable().scaledToFit()
                 .frame(width: CinemaLayout.ticket.width * scale, height: CinemaLayout.ticket.height * scale)
+                .rotation3DEffect(.degrees(52), axis: (x: 1, y: 0, z: 0))
+                .rotationEffect(.degrees(-12))
                 .position(x: CinemaLayout.ticket.midX * scale, y: CinemaLayout.ticket.midY * scale)
         }.allowsHitTesting(false).accessibilityHidden(true)
     }
@@ -100,8 +106,8 @@ struct CinemaProjection: View {
                                       y: (rect.midY + layer.y) * scaleY)
                     }
                     if progress.projectionReady {
-                        let left = CinemaLayout.seatCenter(12)
-                        let right = CinemaLayout.seatCenter(13)
+                        let left = CinemaLayout.seatCenter(12, offset: progress.projectionOffset)
+                        let right = CinemaLayout.seatCenter(13, offset: progress.projectionOffset)
                         Image("cinema-heart-reveal").resizable().scaledToFit()
                             .frame(width: 30 * scaleX, height: 30 * scaleY)
                             .position(x: (left.x + right.x) / 2 * scaleX, y: left.y * scaleY)
@@ -116,7 +122,6 @@ struct CinemaCloseupView: View {
     @Bindable var store: GameStore
     let panel: MemoryPanel
     @State private var dragOrigin: CGPoint?
-    @State private var choosingSeats = false
     @State private var seatRow: Int?
 
     var body: some View {
@@ -133,7 +138,6 @@ struct CinemaCloseupView: View {
         }
         .gameBackAction {
             if seatRow != nil { seatRow = nil }
-            else if choosingSeats { choosingSeats = false }
             else { store.backFromMemory() }
         }
         .onDisappear { dragOrigin = nil; store.persistNow() }
@@ -156,30 +160,17 @@ struct CinemaCloseupView: View {
     }
 
     private var projector: some View {
-        ZStack {
-            FittedSceneStage {
-                GeometryReader { geometry in
-                    Image("later-cinema-projector-background").resizable().scaledToFit()
-                    let slot = CGRect(x: 142, y: 60, width: 18, height: 46)
-                    if store.cinema.filmInserted {
-                        CinemaFilmStack()
-                            .rotationEffect(.degrees(90))
-                            .frame(width: 43 * geometry.size.width / 320, height: 18 * geometry.size.height / 160)
-                            .position(x: slot.midX * geometry.size.width / 320, y: slot.midY * geometry.size.height / 160)
-                            .allowsHitTesting(false)
-                    }
-                    objectTarget(slot, in: geometry.size, label: store.cinema.filmInserted ? "Remove the three films from projector" : "Insert selected films") {
-                        if store.cinema.filmInserted { store.removeCinemaFilm() }
-                        else { store.insertCinemaFilm() }
-                    }
-                    .inventoryToolDrop(store: store, accepting: store.cinema.filmInserted ? [] : [.cinemaFilm]) { _ in
-                        store.insertCinemaFilm()
-                    }
+        FittedSceneStage {
+            GeometryReader { geometry in
+                Image(store.cinema.filmInserted ? "cinema-projector-loaded" : "later-cinema-projector-background")
+                    .resizable().scaledToFit().accessibilityHidden(true)
+                let slot = CGRect(x: 142, y: 60, width: 18, height: 46)
+                objectTarget(slot, in: geometry.size, label: store.cinema.filmInserted ? "Inspect projected films" : "Insert selected films") {
+                    if store.cinema.filmInserted { store.openMemory(.cinema) }
+                    else { store.insertCinemaFilm() }
                 }
-            }
-            if store.cinema.filmInserted {
-                PuzzleActionRail {
-                    PuzzleButton("Screen", width: PuzzleActionLayout.width) { store.openMemory(.cinema) }
+                .inventoryToolDrop(store: store, accepting: store.cinema.filmInserted ? [] : [.cinemaFilm]) { _ in
+                    store.insertCinemaFilm()
                 }
             }
         }
@@ -193,32 +184,33 @@ struct CinemaCloseupView: View {
             let area = CGRect(x: 8, y: 8, width: mainWidth - 16, height: geometry.size.height - 48)
             let active = store.cinema.layers[store.cinema.selectedFilm]
             let source = screenBounds
-            let zoom = seatRow == nil ? min(area.width / source.width, area.height / source.height)
+            let zoom = seatRow == nil ? min(geometry.size.width / source.width, geometry.size.height / source.height)
                 : area.width / source.width
-            let origin = CGPoint(x: area.midX - source.midX * zoom, y: area.midY - source.midY * zoom)
+            let cameraCenter = seatRow == nil
+                ? CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
+                : CGPoint(x: area.midX, y: area.midY)
+            let origin = CGPoint(x: cameraCenter.x - source.midX * zoom, y: cameraCenter.y - source.midY * zoom)
             ZStack(alignment: .topLeading) {
-                InspectionBackdrop(surface: .scene("later-cinema-screen-background"))
                 ZStack(alignment: .topLeading) {
                     Image("later-cinema-screen-background").resizable()
                         .frame(width: 591 * zoom, height: 296 * zoom)
                     CinemaProjection(progress: store.cinema)
                         .frame(width: 591 * zoom, height: 296 * zoom)
                     ForEach(store.cinema.projectionReady ? store.cinema.seats.sorted() : [], id: \.self) { seat in
-                        let point = CinemaLayout.seatCenter(seat)
+                        let point = CinemaLayout.seatCenter(seat, offset: store.cinema.projectionOffset)
                         Ellipse().stroke(IvyType.cream, lineWidth: 2)
                             .frame(width: 26 * zoom, height: 29 * zoom)
                             .position(x: point.x * zoom, y: point.y * zoom)
                             .allowsHitTesting(false)
                     }
                 }
-                .offset(x: origin.x - area.minX, y: origin.y - area.minY)
-                .frame(width: area.width, height: area.height, alignment: .topLeading)
-                .clipped() // Physical screen camera; controls remain outside this crop.
-                .position(x: area.midX, y: area.midY)
+                .offset(x: origin.x, y: origin.y)
+                .frame(width: geometry.size.width, height: geometry.size.height, alignment: .topLeading)
+                .clipped() // One scene camera shared by the cloth, ink and seat targets.
 
-                if choosingSeats {
+                if store.cinema.projectionReady && !store.cinema.solved {
                     seatTargets(area: area, zoom: zoom, origin: origin)
-                } else {
+                } else if !store.cinema.projectionReady {
                     Color.clear.contentShape(Rectangle())
                         .frame(width: area.width, height: area.height)
                         .gesture(DragGesture(minimumDistance: 1)
@@ -240,12 +232,9 @@ struct CinemaCloseupView: View {
                 PuzzleActionRail {
                     if store.cinema.solved {
                         PuzzleButton("Remember", width: PuzzleActionLayout.width) { store.replayKeepsake(.cinema) }
-                    } else if choosingSeats {
-                        PuzzleButton("Film", width: PuzzleActionLayout.width) { choosingSeats = false; seatRow = nil }
-                        PuzzleButton("Enter", width: PuzzleActionLayout.width, action: store.submitCinemaSeats)
                     } else if store.cinema.projectionReady {
-                        PuzzleButton("Seats", width: PuzzleActionLayout.width) { choosingSeats = true }
-                            .disabled(!store.cinema.filmInserted)
+                        PuzzleButton("Enter", width: PuzzleActionLayout.width, action: store.submitCinemaSeats)
+                            .disabled(store.cinema.seats.count != 2)
                     } else {
                         PuzzleButton("Film " + ["A", "B", "C"][store.cinema.selectedFilm], width: PuzzleActionLayout.width) {
                             dragOrigin = nil
@@ -269,10 +258,13 @@ struct CinemaCloseupView: View {
 
     private var screenBounds: CGRect {
         if let row = seatRow {
-            let first = CinemaLayout.seatCenter(row * 5)
-            return CGRect(x: first.x - 20.3125, y: first.y - 20.41015625, width: 203.125, height: 40.8203125)
+            let first = CinemaLayout.seatCenter(row * 5, offset: store.cinema.projectionOffset)
+            return CGRect(x: first.x - CinemaLayout.seatSpacing.width / 2,
+                          y: first.y - CinemaLayout.seatSpacing.height / 2,
+                          width: CinemaLayout.seatSpacing.width * 5,
+                          height: CinemaLayout.seatSpacing.height)
         }
-        return CinemaLayout.diagram.insetBy(dx: -4, dy: -4)
+        return CGRect(x: 0, y: 0, width: 591, height: 296)
     }
 
     @ViewBuilder private func seatTargets(area: CGRect, zoom: CGFloat, origin: CGPoint) -> some View {
@@ -292,7 +284,13 @@ struct CinemaCloseupView: View {
                 .frame(width: area.width, height: area.height)
                 .gesture(SpatialTapGesture().onEnded { value in
                     let y = (value.location.y + area.minY - origin.y) / zoom
-                    seatRow = min(3, max(0, Int(((y - CinemaLayout.seatCenter(0).y) / 40.8203125).rounded())))
+                    let first = CinemaLayout.seatCenter(0, offset: store.cinema.projectionOffset)
+                    let x = (value.location.x + area.minX - origin.x) / zoom
+                    let row = Int(((y - first.y) / CinemaLayout.seatSpacing.height).rounded())
+                    guard (0..<4).contains(row),
+                          x >= first.x - CinemaLayout.seatSpacing.width / 2,
+                          x <= first.x + CinemaLayout.seatSpacing.width * 4.5 else { return }
+                    seatRow = row
                 })
                 .position(x: area.midX, y: area.midY)
                 .accessibilityElement().accessibilityLabel("Inspect a projected row")

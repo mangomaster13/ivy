@@ -197,6 +197,7 @@ final class GameStore {
     var roomImageName: String {
         if let sideImageName { return sideImageName }
         if room == .yard { return yardImageName }
+        if room == .cinema, cinema.filmInserted { return "cinema-booth-loaded" }
         if room == .corridor { return roomDoorIsOpen ? "hk-corridor-open-empty" : "hk-corridor-empty" }
         return room.imageName
     }

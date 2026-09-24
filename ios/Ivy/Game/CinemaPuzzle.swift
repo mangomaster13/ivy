@@ -1,4 +1,5 @@
 import Foundation
+import CoreGraphics
 
 struct CinemaFilmPosition: Codable, Equatable {
     var x: Double
@@ -32,6 +33,11 @@ struct CinemaProgress: Codable, Equatable {
     }
     var selectedFilm: Int { min(2, max(0, activeFilm ?? 0)) }
     var projectionReady: Bool { projectionRevealed == true || solved }
+    var projectionOffset: CGPoint {
+        guard projectionReady else { return .zero }
+        return CGPoint(x: layers.map(\.x).reduce(0, +) / 3,
+                       y: layers.map(\.y).reduce(0, +) / 3)
+    }
 
     var aligned: Bool {
         let placed = layers
@@ -61,8 +67,13 @@ struct CinemaProgress: Codable, Equatable {
         layers = restored
         activeFilm = selectedFilm
         if projectionReady {
+            filmInserted = true
+            filmTaken = true
+            caseOpened = true
             projectionRevealed = true
-            layers = Array(repeating: CinemaFilmPosition(x: 0, y: 0, flipped: false), count: 3)
+            if !aligned {
+                layers = Array(repeating: CinemaFilmPosition(x: 0, y: 0, flipped: false), count: 3)
+            }
         }
     }
 }
@@ -101,14 +112,6 @@ extension GameStore {
         openMemory(.cinema)
     }
 
-    func removeCinemaFilm() {
-        guard cinemaActive, overlay == .memory(.cinemaProjector), cinema.filmInserted,
-              !cinema.solved else { return }
-        cinema.filmInserted = false
-        acquire(.cinemaFilm)
-        persistNow()
-    }
-
     func moveCinemaFilm(x: Double, y: Double) {
         guard cinemaActive, overlay == .memory(.cinema), cinema.filmInserted,
               !cinema.projectionReady, x.isFinite, y.isFinite else { return }
@@ -142,8 +145,7 @@ extension GameStore {
             showInputError("The picture is still in pieces.")
             return
         }
-        // Whole-image confirmation recenters the projection, then reveals the heart.
-        cinema.layers = Array(repeating: CinemaFilmPosition(x: 0, y: 0, flipped: false), count: 3)
+        // Keep the player's assembled picture in place; only reveal the heart.
         cinema.projectionRevealed = true
         dismissSceneHint()
         persistNow()
@@ -183,10 +185,12 @@ extension GameStore {
                 || ["dictionary", "ferris", "taxi"].contains { exploration.views[$0] != nil }
         }
         if collected.contains(.cinema) || memories.opened.contains("cinema") || progress.solved {
+            let savedLayers = progress.projectionReady ? progress.layers : nil
             progress = CinemaProgress(caseOpened: true, filmTaken: true, filmInserted: true,
                                       flipped: false, x: 0, y: 0, seats: [12, 13], solved: true, exitUnlocked: true,
                                       films: Array(repeating: CinemaFilmPosition(x: 0, y: 0, flipped: false), count: 3),
                                       activeFilm: 0, projectionRevealed: true)
+            if let savedLayers { progress.layers = savedLayers }
             memories.opened.insert("cinema")
             collected.insert(.cinema)
             memories.used.insert(.cinemaFilm)

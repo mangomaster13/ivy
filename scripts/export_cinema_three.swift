@@ -10,7 +10,9 @@ let assets = [
     ("ink-source.png", "cinema-three-ink", 512),
     ("film-source.png", "cinema-film-blank", 591),
     ("heart-source.png", "cinema-heart-reveal", 128),
-    ("case-source.png", "cinema-three-case-full", 591)
+    ("case-source.png", "cinema-three-case-full", 591),
+    ("../projector-loaded/proposal.png", "cinema-projector-loaded", 591),
+    ("../projector-loaded/booth-loaded.png", "cinema-booth-loaded", 591)
 ]
 for (source, name, baseWidth) in assets {
     let sourceURL = root.appendingPathComponent("art/cinema/three-films/" + source)
