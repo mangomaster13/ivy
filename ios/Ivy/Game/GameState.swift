@@ -1216,8 +1216,8 @@ final class GameStore {
         lyricHint = ""
         lyricPad = []
         doorOpened = true
+        overlay = .none
         schedulePersist()
-        transition(to: .hall)
     }
 
     /// One entry point for every scene: commit ownership now, then queue the visual celebration.

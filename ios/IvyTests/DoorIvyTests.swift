@@ -3,7 +3,7 @@ import XCTest
 
 @MainActor
 final class DoorNavigationTests: XCTestCase {
-    func testDoorOpensWithoutAwardingAnotherEgg() {
+    func testDoorOpensAndWaitsForTapWithoutAwardingAnotherEgg() {
         let store = StoreHarness.make()
         store.mailboxOpened = true
         store.collected = [.letter]
@@ -12,9 +12,13 @@ final class DoorNavigationTests: XCTestCase {
         store.submitAssemble()
         XCTAssertTrue(store.doorOpened)
         XCTAssertEqual(store.collected, [.letter])
-        XCTAssertEqual(store.room, .hall)
+        XCTAssertEqual(store.room, .yard)
+        XCTAssertEqual(store.yardImageName, "story-yard-open")
+        XCTAssertFalse(store.isHallTransitioning)
         XCTAssertNil(store.collectingEgg)
         XCTAssertEqual(store.overlay, .none)
+        store.tapYardDoor()
+        XCTAssertEqual(store.room, .hall)
         store.tapHallExit()
         XCTAssertEqual(store.room, .yard)
         XCTAssertTrue(store.doorOpened)
