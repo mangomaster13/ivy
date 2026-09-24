@@ -1,5 +1,11 @@
 import Foundation
 
+struct CinemaFilmPosition: Codable, Equatable {
+    var x: Double
+    var y: Double
+    var flipped: Bool
+}
+
 struct CinemaProgress: Codable, Equatable {
     var caseOpened = false
     var filmTaken = false
@@ -11,9 +17,31 @@ struct CinemaProgress: Codable, Equatable {
     var seats: Set<Int> = []
     var solved = false
     var exitUnlocked = false
+    // Optional additions preserve the shipped one-film save format.
+    var films: [CinemaFilmPosition]? = nil
+    var activeFilm: Int? = nil
+    var projectionRevealed: Bool? = nil
 
-    var aligned: Bool { filmInserted && !flipped && abs(x) <= 3 && abs(y) <= 3 }
-    var complete: Bool { aligned && seats == [12, 13] }
+    var layers: [CinemaFilmPosition] {
+        get {
+            films ?? [CinemaFilmPosition(x: x, y: y, flipped: flipped),
+                      CinemaFilmPosition(x: -39, y: 21, flipped: false),
+                      CinemaFilmPosition(x: 17, y: 31, flipped: true)]
+        }
+        set { films = newValue }
+    }
+    var selectedFilm: Int { min(2, max(0, activeFilm ?? 0)) }
+    var projectionReady: Bool { projectionRevealed == true || solved }
+
+    var aligned: Bool {
+        let placed = layers
+        guard filmInserted, placed.count == 3,
+              placed.allSatisfy({ !$0.flipped && $0.x.isFinite && $0.y.isFinite }) else { return false }
+        // There is no stationary answer layer: any common translation is valid.
+        return placed.map(\.x).max()! - placed.map(\.x).min()! <= 3
+            && placed.map(\.y).max()! - placed.map(\.y).min()! <= 3
+    }
+    var complete: Bool { filmInserted && projectionReady && seats == [12, 13] }
 
     mutating func sanitize() {
         x = x.isFinite ? min(55, max(-55, x)) : 32
@@ -21,6 +49,21 @@ struct CinemaProgress: Codable, Equatable {
         seats = Set(seats.filter { (0..<20).contains($0) }.sorted().prefix(2))
         if filmInserted { filmTaken = true }
         if filmTaken { caseOpened = true }
+        var restored = layers
+        let fallback = CinemaProgress().layers
+        restored = (0..<3).map { index in
+            guard index < restored.count else { return fallback[index] }
+            var layer = restored[index]
+            layer.x = layer.x.isFinite ? min(55, max(-55, layer.x)) : fallback[index].x
+            layer.y = layer.y.isFinite ? min(35, max(-35, layer.y)) : fallback[index].y
+            return layer
+        }
+        layers = restored
+        activeFilm = selectedFilm
+        if projectionReady {
+            projectionRevealed = true
+            layers = Array(repeating: CinemaFilmPosition(x: 0, y: 0, flipped: false), count: 3)
+        }
     }
 }
 
@@ -68,23 +111,47 @@ extension GameStore {
 
     func moveCinemaFilm(x: Double, y: Double) {
         guard cinemaActive, overlay == .memory(.cinema), cinema.filmInserted,
-              !cinema.solved, x.isFinite, y.isFinite else { return }
-        cinema.x = min(55, max(-55, x))
-        cinema.y = min(35, max(-35, y))
+              !cinema.projectionReady, x.isFinite, y.isFinite else { return }
+        let index = cinema.selectedFilm
+        cinema.layers[index].x = min(55, max(-55, x))
+        cinema.layers[index].y = min(35, max(-35, y))
         dismissSceneHint()
         schedulePersist()
     }
 
     func flipCinemaFilm() {
-        guard cinemaActive, overlay == .memory(.cinema), cinema.filmInserted, !cinema.solved else { return }
-        cinema.flipped.toggle()
+        guard cinemaActive, overlay == .memory(.cinema), cinema.filmInserted, !cinema.projectionReady else { return }
+        let index = cinema.selectedFilm
+        cinema.layers[index].flipped.toggle()
+        dismissSceneHint()
+        persistNow()
+    }
+
+    func selectCinemaFilm(_ index: Int) {
+        guard cinemaActive, overlay == .memory(.cinema), cinema.filmInserted,
+              !cinema.projectionReady, (0..<3).contains(index) else { return }
+        cinema.activeFilm = index
+        dismissSceneHint()
+        persistNow()
+    }
+
+    func submitCinemaProjection() {
+        guard cinemaActive, overlay == .memory(.cinema), cinema.filmInserted,
+              !cinema.projectionReady else { return }
+        guard cinema.aligned else {
+            showInputError("The picture is still in pieces.")
+            return
+        }
+        // Whole-image confirmation recenters the projection, then reveals the heart.
+        cinema.layers = Array(repeating: CinemaFilmPosition(x: 0, y: 0, flipped: false), count: 3)
+        cinema.projectionRevealed = true
         dismissSceneHint()
         persistNow()
     }
 
     func selectCinemaSeat(_ seat: Int) {
         guard cinemaActive, overlay == .memory(.cinema), cinema.filmInserted,
-              !cinema.solved, (0..<20).contains(seat) else { return }
+              cinema.projectionReady, !cinema.solved, (0..<20).contains(seat) else { return }
         if cinema.seats.contains(seat) { cinema.seats.remove(seat) }
         else if cinema.seats.count < 2 { cinema.seats.insert(seat) }
         dismissSceneHint()
@@ -117,7 +184,9 @@ extension GameStore {
         }
         if collected.contains(.cinema) || memories.opened.contains("cinema") || progress.solved {
             progress = CinemaProgress(caseOpened: true, filmTaken: true, filmInserted: true,
-                                      flipped: false, x: 0, y: 0, seats: [12, 13], solved: true, exitUnlocked: true)
+                                      flipped: false, x: 0, y: 0, seats: [12, 13], solved: true, exitUnlocked: true,
+                                      films: Array(repeating: CinemaFilmPosition(x: 0, y: 0, flipped: false), count: 3),
+                                      activeFilm: 0, projectionRevealed: true)
             memories.opened.insert("cinema")
             collected.insert(.cinema)
             memories.used.insert(.cinemaFilm)

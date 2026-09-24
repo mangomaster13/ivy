@@ -13,7 +13,7 @@ enum AdventureTool: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .cinemaFilm: "transparent film"
+        case .cinemaFilm: "three transparent films"
         case .fountainPen: "fountain pen"
         case .ticket: "ticket"
         case .brassKey: "garden key"
@@ -47,7 +47,7 @@ enum AdventureTool: String, Codable, CaseIterable, Identifiable {
     }
     var description: String {
         switch self {
-        case .cinemaFilm: "A notched strip of transparent film, carrying half a picture."
+        case .cinemaFilm: "Three transparent films, each carrying scattered fragments of the same picture."
         case .fountainPen: "A blue fountain pen from the bookstall."
         case .ticket: "A paper ticket kept between the pages."
         case .brassKey: "A tiny ivy-shaped key. Somewhere inside, a drawer is waiting."
@@ -73,7 +73,7 @@ enum AdventureClue: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var title: String {
         switch self {
-        case .cinemaTicket: "a notched ticket"
+        case .cinemaTicket: "two seats, one memory"
         case .dictionaryLyric: "a song on paper"
         case .dictionaryEntries: "a missing word"
         case .gardenDate: "a date in the garden"
@@ -231,7 +231,7 @@ extension GameStore {
 
     func clueText(_ clue: AdventureClue) -> String {
         return switch clue {
-        case .cinemaTicket: "HOPE. TWO SEATS, ONE MEMORY. A notch cuts into the upper-right edge."
+        case .cinemaTicket: "HOPE. TWO SEATS, ONE MEMORY."
         case .dictionaryLyric: "In the dictionary of love, ‘forever’ cannot be found."
         case .dictionaryEntries: "FORETELL — to sense what may come.\nFORGIVE — to let a memory be gentle.\nAn entry is missing; the facing page is blank."
         case .gardenDate: "August. Seventeen.\nThe day the garden began to grow."

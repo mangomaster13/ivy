@@ -96,6 +96,7 @@ struct ToolButton: View {
         Button { flashName(); store.chooseTool(tool) } label: {
             Group {
                 if tool.isFragranceTool { FragranceBottleArtwork(tool: tool, showLabel: false) }
+                else if tool == .cinemaFilm { CinemaFilmStack() }
                 else if tool == .dinnerMenu { DinnerMenuArtwork() }
                 else { Image(tool.imageName).resizable().interpolation(.high).scaledToFit() }
             }
