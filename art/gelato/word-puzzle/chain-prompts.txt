@@ -1,0 +1,26 @@
+MENU (superseded)
+
+Edit the supplied Ivy Gelato countertop design into the new word-chain puzzle visual proposal. Keep the complete landscape 2:1 composition, camera, counter edges, sheltered dry paper, lantern and striped rainy awning unchanged. Match Ivy Yard hand-painted pixel-storybook visual language: dark readable hand-drawn contours, broad grouped color shapes, restrained stepped brush texture, matte wood and paper, blue-teal shadows and localized amber light. No photorealism, glossy 3D, vector art or low-resolution pixelation.
+Replace ALL printing on the large paper. Keep only small handwritten heading "A flavour to remember". Print SEVEN large spaced uppercase words in a scattered but orderly three-row arrangement: first row MINT, EGG, RAIN; second row STEAM, JAR; third row TANGERINE, NUTS. Exact spelling. All seven must appear exactly once. Give every word ample separation, no numbered order, no arrows, no boxes or buttons. Each word has precisely ONE tiny dark teal leaf directly beneath ONE specified letter, pointing to that letter only:
+MINT: leaf under I (second letter).
+EGG: leaf under E (first letter).
+RAIN: leaf under A (second letter).
+STEAM: leaf under M (fifth letter).
+JAR: leaf under J (first letter).
+TANGERINE: leaf under N (third letter, NOT the eighth letter).
+NUTS: leaf under S (fourth letter).
+The leaf marker is identical in all seven cases and clearly positioned. No other decorative leaves anywhere on the paper, to avoid false markers. No old scrambled letters, no old clues, no bottom formula, no solved JASMINE anywhere. No answer chain. All lettering and marks within a generous paper inset, legible at game scale. Words are dark teal hand-painted inscriptions on real warm worn paper, not floating native text. This is a clue surface proposal, not a baked UI: no input, no keyboard, no footer, no submission or navigation controls. Keep paper fully supported on the counter and coherent contact shadows.
+
+ORDER
+
+Create ONE isolated physical paper asset for Ivy's Gelato word-chain puzzle, landscape aspect approximately 3:2, true transparent background. Image 1 supplies the current puzzle paper palette and inking style; image 2 supplies Yard's hand-painted pixel-storybook style only. A small old cream order slip, complete silhouette visible, gently uneven torn bottom edge, faint single fold, two tiny staple holes near top, no clip. Frontal orthographic inspection view, no perspective distortion, no furniture, no surrounding scene. Matte paper with crisp restrained stepped brush texture and dark teal hand-inked lettering, subtle warm amber illumination from upper right and blue-teal edge shadow. Never glossy, photorealistic, vector or blurry.
+Exact text only: small heading "ORDER", then a very large central "CUP → PEACH". Wide letterspacing so the final P in CUP and the first P in PEACH are separated and clearly readable. Those TWO P letters are copper-brown instead of teal, each has a copper underline, and a thin curved copper connector below the main text links just those two letters. All other letters are dark teal. This diagram teaches last-letter to first-letter chaining. Do not add any explanatory text, leaf marks, other words, numbers, answers or UI. Maintain 12% inner paper margins, sparse print, readable at phone playing scale. High-resolution authored game artwork, not a presentation board.
+
+NOTE
+
+Create ONE visual design proposal of a small physical handwritten clue note for the Ivy Gelato game. Landscape 3:2. Image 1 is the new menu: match its cream paper and EXACT identical dark teal two-leaf sprout symbol. Image 2 is Yard painting style only. Match hand-painted pixel-storybook art, dark irregular contours, broad matte color shapes, restrained stepped brush texture, deep teal shadows, gentle local warm amber illumination. No photorealism, vector or glossy effects.
+Frontal nearly orthographic view of a complete small cream paper note, gently torn edges, one faint diagonal crease, lying flat with coherent contact shadow on a few old dark wooden bench seat slats that fill the background. Only the note and its supporting wooden surface; no other objects, no furniture distortion. Paper fully within frame, ample inset margins. The note fills 80 percent of image width.
+Print precisely two centered handwritten lines, very large and legible, dark teal:
+"Follow the chain."
+"Read the leaves."
+Beneath these lines place ONE small dark teal sprout matching the menu's exact marker: two pointed leaves curving upward from a short central stem. No additional decorative leaves, word puzzle answers, arrows, symbols, captions, UI, buttons or borders. Keep texture quieter behind writing. This is physical clue artwork for review, not a screenshot or finished UI.
