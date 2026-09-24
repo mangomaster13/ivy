@@ -1,0 +1,8 @@
+{
+  "images" : [
+    { "filename" : "later-taxi-interior-receipt-out.png", "idiom" : "universal", "scale" : "1x" },
+    { "filename" : "later-taxi-interior-receipt-out@2x.png", "idiom" : "universal", "scale" : "2x" },
+    { "filename" : "later-taxi-interior-receipt-out@3x.png", "idiom" : "universal", "scale" : "3x" }
+  ],
+  "info" : { "author" : "xcode", "version" : 1 }
+}
