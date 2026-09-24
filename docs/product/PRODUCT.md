@@ -15,7 +15,7 @@ Ivy 是送给一个人的私人横屏 iPhone 回忆解谜游戏。院子和大�
 | 项目 | 当前运行代码 | 目标规则 / 接入要求 |
 | --- | --- | --- |
 | 香水店与收藏 | 房间与收藏枚举均已改 `perfume`，旧值可解码 | 玩家场景称 Le Labo，收藏 ID 改 `perfume`；读取旧存档并迁移 |
-| 影院后的关卡 | 房间与收藏仍叫 `sunset`，画面是日落滑块占位 | 改为 Dictionary 场景、手写词条与 `dictionary` 收藏；旧进度迁移 |
+| 影院后的关卡 | Dictionary 书摊、手写词条和 `dictionary` ID 已接入；旧 `sunset` 完成事实迁移 | 用户验收笔迹识别、修改、保存及回访 |
 | 后四站 | Cinema、Ferris、Taxi 仍使用早期简版操作 | 采用[已确认设计](../gameplay/2026-09-23-later-eggs-tool-design.md)；已交付的素材尚未接入 |
 | Gelato / Big Top | 连续转轴水路、灯管整串判定和八格描图纸已接入源码，设备游玩待验收 | 保留已确认的空间与证据链；具体防穷举机制见[已批准方案](../gameplay/2026-09-23-anti-greedy-puzzles.md) |
 
@@ -57,13 +57,13 @@ Ivy 是送给一个人的私人横屏 iPhone 回忆解谜游戏。院子和大�
 
 ## 物件、状态和存档
 
-目标收藏 ID 与顺序：`letter, vuori, plane, keycard, city, rose, gelato, noodle, perfume, cinema, dictionary, ferris, taxi`。`perfume` 与 `dictionary` 分别取代旧 `supermarket` 与 `sunset`；新代码读取旧收藏值并迁移完成状态，不能清空玩家进度。本轮已迁移 `perfume` 房间、导航边和收藏枚举；`dictionary` 属后续范围，当前运行代码仍使用旧 `sunset`。
+目标收藏 ID 与顺序：`letter, vuori, plane, keycard, city, rose, gelato, noodle, perfume, cinema, dictionary, ferris, taxi`。`perfume` 与 `dictionary` 分别取代旧 `supermarket` 与 `sunset`；新代码读取旧收藏值并迁移完成状态，不能清空玩家进度。本轮已迁移 `perfume` 房间、导航边和收藏枚举；`dictionary` 已接入旧 ID 与完成事实迁移，尚未构建或设备验收。
 
 保留玩家已有收藏、通行权限、工具持有/消耗与线索。新状态向后兼容；已完成关卡不强制重玩。随机散片位置、原料位置若随机、灯管排列生成一次并持久保存，不随重开刷新。打开、发现、拿取、使用、收藏分别记录。拼合收藏本体的关卡完成即解锁并进入 Element；重看不重复发奖。review 模式不得写入正常存档。
 
 ## 美术与可访问性
 
-采用 Yard 画风的哑光手绘素材；可见文字原则上为英文，Dictionary 歌词纸卡保留用户指定中文。Notes、锁板交互文字与玩家在 Dictionary 的真实笔迹按 UI 规则处理，其余显示文字制成素材，语义标签独立保留。键帽、拼图壳、双光照房间、雨景和收藏 icon 先做实际构图设计稿。香料建立逐项素材映射和表面锚点。
+采用 Yard 画风的哑光手绘素材；可见文字原则上为英文，Dictionary 歌词纸卡也按 2026-09-24 最新要求使用英文。Notes、锁板交互文字与玩家在 Dictionary 的真实笔迹按 UI 规则处理，其余显示文字制成素材，语义标签独立保留。键帽、拼图壳、双光照房间、雨景和收藏 icon 先做实际构图设计稿。香料建立逐项素材映射和表面锚点。
 
 拖拽和连续滑动谜题提供等价无障碍操作，不让普通点击绕过核心推理。Reduce Motion 保留证据和状态，取消不必要移动、雨粒和闪动。任何谜题不依赖短暂反应窗口或只用颜色表达证据。
 

@@ -54,21 +54,6 @@ struct LaterMemoryView: View {
                 }
 
             }
-        case .dictionary:
-            ZStack {
-                Color.clear.frame(width: 460, height: 160)
-                RoundedRectangle(cornerRadius: 4).stroke(IvyType.cream.opacity(0.45), style: StrokeStyle(lineWidth: 2, dash: [5, 5]))
-                    .frame(width: 150, height: 120).offset(x: 42)
-                RoundedRectangle(cornerRadius: 4).stroke(IvyType.cream, lineWidth: 4)
-                    .frame(width: 150, height: 120).offset(x: (store.memories.sunsetFrame - 0.5) * 280)
-            }
-            if solved { reward(.dictionary, "keep the photograph") }
-            else {
-
-                Slider(value: $store.memories.sunsetFrame, in: 0...1, onEditingChanged: { _ in store.persistNow() }).frame(maxWidth: 440).tint(IvyType.cream)
-                    .accessibilityLabel("Camera framing")
-                Button("take the photograph") { store.solveLater(.dictionary) }.frame(minHeight: 44)
-            }
         case .ferris:
             Text("☾ · leaf").multilineTextAlignment(.center)
             if solved {

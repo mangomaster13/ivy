@@ -86,7 +86,7 @@ Big Top’s neon uses six randomly shuffled coloured tube letters whose order pe
 
 ## Language and map
 
-All player-facing copy is English, including Gelato menus, flavour names and private memories, except the user-supplied Chinese lyric on Dictionary's physical lyric card: “在爱情字典里找不到永远”. The player writes the missing dictionary entry in English (`FOREVER`); this local exception does not change other scenes' language. System type is Kiddos; inscriptions use Juniper. Translation must cover prompts, controls, clues, rewards and generated paper assets outside that lyric card.
+All player-facing copy is English, including Gelato menus, flavour names, private memories and Dictionary’s physical lyric card. On 2026-09-24 the user replaced its former Chinese exception with “In the dictionary of love, ‘forever’ cannot be found.” The card title is “Stefanie Sun · Dictionary of Love”; the player writes the missing entry in English (`FOREVER`). System type is Kiddos; inscriptions use Juniper. Translation covers prompts, controls, clues, rewards and generated paper assets.
 
 Le Labo's product labels and physical brand marks follow the user's real-product references (2026-09-20): condensed black printed lettering, small monospaced laboratory copy, ivory wraparound labels and kraft packaging. This is a local printed-branding exception; game controls, Notes and recipe inscriptions retain their established fonts. Product names remain complete: Gaiac 10, Bergamote 22 and Mousse de Chene 30.
 

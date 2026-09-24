@@ -169,7 +169,7 @@ extension EggId {
         case .noodle: "Big Top"
         case .perfume: "Le Labo"
         case .cinema: "Cinema"
-        case .dictionary: "Sunset"
+        case .dictionary: "Dictionary"
         case .ferris: "Above the city"
         case .taxi: "Stay"
         }
@@ -186,7 +186,7 @@ extension EggId {
         case .noodle: "Half a goose, rice, noodles, lemon tea, and Ovaltine. We ordered well."
         case .perfume: "Gaiac 10, Bergamote 22, Mousse de Chene 30. Our little collection, one bottle at a time."
         case .cinema: "I forgot the plot. I remember your arms around me."
-        case .dictionary: "A sunset worth keeping. Especially with you in it."
+        case .dictionary: "Some words belong in our story."
         case .ferris: "Going in circles is lovely with you."
         case .taxi: "The ride had to end. I wasn't ready to say goodbye."
         }

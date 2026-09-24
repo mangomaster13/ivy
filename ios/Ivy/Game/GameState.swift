@@ -43,7 +43,7 @@ enum EggId: String, CaseIterable, Codable, Identifiable {
         case .noodle: "bt-dinner"
         case .taxi: "memory-taxi-receipt"
         case .ferris: "memory-ferris-ticket"
-        case .dictionary: "memory-sunset"
+        case .dictionary: "later-dictionary-keepsake"
         case .keycard: "sheraton-keycard"
         case .city: "city-jigsaw-master"
         default: iconName
@@ -108,7 +108,7 @@ enum Room: String, Codable {
         case .noodle: "bt2-room"
         case .perfume: "ll4-street"
         case .cinema: "memory-cinema"
-        case .dictionary: "memory-sunset"
+        case .dictionary: "later-dictionary-stall-background"
         case .ferris: "memory-ferris"
         case .taxi: "memory-taxi"
         }
@@ -1092,7 +1092,13 @@ final class GameStore {
                 memories.cinemaSeats = []
                 memories.cinemaDraft = ""
             }
-            if index <= EggId.dictionary.slotIndex { memories.sunsetFrame = 0.15 }
+            if index <= EggId.dictionary.slotIndex {
+                memories.dictionary = nil
+                exploration.tools.remove(.fountainPen)
+                exploration.clues.subtract([.dictionaryLyric, .dictionaryEntries])
+                memories.picked.remove(.fountainPen)
+                memories.used.remove(.fountainPen)
+            }
             if index <= EggId.ferris.slotIndex { memories.ferrisMatches = [] }
             if index <= EggId.taxi.slotIndex { memories.taxiDraft = "" }
         }

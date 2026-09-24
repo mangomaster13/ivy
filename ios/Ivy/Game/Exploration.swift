@@ -5,7 +5,7 @@ enum AdventureTool: String, Codable, CaseIterable, Identifiable {
     case brassKey, magnifier, cloth, napkin, sewingKit, coin, scoop, ticket
     // Preserve the old save identifier while replacing the physical tool.
     case eraser = "pencil"
-    case dinnerMenu, bigTopPencil, bigTopInspectionMirror
+    case dinnerMenu, bigTopPencil, bigTopInspectionMirror, fountainPen
     case gaiacWood, cedar, incense, oakmoss, patchouli, vetiver
     case bergamot, grapefruit, petitgrain, orangeBlossom, iris, violet, jasmine
     case cinnamon, pimentoBay, pinkPepper, cardamom, musk, crystalMoss, clearwood, ambroxyde
@@ -13,6 +13,7 @@ enum AdventureTool: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
+        case .fountainPen: "fountain pen"
         case .ticket: "ticket"
         case .brassKey: "garden key"
         case .eraser: "rubber eraser"
@@ -45,6 +46,7 @@ enum AdventureTool: String, Codable, CaseIterable, Identifiable {
     }
     var description: String {
         switch self {
+        case .fountainPen: "A blue fountain pen from the bookstall."
         case .ticket: "A paper ticket kept between the pages."
         case .brassKey: "A tiny ivy-shaped key. Somewhere inside, a drawer is waiting."
         case .eraser: "A worn rubber eraser, with graphite on one corner."
@@ -65,10 +67,12 @@ enum AdventureTool: String, Codable, CaseIterable, Identifiable {
 enum AdventureClue: String, Codable, CaseIterable, Identifiable {
     case gardenDate, label, travelOrder, mirror, music, recipe, temperature, rainRelation
     case gaiacFormula, bergamoteFormula, mousseFormula, perfumeOrder, gelatoOrder, gelatoLeaves
-    case bigTopLedger, bigTopMirror
+    case bigTopLedger, bigTopMirror, dictionaryLyric, dictionaryEntries
     var id: String { rawValue }
     var title: String {
         switch self {
+        case .dictionaryLyric: "a song on paper"
+        case .dictionaryEntries: "a missing word"
         case .gardenDate: "a date in the garden"
         case .label: "a very small label"
         case .travelOrder: "a journey in four signs"
@@ -224,6 +228,8 @@ extension GameStore {
 
     func clueText(_ clue: AdventureClue) -> String {
         return switch clue {
+        case .dictionaryLyric: "In the dictionary of love, ‘forever’ cannot be found."
+        case .dictionaryEntries: "FORETELL — to sense what may come.\nFORGIVE — to let a memory be gentle.\nAn entry is missing; the facing page is blank."
         case .gardenDate: "August. Seventeen.\nThe day the garden began to grow."
         case .label: "vuori.\nA little name, a familiar feeling."
         case .travelOrder: "moon → leaf → star → drop"
@@ -288,7 +294,7 @@ extension GameStore {
         if !collected.contains(.noodle) { return "A warm bowl, an order slip. Big Top kept a little of our evening." }
         if !collected.contains(.perfume) { return "Beyond the groceries, a familiar scent is waiting." }
         if !collected.contains(.cinema) { return "Two cinema tickets still remember the dark and the screen." }
-        if !collected.contains(.dictionary) { return "Outside the cinema, the camera is waiting for the last light." }
+        if !collected.contains(.dictionary) { return "The old bookstall has kept a song and an unfinished page." }
         if !collected.contains(.ferris) { return "The ride tickets promise a quieter view above the city." }
         if !collected.contains(.taxi) { return "One last ride. The taxi meter has kept the end of our night." }
         return "Every keepsake is here. The pages still remember, whenever you want to return."

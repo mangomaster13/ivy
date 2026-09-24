@@ -38,6 +38,38 @@ final class EggOrderTests: XCTestCase {
         XCTAssertEqual(String(decoding: try JSONEncoder().encode(EggId.dictionary), as: UTF8.self), "\"dictionary\"")
     }
 
+    @MainActor
+    func testDictionaryRequiresSelectedPenAndPreservesActualDraft() throws {
+        let store = StoreHarness.make()
+        store.room = .dictionary
+        store.openMemory(.dictionary)
+        let point = DictionaryInkPoint(x: 0.2, y: 0.3)
+        store.addDictionaryPoint(point, startingStroke: true)
+        XCTAssertTrue(store.dictionary.strokes.isEmpty)
+        store.backFromMemory()
+        store.takeDictionaryPen()
+        XCTAssertTrue(store.exploration.tools.contains(.fountainPen))
+        XCTAssertNil(store.selectedTool)
+        store.openMemory(.dictionary)
+        store.addDictionaryPoint(point, startingStroke: true)
+        XCTAssertTrue(store.dictionary.strokes.isEmpty)
+        store.chooseTool(.fountainPen)
+        store.addDictionaryPoint(point, startingStroke: true)
+        store.addDictionaryPoint(DictionaryInkPoint(x: 0.8, y: 0.3), startingStroke: false)
+        let saved = try JSONEncoder().encode(store.memories)
+        let restored = try JSONDecoder().decode(MemoryProgress.self, from: saved)
+        XCTAssertEqual(restored.dictionary?.strokes, [[point, DictionaryInkPoint(x: 0.8, y: 0.3)]])
+        store.memories.sunsetFrame = 0.65
+        store.solveLater(.dictionary)
+        store.collectPhysical(.dictionary)
+        XCTAssertFalse(store.collected.contains(.dictionary), "Old framing must not solve the new word")
+        store.undoDictionaryStroke()
+        XCTAssertTrue(store.dictionary.strokes.isEmpty)
+        let damaged = try JSONDecoder().decode(DictionaryProgress.self, from: Data("{\"strokes\":\"bad\",\"solved\":true}".utf8))
+        XCTAssertTrue(damaged.solved)
+        XCTAssertTrue(damaged.strokes.isEmpty)
+    }
+
     func testOldPerfumeNamesDecodeIntoCurrentIds() throws {
         let decoder = JSONDecoder()
         XCTAssertEqual(try decoder.decode(EggId.self, from: Data("\"supermarket\"".utf8)), .perfume)

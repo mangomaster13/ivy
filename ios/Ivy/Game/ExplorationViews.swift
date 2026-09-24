@@ -372,6 +372,19 @@ private struct ClueNotebookView: View {
                 case .bigTopLedger, .bigTopMirror:
                     BigTopEvidenceArtwork(mirrored: clue == .bigTopMirror, notebook: true)
                         .frame(maxHeight: compact ? 105 : 150)
+                case .dictionaryEntries:
+                    ZStack {
+                        GelatoPaperExcerpt(image: "later-dictionary-open-book-background",
+                                           sourceSize: CGSize(width: 1115, height: 627),
+                                           bounds: CGRect(x: 160, y: 110, width: 320, height: 320))
+                        GelatoPaperExcerpt(image: "later-dictionary-page-entries-overlay",
+                                           sourceSize: CGSize(width: 1115, height: 627),
+                                           bounds: CGRect(x: 160, y: 110, width: 320, height: 320))
+                    }.frame(maxHeight: compact ? 105 : 150)
+                        .accessibilityLabel(store.clueText(clue))
+                case .dictionaryLyric:
+                    Image("later-dictionary-song-card").resizable().scaledToFit()
+                        .accessibilityLabel(store.clueText(clue))
                 case .travelOrder:
                     TravelOrderSymbols(symbolSize: compact ? 27 : 33)
                 case .gelatoOrder:

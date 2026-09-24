@@ -26,7 +26,8 @@ struct MemoryProgress: Codable {
     var legacyRoomAccess: Bool? = nil
     var scents: [Int] = [30, 22, 10]
     var cinemaSeats: Set<Int> = []
-    var sunsetFrame = 0.15
+    var sunsetFrame = 0.15 // Legacy decoding only.
+    var dictionary: DictionaryProgress? = nil
     var ferrisMatches: Set<Int> = []
     var bigTop: BigTopProgress? = nil
     var perfumery: PerfumeProgress? = nil
@@ -66,7 +67,7 @@ struct MemoryProgress: Codable {
 }
 
 enum MemoryPanel: String, CaseIterable {
-    case gelatoOrder, gelatoNote
+    case gelatoOrder, gelatoNote, dictionarySong
     case pot, drawer, linen, wholeBox, dispenser, flight, ticket, travelBook, yunnan, bouquet, city, bath, menu, tasting, keycard
     case bigTop, mexican, perfume, cinema, dictionary, ferris, taxi, blanket
     case bigTopSign, bigTopMenuSearch, bigTopOrder, bigTopMenu, bigTopLedger, bigTopMirror, rainGutter
@@ -93,7 +94,7 @@ enum MemoryPanel: String, CaseIterable {
         case .bigTopSign: .gelato
         case .perfume, .perfumeWood, .perfumeBotanical, .perfumeSpice, .perfumeLab, .perfumeFormula, .perfumeMix: .perfume
         case .cinema: .cinema
-        case .dictionary: .dictionary
+        case .dictionary, .dictionarySong: .dictionary
         case .ferris: .ferris
         case .taxi: .taxi
         }
@@ -186,6 +187,8 @@ extension GameStore {
             returnToRecipe = overlay == .adventure(.recipe) && panel == .menu
             memoryNavigation = []
         }
+        if panel == .dictionary { discover(.dictionaryEntries) }
+        if panel == .dictionarySong { discover(.dictionaryLyric) }
         if panel == .menu { discover(.recipe) }
         if panel == .gelatoOrder { discover(.gelatoOrder) }
         if panel == .gelatoNote { discover(.gelatoLeaves) }
@@ -354,7 +357,7 @@ extension GameStore {
         switch panel {
         case .bigTop, .perfume: return // Dedicated physical puzzle operations own these rewards.
         case .cinema: solved = memories.cinemaDraft.trimmingCharacters(in: .whitespacesAndNewlines).uppercased() == "HOPE" && memories.cinemaSeats == [2, 3]
-        case .dictionary: solved = abs(memories.sunsetFrame - 0.65) <= 0.08
+        case .dictionary: return // Only actual handwriting can solve the word.
         case .ferris: solved = memories.ferrisMatches == [0, 1]
         case .taxi: solved = memories.taxiDraft.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "stay"
         default: return
@@ -364,8 +367,7 @@ extension GameStore {
     }
     func migrateMemories() {
         memories.sanitize()
-        if memories.opened.remove("sunset") != nil { memories.opened.insert("dictionary") }
-        if memories.opened.contains("dictionary") { collected.insert(.dictionary) }
+        migrateDictionary()
         if memories.cityJigsaw == nil && memories.cityPieces == [2, 0, 3, 1] && !memories.citySolved {
             memories.cityJigsaw = []
         }

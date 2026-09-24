@@ -3,7 +3,7 @@ import SwiftUI
 enum ExplorationAction {
     case dryCloth, pot, postcard, drawer, journal, cloth, mirror, score, musicBox, recipe, dispenser, freezer
     case memory(MemoryPanel)
-    case perfumeDoor, perfumeExit
+    case perfumeDoor, perfumeExit, dictionaryPen
     case bigTopTool(AdventureTool), bigTopMirror
     case roseHidingPlace(Int)
     case ambient(String)
@@ -120,7 +120,7 @@ extension GameStore {
             .init("Blending bench", 42, 68, 183, 71, .memory(.perfumeMix)),
             .init("Bottling press", 235, 19, 49, 112, .memory(.perfumeMix))]
         case (.cinema, 0): [.init("tickets", 95, 45, 135, 75, .memory(.cinema))]
-        case (.dictionary, 0): [.init("camera", 95, 45, 135, 75, .memory(.dictionary))]
+        case (.dictionary, 0): DictionaryLayout.spots(penAvailable: !memories.picked.contains(.fountainPen) && !dictionary.solved)
         case (.ferris, 0): [.init("ride tickets", 95, 45, 135, 75, .memory(.ferris))]
         case (.taxi, 0): [.init("taxi meter", 95, 45, 135, 65, .memory(.taxi))]
         default: []
@@ -138,7 +138,7 @@ extension GameStore {
         case .noodle: "The bowls are warm. We take our time."
         case .perfume: "A familiar scent follows us out into the street."
         case .cinema: "The lights dim. Your hand finds mine."
-        case .dictionary: "The light will change. This moment can stay."
+        case .dictionary: "Old paper, a quiet song, and room for one more word."
         case .ferris: "Above the city, everything feels a little quieter."
         case .taxi: "The meter is running. Neither of us is in a hurry."
         }
@@ -147,6 +147,7 @@ extension GameStore {
     func inspect(_ spot: ExplorationSpot) {
         guard canExplore else { return }
         switch spot.action {
+        case .dictionaryPen: takeDictionaryPen()
         case .bigTopTool(let tool): takeBigTopTool(tool)
         case .bigTopMirror: inspectBigTopMirror()
         case .perfumeDoor: enterPerfumery()

@@ -1,6 +1,6 @@
 # Asset catalog 分类
 
-本文记录**当前资源目录**，不是目标关卡或收藏命名。`Scenes/LeLabo` 对应目标收藏 `perfume`；`Scenes/Sunset` 与 `memory-sunset` 仍供旧运行代码使用。Dictionary 的 Yard 风格分层源图位于 `art/later-eggs/production/dictionary/`，对应 `later-dictionary-*` imageset 已导入 `Scenes/Dictionary` 和 `Keepsakes`，但场景代码尚未引用。目标规则与旧存档迁移见 [游戏总纲](../gameplay/IVY-GUIDE.md)，不要因旧目录名继续设计 Supermarket/Sunset 玩法。
+本文记录**当前资源目录**，不是玩法验收报告。`Scenes/LeLabo` 对应 `perfume`。Dictionary 已使用 `Scenes/Dictionary` 与 `Keepsakes` 下的 `later-dictionary-*` 分层素材；旧 `Scenes/Sunset` 资源保留为历史文件。英文歌词卡源图及放置约定见 [Dictionary 接入说明](../../art/dictionary/README.md)；旧文档引用的 `art/later-eggs/production/dictionary/` 在当前工作区不存在，以已导入素材为准。目标规则与旧存档迁移见 [游戏总纲](../gameplay/IVY-GUIDE.md)。
 
 `ios/Ivy/Assets.xcassets` 按使用模块放置资源。`Scenes/<地点>` 收纳该地点的主景、近景、纸品、原料及独立物件；`Shared/Tools`、`Shared/Notes`、`Shared/Lock`、`Shared/UI` 收纳跨场景资源。`Keepsakes` 是收藏展示模块，`Intro` 是片头模块。`AppIcon`、`AccentColor` 留在 catalog 根目录，供 Xcode 构建设置直接引用。
 
