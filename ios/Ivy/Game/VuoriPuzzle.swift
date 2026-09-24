@@ -3,6 +3,8 @@ import SwiftUI
 /// The saved word is also the ordered path: every supplied letter occurs once.
 enum VuoriPuzzle {
     static let letters = Array("lvaoutrie")
+    // The saved draft uses letters, so changing their positions preserves old progress.
+    static let displayIndices = Array("arlvoieut").compactMap { letters.firstIndex(of: $0) }
     static let answer = "vuori"
     static let limit = 5
 
@@ -66,9 +68,11 @@ extension GameStore {
             return
         }
         guard vuoriDraft == VuoriPuzzle.answer else {
+            vuoriDraft = ""
             vuoriMiss = true
             showInputError("That doesn't feel familiar.")
             IvyHaptics.warning()
+            schedulePersist()
             return
         }
         vuoriDraft = ""
@@ -82,15 +86,6 @@ extension GameStore {
     func eraseVuoriConnection() {
         guard canConnectVuori, !vuoriDraft.isEmpty else { return }
         vuoriDraft.removeLast()
-        vuoriMiss = false
-        dismissSceneHint()
-        IvyHaptics.soft()
-        schedulePersist()
-    }
-
-    func clearVuoriConnection() {
-        guard canConnectVuori, !vuoriDraft.isEmpty else { return }
-        vuoriDraft = ""
         vuoriMiss = false
         dismissSceneHint()
         IvyHaptics.soft()

@@ -1,0 +1,8 @@
+{
+  "images" : [
+    { "filename" : "vuori-thread.png", "idiom" : "universal", "scale" : "1x" },
+    { "filename" : "vuori-thread@2x.png", "idiom" : "universal", "scale" : "2x" },
+    { "filename" : "vuori-thread@3x.png", "idiom" : "universal", "scale" : "3x" }
+  ],
+  "info" : { "author" : "xcode", "version" : 1 }
+}

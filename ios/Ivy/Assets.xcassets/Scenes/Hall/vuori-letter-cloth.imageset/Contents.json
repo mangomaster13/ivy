@@ -1,0 +1,8 @@
+{
+  "images" : [
+    { "filename" : "vuori-letter-cloth.png", "idiom" : "universal", "scale" : "1x" },
+    { "filename" : "vuori-letter-cloth@2x.png", "idiom" : "universal", "scale" : "2x" },
+    { "filename" : "vuori-letter-cloth@3x.png", "idiom" : "universal", "scale" : "3x" }
+  ],
+  "info" : { "author" : "xcode", "version" : 1 }
+}

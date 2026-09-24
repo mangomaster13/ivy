@@ -3,17 +3,16 @@ import XCTest
 
 @MainActor
 final class HallTests: XCTestCase {
-    func testVuoriWrongRetainsDraftAndCorrectCollectsOnlyOnce() {
+    func testVuoriWrongClearsDraftAndCorrectCollectsOnlyOnce() {
         let store = StoreHarness.make()
         store.room = .hall
         store.tapVuori()
         [0, 1, 2, 3, 4].forEach(store.connectVuoriLetter)
         store.finishVuoriConnection()
-        XCTAssertEqual(store.vuoriDraft, "lvaou")
+        XCTAssertTrue(store.vuoriDraft.isEmpty)
         XCTAssertEqual(store.overlay, .vuori)
         XCTAssertTrue(store.vuoriMiss)
         XCTAssertFalse(store.collected.contains(.vuori))
-        store.clearVuoriConnection()
         [1, 4, 3, 6, 7].forEach(store.connectVuoriLetter)
         XCTAssertFalse(store.collected.contains(.vuori), "Dragging must not collect before finger lift")
         store.finishVuoriConnection()
@@ -97,27 +96,22 @@ final class HallTests: XCTestCase {
         XCTAssertEqual(store.vuoriDraft, "vuo")
         store.connectVuoriLetter(4)
         XCTAssertEqual(store.vuoriDraft, "vu")
-        store.finishVuoriConnection()
-        XCTAssertFalse(store.vuoriMiss)
         store.cancelOverlay()
         store.tapVuori()
         XCTAssertEqual(store.vuoriPath, [1, 4])
-        store.eraseVuoriConnection()
-        XCTAssertEqual(store.vuoriDraft, "v")
-        store.clearVuoriConnection()
+        store.finishVuoriConnection()
         XCTAssertTrue(store.vuoriPath.isEmpty)
+        XCTAssertFalse(store.vuoriMiss)
     }
 
-    func testWrongPathRemainsEditableWithoutMovingLetters() {
+    func testWrongPathClearsWithoutMovingLetters() {
         let store = StoreHarness.make()
         store.room = .hall; store.tapVuori()
         [1, 4, 3, 6, 8].forEach(store.connectVuoriLetter)
         store.finishVuoriConnection()
         XCTAssertTrue(store.vuoriMiss)
-        store.eraseVuoriConnection()
-        XCTAssertFalse(store.vuoriMiss)
-        XCTAssertTrue(store.sceneHint.isEmpty)
-        store.connectVuoriLetter(7)
+        XCTAssertTrue(store.vuoriDraft.isEmpty)
+        [1, 4, 3, 6, 7].forEach(store.connectVuoriLetter)
         store.finishVuoriConnection()
         XCTAssertEqual(store.collected, [.vuori])
         XCTAssertEqual(store.collectionQueue, [.vuori])
@@ -125,11 +119,11 @@ final class HallTests: XCTestCase {
     }
 
     func testFastSwipesHitEveryCrossedNodeInTravelOrder() {
-        let grid = VuoriGridLayout(side: 56, gap: 10)
+        let grid = VuoriGridLayout(side: 270)
         XCTAssertEqual(grid.crossedIndices(from: grid.center(1), to: grid.center(7)), [1, 4, 7])
         XCTAssertEqual(grid.crossedIndices(from: grid.center(7), to: grid.center(1)), [7, 4, 1])
         XCTAssertEqual(grid.crossedIndices(from: grid.center(4), to: grid.center(3)), [4, 3])
-        XCTAssertEqual(grid.crossedIndices(from: CGPoint(x: 60, y: 0), to: CGPoint(x: 60, y: 180)), [])
+        XCTAssertEqual(grid.crossedIndices(from: CGPoint(x: 0, y: 0), to: CGPoint(x: 0, y: 180)), [])
         XCTAssertEqual(grid.crossedIndices(from: grid.center(1), to: grid.center(1)), [1])
     }
 

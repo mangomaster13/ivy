@@ -2,69 +2,44 @@ import SwiftUI
 
 struct HallKeepsakeView: View {
     @Bindable var store: GameStore
-    @State private var showingTag = false
 
     var body: some View {
-        KeepsakeSheet(back: {
-            if showingTag { showingTag = false }
-            else { store.cancelOverlay() }
-        }, surface: .scene(showingTag ? "vuori-tag-closeup" : "vuori-desk")) {
-            if showingTag {
-                Color.clear.accessibilityElement()
-                    .accessibilityLabel("A stitched nine-point tag. Start at the top middle, then down, left, down, right.")
-            } else {
-                GeometryReader { geometry in
-                    let gap: CGFloat = 10
-                    let side = min(88, (geometry.size.height - 120) / 3,
-                                   (geometry.size.width * 0.48 - gap * 2) / 3)
-                    HStack(spacing: 24) {
-                        GeometryReader { shirt in
-                            Image("memory-shirt-final").resizable().interpolation(.high).scaledToFit()
-                                .frame(width: shirt.size.width, height: shirt.size.height)
-                            Button { showingTag = true } label: {
-                                Image("vuori-tag-sprite").resizable().interpolation(.high).scaledToFit()
-                                    .frame(width: 33, height: 42)
-                                    .frame(width: 48, height: 48)
-                            }
-                            .buttonStyle(.plain)
-                            .position(x: shirt.size.width * 0.5, y: shirt.size.height * 0.19)
-                            .accessibilityLabel("Inspect the stitched shirt tag")
-                        }
-                        .padding(.vertical, 8)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        VStack(spacing: 8) {
-                            VuoriLetterGrid(store: store, layout: VuoriGridLayout(side: side, gap: gap))
-                            HStack(spacing: 14) {
-                                PuzzleButton("erase", action: store.eraseVuoriConnection)
-                                PuzzleButton("clear", action: store.clearVuoriConnection)
-                            }
-                            .disabled(store.vuoriDraft.isEmpty)
-                            .opacity(store.vuoriDraft.isEmpty ? 0.5 : 1)
-                            SceneFeedback(store: store, height: 28)
-                        }
-                        .frame(width: geometry.size.width * 0.48, height: geometry.size.height)
+        KeepsakeSheet(back: store.cancelOverlay, surface: .scene("vuori-desk")) {
+            GeometryReader { geometry in
+                let side = min(310, geometry.size.width * 0.46, geometry.size.height - 4)
+                HStack(spacing: 12) {
+                    VStack(spacing: 4) {
+                        Image("memory-shirt-final").resizable().interpolation(.high).scaledToFit()
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .accessibilityLabel("Vuori shirt")
+                        SceneFeedback(store: store, height: 28)
                     }
-                    .frame(width: geometry.size.width, height: geometry.size.height)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    VuoriLetterGrid(store: store, layout: VuoriGridLayout(side: side))
+                    .frame(width: geometry.size.width * 0.48, height: geometry.size.height)
                 }
+                .frame(width: geometry.size.width, height: geometry.size.height)
             }
         }
     }
 }
 
-/// Shared hit geometry sweeps between touch samples so fast swipes cannot skip letters.
+/// Hit nodes share the letter-cloth sprite's 1268×1241 reference canvas.
 struct VuoriGridLayout {
     let side: CGFloat
-    let gap: CGFloat
-    var extent: CGFloat { side * 3 + gap * 2 }
+    var height: CGFloat { side * 1241 / 1268 }
+    private let columns: [CGFloat] = [0.272, 0.505, 0.744]
+    private let rows: [CGFloat] = [0.254, 0.471, 0.699]
 
     func rect(_ index: Int) -> CGRect {
-        CGRect(x: CGFloat(index % 3) * (side + gap), y: CGFloat(index / 3) * (side + gap),
-               width: side, height: side)
+        let point = center(index)
+        let target = max(48, side * 0.18)
+        return CGRect(x: point.x - target / 2, y: point.y - target / 2,
+                      width: target, height: target)
     }
 
     func center(_ index: Int) -> CGPoint {
-        let bounds = rect(index)
-        return CGPoint(x: bounds.midX, y: bounds.midY)
+        CGPoint(x: side * columns[index % 3], y: height * rows[index / 3])
     }
 
     func crossedIndices(from start: CGPoint, to end: CGPoint) -> [Int] {
@@ -95,40 +70,43 @@ private struct VuoriLetterGrid: View {
     let layout: VuoriGridLayout
     @State private var previousPoint: CGPoint?
     @State private var lastVisited: Int?
+    @State private var dragPoint: CGPoint?
     private let amber = Color(red: 0.86, green: 0.58, blue: 0.19)
 
     var body: some View {
         ZStack(alignment: .topLeading) {
-            Path { line in
-                for (offset, index) in store.vuoriPath.enumerated() {
-                    if offset == 0 { line.move(to: layout.center(index)) }
-                    else { line.addLine(to: layout.center(index)) }
+            Image("vuori-letter-cloth").resizable().interpolation(.high)
+                .frame(width: layout.side, height: layout.height)
+                .accessibilityHidden(true)
+            ForEach(0..<max(0, store.vuoriPath.count - 1), id: \.self) { offset in
+                if let start = point(for: store.vuoriPath[offset]),
+                   let end = point(for: store.vuoriPath[offset + 1]) {
+                    thread(from: start, to: end, endInset: layout.side * 0.09)
                 }
             }
-            .stroke(amber, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
-            .accessibilityHidden(true)
+            if let dragPoint, let last = store.vuoriPath.last, let start = point(for: last) {
+                thread(from: start, to: dragPoint, endInset: 0)
+            }
 
-            ForEach(VuoriPuzzle.letters.indices, id: \.self) { index in
+            ForEach(VuoriPuzzle.displayIndices.indices, id: \.self) { position in
+                let index = VuoriPuzzle.displayIndices[position]
                 let order = store.vuoriPath.firstIndex(of: index)
-                Text(String(VuoriPuzzle.letters[index]))
-                    .font(IvyType.hand(min(34, layout.side * 0.5)))
-                    .foregroundStyle(IvyType.ink)
-                    .frame(width: layout.side, height: layout.side)
-                    .background(HandcutKey().fill(IvyType.cream))
-                    .overlay(HandcutKey().stroke(order == nil ? IvyType.ink.opacity(0.65) : amber,
-                                                lineWidth: order == nil ? 1 : 2.5))
-                    .position(layout.center(index))
+                Circle()
+                    .stroke(order == nil ? .clear : amber, lineWidth: 2.5)
+                    .frame(width: layout.rect(position).width, height: layout.rect(position).height)
+                    .contentShape(Circle())
+                    .position(layout.center(position))
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(String(VuoriPuzzle.letters[index]).uppercased())
                     .accessibilityValue(order.map { "Selected, \($0 + 1) of \(store.vuoriPath.count)" } ?? "Not selected")
                     .accessibilityAddTraits(.isButton)
-                    .accessibilityIdentifier("vuori-letter-\(index)")
+                    .accessibilityIdentifier("vuori-letter-\(position)")
                     .accessibilityAction {
                         store.connectVuoriLetter(index)
                     }
             }
         }
-        .frame(width: layout.extent, height: layout.extent)
+        .frame(width: layout.side, height: layout.height)
         .contentShape(Rectangle())
         .gesture(DragGesture(minimumDistance: 0)
             .onChanged { trace(to: $0.location, start: $0.startLocation) }
@@ -136,6 +114,7 @@ private struct VuoriLetterGrid: View {
                 trace(to: $0.location, start: $0.startLocation)
                 previousPoint = nil
                 lastVisited = nil
+                dragPoint = nil
                 store.finishVuoriConnection()
             })
         .accessibilityElement(children: .contain)
@@ -145,11 +124,30 @@ private struct VuoriLetterGrid: View {
 
     private func trace(to point: CGPoint, start: CGPoint) {
         if previousPoint == nil { store.beginVuoriConnection() }
-        for index in layout.crossedIndices(from: previousPoint ?? start, to: point) where index != lastVisited {
-            store.connectVuoriLetter(index)
-            lastVisited = index
+        for position in layout.crossedIndices(from: previousPoint ?? start, to: point) where position != lastVisited {
+            store.connectVuoriLetter(VuoriPuzzle.displayIndices[position])
+            lastVisited = position
         }
         previousPoint = point
+        dragPoint = CGPoint(x: min(max(point.x, 0), layout.side),
+                            y: min(max(point.y, 0), layout.height))
+    }
+
+    private func point(for index: Int) -> CGPoint? {
+        VuoriPuzzle.displayIndices.firstIndex(of: index).map(layout.center)
+    }
+
+    private func thread(from start: CGPoint, to end: CGPoint, endInset: CGFloat) -> some View {
+        let dx = end.x - start.x, dy = end.y - start.y
+        let distance = (dx * dx + dy * dy).squareRoot()
+        let startInset = layout.side * 0.09
+        let length = max(0, distance - startInset - endInset)
+        let position = distance > 0 ? (startInset + length / 2) / distance : 0
+        return Image("vuori-thread").resizable().interpolation(.high)
+            .frame(width: length, height: 7)
+            .rotationEffect(.radians(atan2(Double(dy), Double(dx))))
+            .position(x: start.x + dx * position, y: start.y + dy * position)
+            .accessibilityHidden(true)
     }
 }
 
