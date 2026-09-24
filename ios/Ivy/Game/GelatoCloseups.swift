@@ -51,8 +51,8 @@ struct GelatoCloseupView: View {
     private var kept: Bool { store.collected.contains(.gelato) }
     private var image: String {
         switch panel {
-        case .dispenser: opened ? "gelato-box-open" : "gelato-box-closed"
-        default: "gelato-tasting"
+        case .dispenser: store.gelatoCabinetImageName
+        default: store.gelatoServingImageName
         }
     }
 
@@ -77,10 +77,12 @@ struct GelatoCloseupView: View {
             if opened {
                 if !store.memories.picked.contains(.scoop) {
                     Button { store.pickup(.scoop, from: .dispenser) } label: {
-                        Image(AdventureTool.scoop.imageName).resizable().interpolation(.high).scaledToFit()
-                            .frame(width: stage.artWidth * 0.18, height: stage.size.height * 0.43)
+                        // Painted scoop hangs from the cabinet-back clip, x140...165/y42...110.
+                        Color.clear
+                            .frame(width: max(48, stage.artWidth * 25 / 320), height: max(48, stage.size.height * 68 / 160))
+                            .contentShape(Rectangle())
                     }.buttonStyle(.plain).accessibilityLabel("Gelato scoop")
-                        .position(stage.point(0.48, 0.49))
+                        .position(stage.point(152.5 / 320, 76 / 160))
                 }
             } else {
                 Button { store.openContainer(.dispenser) } label: {
@@ -94,17 +96,28 @@ struct GelatoCloseupView: View {
 
     private func tasting(_ stage: GelatoStageGeometry) -> some View {
         Button { store.taste(2) } label: {
-            Image("memory-gelato-cup").resizable().interpolation(.high).scaledToFit()
-                .frame(width: stage.artWidth * 0.17, height: stage.size.height * 0.28)
-                .frame(minWidth: 48, minHeight: 48)
+            // Cup is painted into its saucer; the pickup target uses the same footprint.
+            Color.clear
+                .frame(width: max(48, stage.artWidth * 28 / 320), height: max(48, stage.size.height * 34 / 160))
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .inventoryToolDrop(store: store, accepting: kept ? [] : [.scoop]) { _ in store.taste(2) }
         .accessibilityLabel("Taste the jasmine gelato with the selected spoon")
-        .position(stage.point(0.50, 0.77))
+        .position(stage.point(258 / 320, 102 / 160))
     }
 
+}
+
+extension GameStore {
+    var gelatoCabinetImageName: String {
+        guard memories.opened.contains("dispenser") else { return "cabinet-state-closed" }
+        return memories.picked.contains(.scoop) ? "cabinet-state-empty" : "cabinet-state-scoop"
+    }
+    var gelatoServingImageName: String {
+        if collected.contains(.gelato) { return "gelato-state-tasted" }
+        return gelatoWords.flavorSolved ? "gelato-state-served" : "gelato-state-empty"
+    }
 }
 
 /// Legacy recipe entry uses the readable menu, without a second inspection layer.

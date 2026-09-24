@@ -547,10 +547,34 @@ final class ExplorationCompatibilityTests: XCTestCase {
         s.pickup(.eraser, from: .drawer); s.persistNow()
         let r = GameStore(defaults: defaults)
         XCTAssertTrue(r.memories.opened.contains("drawer")); XCTAssertEqual(r.exploration.tools, [.eraser])
+        XCTAssertEqual(r.drawerImageName, "drawer-state-empty")
+        XCTAssertEqual(r.potImageName, "pot-state-empty", "A consumed key stays absent after restoring")
         r.openMemory(.drawer); r.pickup(.magnifier, from: .drawer)
         XCTAssertEqual(r.exploration.tools, [.eraser])
         r.room = .yard; r.openMemory(.pot); r.pickup(.brassKey, from: .pot)
         XCTAssertFalse(r.exploration.tools.contains(.brassKey))
+    }
+
+    func testBoxArtworkFollowsEitherPickupOrderAndConsumedToken() throws {
+        for tokenFirst in [false, true] {
+            let s = StoreHarness.make()
+            s.room = .bedroom
+            s.openMemory(.wholeBox)
+            XCTAssertEqual(s.wholeBoxImageName, "box-state-closed")
+            s.memories.wholeDraft = "as a whole"
+            s.submitWhole()
+            XCTAssertEqual(s.wholeBoxImageName, "box-state-both")
+            if tokenFirst { s.pickup(.coin, from: .wholeBox) }
+            else { s.takeRosePetal(2) }
+            let r = StoreHarness.make()
+            r.memories = try JSONDecoder().decode(MemoryProgress.self, from: JSONEncoder().encode(s.memories))
+            XCTAssertEqual(r.wholeBoxImageName, tokenFirst ? "box-state-petal" : "box-state-token")
+            if tokenFirst { s.takeRosePetal(2) }
+            else { s.pickup(.coin, from: .wholeBox) }
+            s.consume(.coin)
+            XCTAssertEqual(s.wholeBoxImageName, "box-state-empty")
+            XCTAssertFalse(s.exploration.tools.contains(.coin))
+        }
     }
 }
 

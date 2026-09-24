@@ -216,7 +216,7 @@ struct GelatoClueView: View {
                 ZStack {
                     // Bare counter, left of the saucer; the order is a transparent paper sprite.
                     SceneDetailStage(bounds: CGRect(x: 70, y: 110, width: 64, height: 32)) {
-                        InspectionBackdrop(surface: .scene("gelato-tasting"))
+                        InspectionBackdrop(surface: .scene(store.gelatoServingImageName))
                     }
                     Image("gelato-word-order").resizable().interpolation(.high).scaledToFit()
                         .padding(16)

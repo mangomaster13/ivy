@@ -157,7 +157,7 @@ extension GameStore {
     var sideImageName: String? {
         switch (room, sceneView) {
         case (.bedroom, -1): "memory-bath"
-        case (.noodle, 1): bigTop.menuDrawerOpen == true ? "bt3-counter-open" : "bt3-counter"
+        case (.noodle, 1): bigTopCounterImageName
         case (.perfume, 1): "ll4-entry"
         case (.perfume, 2): perfumery.opened.contains("wood") ? "ll-wood-open" : "ll-wood"
         case (.perfume, 3): perfumery.opened.contains("botanical") ? "ll-botanical-room-open" : "ll-botanical"

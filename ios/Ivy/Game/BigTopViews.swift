@@ -234,14 +234,15 @@ enum BigTopCounterLayout {
     static let ledger = CGRect(x: 41, y: 53, width: 68, height: 29)
     static let slit = CGRect(x: 174, y: 55, width: 60, height: 8)
     static let drawer = CGRect(x: 97, y: 117, width: 126, height: 37)
-    static let drawerCamera = CGRect(x: 92, y: 108, width: 135, height: 49)
-    static let menu = CGRect(x: 142, y: 116, width: 34, height: 9)
+    static let drawerCamera = CGRect(x: 92, y: 103, width: 135, height: 54)
+    // The menu lies on the drawer floor, behind the front lip, in bt-state-menu.
+    static let menu = CGRect(x: 117, y: 105, width: 55, height: 20)
     static func wheel(_ index: Int, open: Bool) -> CGPoint {
-        CGPoint(x: (open ? 117.5 : 122) + CGFloat(index) * (open ? 28.3 : 25.4), y: open ? 138.5 : 131.7)
+        CGPoint(x: (open ? 117.5 : 121.5) + CGFloat(index) * (open ? 28.3 : 25.4), y: open ? 138.5 : 130.7)
     }
 }
 
-/// Shared by the room and the lock camera; movable art never remains baked into the plate.
+/// Room and lock camera share complete closed / occupied / empty counter plates.
 struct BigTopCounterArtwork: View {
     let store: GameStore
     var interactiveLock = false
@@ -250,7 +251,7 @@ struct BigTopCounterArtwork: View {
             let scale = geometry.size.width / 320
             let open = store.bigTop.menuDrawerOpen == true
             ZStack(alignment: .topLeading) {
-                Image(open ? "bt3-counter-open" : "bt3-counter").resizable().interpolation(.high)
+                Image(store.bigTopCounterImageName).resizable().interpolation(.high)
                 if !store.memories.picked.contains(.bigTopPencil) {
                     object(.bigTopPencil, rect: BigTopCounterLayout.pencil, scale: scale)
                 }
@@ -282,10 +283,9 @@ struct BigTopCounterArtwork: View {
                 }
                 if open && !store.bigTop.menuTaken {
                     Button(action: store.takeBigTopMenu) {
-                        Image("bt2-menu-cover-lettered").resizable().interpolation(.high).scaledToFit()
-                            .frame(width: 9 * scale, height: 34 * scale)
-                            .rotationEffect(.degrees(90))
-                            .frame(width: 34 * scale, height: max(48, 9 * scale))
+                        Color.clear
+                            .frame(width: max(48, BigTopCounterLayout.menu.width * scale),
+                                   height: max(48, BigTopCounterLayout.menu.height * scale))
                             .contentShape(Rectangle())
                     }.buttonStyle(.plain).allowsHitTesting(interactiveLock)
                         .accessibilityLabel("Take the folded menu")
@@ -304,6 +304,13 @@ struct BigTopCounterArtwork: View {
         Image(tool.imageName).resizable().interpolation(.high).scaledToFit()
             .frame(width: rect.width * scale, height: rect.height * scale)
             .position(x: rect.midX * scale, y: rect.midY * scale)
+    }
+}
+
+extension GameStore {
+    var bigTopCounterImageName: String {
+        guard bigTop.menuDrawerOpen == true else { return "bt-state-closed" }
+        return bigTop.menuTaken ? "bt-state-empty" : "bt-state-menu"
     }
 }
 

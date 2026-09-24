@@ -5,7 +5,6 @@ struct MemoryCloseupView: View {
     @Bindable var store: GameStore
     let panel: MemoryPanel
     @State private var isEnteringText = false
-    private var isContainer: Bool { [.pot, .drawer, .linen, .dispenser].contains(panel) || (panel == .wholeBox && store.memories.opened.contains("wholeBox")) }
     private var relevantTools: [AdventureTool] {
         let candidates: [AdventureTool]
         switch panel {
@@ -46,6 +45,8 @@ struct MemoryCloseupView: View {
             BlanketCloseupView(store: store)
         } else if panel == .wholeBox && !store.memories.opened.contains("wholeBox") {
             WholeBoxPuzzleView(store: store)
+        } else if [.pot, .drawer, .wholeBox, .travelBook].contains(panel) {
+            authoredContainer
         } else {
         KeepsakeSheet(back: store.backFromMemory, surface: inspectionSurface) {
             VStack(spacing: 8) {
@@ -68,24 +69,9 @@ struct MemoryCloseupView: View {
     }
     @ViewBuilder private func content(height: CGFloat) -> some View {
         switch panel {
-        case .pot, .drawer, .linen, .dispenser: container(height: height)
-        case .wholeBox:
-            if store.memories.opened.contains("wholeBox") { container(height: height) }
-            else { WholeBoxPuzzleView(store: store) }
+        case .linen: linen(height: height)
+        case .pot, .drawer, .wholeBox, .dispenser, .travelBook: EmptyView()
         case .flight: JourneyMapView(store: store, height: height)
-        case .travelBook:
-            GeometryReader { geometry in
-                if !store.memories.picked.contains(.ticket) {
-                    Button(action: store.takeTicket) {
-                        Image("ticket-paper").resizable().interpolation(.high).scaledToFit()
-                            .frame(width: min(280, geometry.size.width * 0.34))
-                            .frame(minHeight: 48)
-                    }.buttonStyle(.plain)
-                        .rotationEffect(.degrees(-7))
-                        .position(x: geometry.size.width * 0.68, y: geometry.size.height * 0.42)
-                        .accessibilityLabel("Ticket between the pages")
-                }
-            }
         case .ticket: ticket(height: height)
         case .yunnan: EmptyView() // Dedicated element view above.
         case .bouquet: EmptyView() // Dedicated assembly-to-memory layout above.
@@ -96,52 +82,93 @@ struct MemoryCloseupView: View {
         default: LaterMemoryView(store: store, panel: panel)
         }
     }
-    private func container(height: CGFloat) -> some View {
-        let opened = store.memories.opened.contains(panel.rawValue)
-        let remaining = panel.tools.filter { !store.memories.picked.contains($0) }
+    private func linen(height: CGFloat) -> some View {
         return VStack(spacing: 12) {
             ZStack {
                 Color.clear
-                if opened && panel != .linen {
-                    HStack(spacing: 60) {
-                        if panel == .wholeBox, !store.collected.contains(.rose), !store.roseProgress.found.contains(2) {
-                            Button { store.takeRosePetal(2) } label: {
-                                RosePetalArtwork(index: 2)
-                                    .frame(width: 82, height: 90).rotationEffect(.degrees(-18))
-                            }.buttonStyle(.plain).accessibilityLabel("Red rose petal inside the box")
-                        }
-                        ForEach(remaining) { tool in
-                            Button { withAnimation(.easeInOut(duration: 0.5)) { store.pickup(tool, from: panel) } } label: {
-                                Image(tool.imageName).resizable().interpolation(.high).scaledToFit()
-                                    .frame(width: 105, height: 105).shadow(color: .black.opacity(0.2), radius: 3, y: 4)
-                            }.buttonStyle(.plain).accessibilityLabel("Pick up " + tool.label)
-                                .transition(.scale(scale: 0.1).combined(with: .opacity))
-                        }
-                    }.offset(x: panel == .dispenser ? -35 : 0, y: panel == .wholeBox ? 35 : 0)
-                } else if panel == .linen {
-                    if !store.memories.picked.contains(.cloth) {
-                        Button { store.openContainer(.linen); store.pickup(.cloth, from: .linen) } label: {
-                            Color.clear.frame(width: 180, height: 100).contentShape(Rectangle())
-                        }.offset(x: 60, y: 30).accessibilityLabel("Pick up the folded linen cloth")
-                    }
-                } else if panel != .drawer {
-                    Button { store.openContainer(panel) } label: {
+                if !store.memories.picked.contains(.cloth) {
+                    Button { store.openContainer(.linen); store.pickup(.cloth, from: .linen) } label: {
                         Color.clear.frame(width: 180, height: 100).contentShape(Rectangle())
-                    }.accessibilityLabel(panel == .pot ? "Terracotta pot" : "Token slot")
-                } else {
-                    Button { store.openContainer(panel) } label: {
-                        Image(systemName: "key.fill").font(.system(size: 24)).frame(width: 70, height: 60)
-                            .background(IvyType.cream.opacity(0.15), in: Circle())
-                    }.offset(y: -max(115, min(210, height - 80)) * 0.125).accessibilityLabel("Use selected key in drawer lock")
+                    }.offset(x: 60, y: 30).accessibilityLabel("Pick up the folded linen cloth")
                 }
-            }.frame(height: max(115, min(210, height - 80))).animation(store.prefersReducedMotion ? nil : .easeInOut(duration: 0.65), value: opened)
-
+            }.frame(height: max(115, min(210, height - 80)))
         }
+    }
+
+    /// The entire plate and its transparent targets share one 320 × 160 canvas.
+    /// Object footprints are measured from art/object-states/source, never inventory icons.
+    private var authoredContainer: some View {
+        FittedSceneStage {
+            GeometryReader { geometry in
+                let scale = geometry.size.width / 320
+                let opened = store.memories.opened.contains(panel.rawValue)
+                ZStack(alignment: .topLeading) {
+                    InspectionBackdrop(surface: inspectionSurface)
+                    switch panel {
+                    case .pot:
+                        if !opened {
+                            containerTarget("Move the terracotta pot", rect: CGRect(x: 115, y: 31, width: 80, height: 70), scale: scale) {
+                                store.openContainer(.pot)
+                            }
+                        } else if !store.memories.picked.contains(.brassKey) {
+                            // Stone bench, inside the exposed moss ring.
+                            containerTarget("Pick up the garden key", rect: CGRect(x: 145, y: 70, width: 37, height: 26), scale: scale) {
+                                store.pickup(.brassKey, from: .pot)
+                            }
+                        }
+                    case .drawer:
+                        if !opened {
+                            containerTarget("Use selected key in drawer lock", rect: CGRect(x: 147, y: 45, width: 26, height: 25), scale: scale) {
+                                store.openContainer(.drawer)
+                            }
+                        } else if !store.memories.picked.contains(.eraser) {
+                            // Linen-lined drawer floor, left of centre.
+                            containerTarget("Pick up the rubber eraser", rect: CGRect(x: 101, y: 71, width: 36, height: 25), scale: scale) {
+                                store.pickup(.eraser, from: .drawer)
+                            }
+                        }
+                    case .wholeBox:
+                        // Fixed left/right positions survive either pickup order.
+                        if !store.collected.contains(.rose), !store.roseProgress.found.contains(2) {
+                            containerTarget("Red rose petal inside the box", rect: CGRect(x: 112, y: 88, width: 33, height: 26), scale: scale) {
+                                store.takeRosePetal(2)
+                            }
+                        }
+                        if !store.memories.picked.contains(.coin) {
+                            containerTarget("Pick up the brass token", rect: CGRect(x: 171, y: 91, width: 33, height: 22), scale: scale) {
+                                store.pickup(.coin, from: .wholeBox)
+                            }
+                        }
+                    case .travelBook:
+                        if !store.memories.picked.contains(.ticket) {
+                            containerTarget("Ticket between the pages", rect: CGRect(x: 169, y: 50, width: 104, height: 44), scale: scale, action: store.takeTicket)
+                        }
+                    default: EmptyView()
+                    }
+                }
+                .inventoryToolDrop(store: store, accepting: relevantTools) { _ in
+                    if panel == .drawer { store.openContainer(.drawer) }
+                }
+            }
+        }
+        .overlay(alignment: .bottom) { SceneFeedback(store: store, height: 30) }
+        .gameBackAction(store.backFromMemory)
+    }
+
+    private func containerTarget(_ label: String, rect: CGRect, scale: CGFloat, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Color.clear.frame(width: max(48, rect.width * scale), height: max(48, rect.height * scale))
+                .contentShape(Rectangle())
+        }.buttonStyle(.plain).accessibilityLabel(label)
+            .position(x: rect.midX * scale, y: rect.midY * scale)
     }
     private var inspectionSurface: InspectionSurface {
         switch panel {
-        case .pot, .drawer, .linen, .dispenser: .scene(containerImage(store.memories.opened.contains(panel.rawValue)))
-        case .wholeBox: .scene(store.memories.opened.contains("wholeBox") ? "memory-box" : "memory-box-closed")
+        case .pot: .scene(store.potImageName)
+        case .drawer: .scene(store.drawerImageName)
+        case .linen: .scene(store.memories.picked.contains(.cloth) ? "memory-linen-empty" : "memory-linen")
+        case .dispenser: .scene(store.gelatoCabinetImageName)
+        case .wholeBox: .scene(store.wholeBoxImageName)
         case .bath: .scene("memory-bath")
         case .blanket: .scene("memory-blanket-open")
         case .perfume: .scene("memory-perfume")
@@ -151,7 +178,7 @@ struct MemoryCloseupView: View {
         case .bigTop, .mexican: .scene("memory-noodle")
         case .ferris, .ferrisTicket, .ferrisGate, .ferrisCabin, .ferrisCamera: .scene("later-ferris-exterior-background")
         case .ticket: .puzzle
-        case .travelBook: .scene("memory-travel-book")
+        case .travelBook: .scene(store.travelBookImageName)
         case .yunnan: .scene("explore-plane-window")
         case .bouquet, .city: .defocusedScene("hk-bedroom")
         case .keycard: .scene("explore-corridor-cart")
@@ -167,15 +194,6 @@ struct MemoryCloseupView: View {
         case .bigTopMenu: .scene("bt3-menu-compact")
         case .perfumeWood, .perfumeBotanical, .perfumeSpice, .perfumeLab: .scene("ll-cabinet")
         case .perfumeFormula, .perfumeMix: .scene("ll-bench")
-        }
-    }
-    private func containerImage(_ opened: Bool) -> String {
-        switch panel {
-        case .drawer: opened ? "memory-drawer" : "memory-drawer-closed"
-        case .wholeBox: "memory-box"
-        case .dispenser: opened ? "memory-cabinet" : "memory-cabinet-closed"
-        case .pot: opened ? "memory-pot" : "memory-pot-covered"
-        default: store.memories.picked.contains(.cloth) ? "memory-linen-empty" : "memory-linen"
         }
     }
     private func ticket(height: CGFloat) -> some View {
@@ -224,18 +242,13 @@ private struct WholeBoxPuzzleView: View {
                 let size = geometry.size
 
                 ZStack(alignment: .topLeading) {
-                    InspectionBackdrop(surface: .scene("memory-box-puzzle"))
-                    if !isEnteringText {
-                        IvyType.inscription("i love u")
-                            .font(IvyType.script(min(36, size.width * 0.052)))
-                            .foregroundStyle(IvyType.ink)
-                            .position(x: size.width * 0.23, y: size.height * 0.43)
-                    }
+                    InspectionBackdrop(surface: .scene("box-state-closed"))
                     PuzzleInputLine(text: $store.memories.wholeDraft, limit: 10,
                                     mode: .phrase, submit: store.submitWhole,
                                     onFocusChange: { isEnteringText = $0 })
-                        .frame(width: isEnteringText ? min(300, size.width - 32) : min(300, size.width * 0.42))
-                        .position(x: size.width * (isEnteringText ? 0.56 : 0.73), y: size.height * 0.43)
+                        .accessibilityHint("Complete the inscription: i love u")
+                        .frame(width: isEnteringText ? min(300, size.width - 32) : min(300, size.width * 0.40))
+                        .position(x: size.width * (isEnteringText ? 0.56 : 0.76), y: size.height * 0.43)
                     if !isEnteringText {
                         VStack {
                             Spacer(minLength: 0)
@@ -275,6 +288,25 @@ extension AdventureTool {
     var imageName: String { self == .ferrisTicket ? "ferris-ride-ticket" : self == .ferrisPhone ? "ferris-selfie-phone" : self == .cinemaFilm ? "cinema-film-blank" : self == .fountainPen ? "later-dictionary-fountain-pen" : isFragranceTool ? fragranceImageName : self == .dinnerMenu ? "bt2-menu-cover" : self == .ticket ? "ticket-paper" : self == .sewingKit ? "memory-twine" : self == .eraser ? "tool-eraser" : self == .napkin ? "tool-cloth" : "tool-" + rawValue }
 }
 extension GameStore {
+    var potImageName: String {
+        guard memories.opened.contains("pot") else { return "pot-state-covered" }
+        return memories.picked.contains(.brassKey) ? "pot-state-empty" : "pot-state-key"
+    }
+    var drawerImageName: String {
+        guard memories.opened.contains("drawer") else { return "drawer-state-closed" }
+        return memories.picked.contains(.eraser) ? "drawer-state-empty" : "drawer-state-eraser"
+    }
+    var wholeBoxImageName: String {
+        guard memories.opened.contains("wholeBox") else { return "box-state-closed" }
+        let petal = !collected.contains(.rose) && !roseProgress.found.contains(2)
+        let token = !memories.picked.contains(.coin)
+        if petal { return token ? "box-state-both" : "box-state-petal" }
+        return token ? "box-state-token" : "box-state-empty"
+    }
+    var travelBookImageName: String {
+        memories.picked.contains(.ticket) ? "book-state-empty" : "book-state-ticket"
+    }
+
     func traceTicket() {
         guard room == .plane, overlay == .memory(.ticket), !exploration.clues.contains(.travelOrder) else { return }
         guard use(.eraser) else { return }
