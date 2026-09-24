@@ -1,0 +1,203 @@
+{
+  "jobs": [
+    {
+      "key": "bt-state-menu",
+      "refs": [
+        "/Users/liangzixuan/Desktop/ivy/art/noodles-menu-design/source/counter-open.png",
+        "/Users/liangzixuan/Desktop/ivy/art/object-state-design/01-big-top.png",
+        "/Users/liangzixuan/Desktop/ivy/ios/Ivy/Assets.xcassets/Scenes/Yard/story-yard-base.imageset/story-yard-base@3x.png"
+      ],
+      "prompt": "Production game background, ONE image, EXACT 2:1 horizontal landscape at 3072x1536 or highest available native resolution. Not a board, not a collage, no captions, no UI, no borders. Edit FIRST reference preserving its exact camera, geometry and pixel positions of furniture, background and lighting; second reference is an APPROVED STATE DESIGN BOARD guiding ONLY the object's physical placement, NOT a new camera. Last reference is STYLE ONLY: Match Ivy Yard's hand-painted pixel-storybook visual language: readable dark hand-drawn contours, broad grouped color shapes, restrained stepped brush texture, matte stone/wood/foliage, deep blue-teal shadows and localized warm amber light. Keep crisp native detail, no low-res pixelation, vector or glossy 3D. Only add the named physical object with scene-correct perspective, scale, contact shadows and occlusion. Keep remaining environment untouched. The full restaurant counter scene remains full-frame, NOT cropped. Place one cream red-spined Big Top menu flat on the wooden floor of the OPEN lower drawer. Menu occupies x=119..172, y=116..125 on a 320x160 canvas; its cover foreshortens along depth and lower edge is hidden by drawer front lip. Keep four brass discs BLANK at original positions. Use approved board for physical lying posture, recognizable roast goose cover and BIG TOP / MENU lettering. Keep ledger blank, slit, bottles and drawer front/handle exactly unchanged. No pencil or mirror added. Thin book fits actual shallow drawer, do not deepen drawer.",
+      "generatedPath": "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-89cfe0f5-6b51-41bb-9c01-67009cab00c6.png"
+    },
+    {
+      "key": "pot-state-key",
+      "refs": [
+        "/Users/liangzixuan/Desktop/ivy/ios/Ivy/Assets.xcassets/Scenes/Yard/memory-pot.imageset/memory-pot@3x.png",
+        "/Users/liangzixuan/Desktop/ivy/art/object-state-design/02-yard-pot.png",
+        "/Users/liangzixuan/Desktop/ivy/ios/Ivy/Assets.xcassets/Scenes/Yard/story-yard-base.imageset/story-yard-base@3x.png"
+      ],
+      "prompt": "Production game background, ONE image, EXACT 2:1 horizontal landscape at 3072x1536 or highest available native resolution. Not a board, not a collage, no captions, no UI, no borders. Edit FIRST reference preserving its exact camera, geometry and pixel positions of furniture, background and lighting; second reference is an APPROVED STATE DESIGN BOARD guiding ONLY the object's physical placement, NOT a new camera. Last reference is STYLE ONLY: Match Ivy Yard's hand-painted pixel-storybook visual language: readable dark hand-drawn contours, broad grouped color shapes, restrained stepped brush texture, matte stone/wood/foliage, deep blue-teal shadows and localized warm amber light. Keep crisp native detail, no low-res pixelation, vector or glossy 3D. Only add the named physical object with scene-correct perspective, scale, contact shadows and occlusion. Keep remaining environment untouched. One small ornate ivy brass key lies flat inside the exposed moss ring at normalized center (0.50,0.52), length 0.13 of image width, angled down-right matching the stone plane. Pot stays at LEFT exactly as target; full key footprint lies on stone, no floating. Do not move pot or lantern, ring or bench.",
+      "generatedPath": "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-a9b04687-82c0-4707-b50b-de9f96394ccb.png"
+    },
+    {
+      "key": "drawer-state-eraser",
+      "refs": [
+        "/Users/liangzixuan/Desktop/ivy/ios/Ivy/Assets.xcassets/Scenes/Hall/memory-drawer.imageset/memory-drawer@3x.png",
+        "/Users/liangzixuan/Desktop/ivy/art/object-state-design/03-hall-drawer.png",
+        "/Users/liangzixuan/Desktop/ivy/ios/Ivy/Assets.xcassets/Scenes/Yard/story-yard-base.imageset/story-yard-base@3x.png"
+      ],
+      "prompt": "Production game background, ONE image, EXACT 2:1 horizontal landscape at 3072x1536 or highest available native resolution. Not a board, not a collage, no captions, no UI, no borders. Edit FIRST reference preserving its exact camera, geometry and pixel positions of furniture, background and lighting; second reference is an APPROVED STATE DESIGN BOARD guiding ONLY the object's physical placement, NOT a new camera. Last reference is STYLE ONLY: Match Ivy Yard's hand-painted pixel-storybook visual language: readable dark hand-drawn contours, broad grouped color shapes, restrained stepped brush texture, matte stone/wood/foliage, deep blue-teal shadows and localized warm amber light. Keep crisp native detail, no low-res pixelation, vector or glossy 3D. Only add the named physical object with scene-correct perspective, scale, contact shadows and occlusion. Keep remaining environment untouched. One worn cream rubber eraser with graphite-darkened left end rests flat slightly left of center on linen drawer floor. Normalized footprint x=.38..49,y=.49..62, mild diagonal perspective matching drawer floor. Preserve large drawer, desk, two knobs and central keyhole exactly. Eraser believable small scale, thin contact shadow, no hovering.",
+      "generatedPath": "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-0f340ec9-8681-4f5f-8f3e-8d29a00ae90a.png"
+    },
+    {
+      "key": "book-state-ticket",
+      "refs": [
+        "/Users/liangzixuan/Desktop/ivy/ios/Ivy/Assets.xcassets/Scenes/Plane/memory-travel-book.imageset/memory-travel-book@3x.png",
+        "/Users/liangzixuan/Desktop/ivy/art/object-state-design/04-plane-book.png",
+        "/Users/liangzixuan/Desktop/ivy/ios/Ivy/Assets.xcassets/Scenes/Yard/story-yard-base.imageset/story-yard-base@3x.png"
+      ],
+      "prompt": "Production game background, ONE image, EXACT 2:1 horizontal landscape at 3072x1536 or highest available native resolution. Not a board, not a collage, no captions, no UI, no borders. Edit FIRST reference preserving its exact camera, geometry and pixel positions of furniture, background and lighting; second reference is an APPROVED STATE DESIGN BOARD guiding ONLY the object's physical placement, NOT a new camera. Last reference is STYLE ONLY: Match Ivy Yard's hand-painted pixel-storybook visual language: readable dark hand-drawn contours, broad grouped color shapes, restrained stepped brush texture, matte stone/wood/foliage, deep blue-teal shadows and localized warm amber light. Keep crisp native detail, no low-res pixelation, vector or glossy 3D. Only add the named physical object with scene-correct perspective, scale, contact shadows and occlusion. Keep remaining environment untouched. A cream worn flight ticket rests on right book page in normalized footprint x=.57..82,y=.39..60. Airplane stamp at left, globe stamp and perforated stub at right, engraved double border, NOT any new lettering or answer symbols. Small curled page corner at ticket lower-right lightly overlaps ticket edge, otherwise ticket readable. Follow paper page perspective and curvature, no upright rectangle. Preserve book edges, spine, tea cup, tray and bookmark exactly.",
+      "generatedPath": "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-7fd0a267-e915-46ec-8911-6b5acc7fc8a1.png"
+    },
+    {
+      "key": "box-state-both",
+      "refs": [
+        "/Users/liangzixuan/Desktop/ivy/ios/Ivy/Assets.xcassets/Scenes/Bedroom/memory-box.imageset/memory-box@3x.png",
+        "/Users/liangzixuan/Desktop/ivy/art/object-state-design/05-bedroom-box.png",
+        "/Users/liangzixuan/Desktop/ivy/ios/Ivy/Assets.xcassets/Scenes/Yard/story-yard-base.imageset/story-yard-base@3x.png"
+      ],
+      "prompt": "undefinedAdd exactly one red plush rose petal at normalized center (.40,.66), footprint x=.35..45,y=.58..73; and exactly one small brass spoon-and-ivy engraved token at center (.62,.67), footprint x=.57..67,y=.62..71. Both lie FLAT on the cream BOX FLOOR, not upright lid. Token face is clearly foreshortened elliptical (vertical diameter 55 percent horizontal) with a thin rim and small contact shadow. Petal matte red fabric with a cream root. Keep exact existing box inner boundaries and front lip, hinges, lamps, light, table and composition. Object positions stable, no new compartments.",
+      "generatedPath": "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-b91732e4-db75-4235-9c01-eb93341820c3.png"
+    },
+    {
+      "key": "cabinet-state-scoop",
+      "refs": [
+        "/Users/liangzixuan/Desktop/ivy/ios/Ivy/Assets.xcassets/Scenes/Gelato/gelato-box-open.imageset/gelato-box-open@3x.png",
+        "/Users/liangzixuan/Desktop/ivy/art/object-state-design/06-gelato-cabinet.png",
+        "/Users/liangzixuan/Desktop/ivy/ios/Ivy/Assets.xcassets/Scenes/Yard/story-yard-base.imageset/story-yard-base@3x.png"
+      ],
+      "prompt": "undefinedOne steel ice-cream scoop with worn wooden handle hangs vertically on a brass tool clip on cabinet's wood BACK. Bowl up, wood handle down. Tool footprint normalized x=.45..54, y=.29..63; small clip grips neck at (.49,.40). Dark contact shadow on cabinet back, neck visibly supported by brass clip. No floating. Preserve all cabinet geometry, open right door, cart, harbour, weather and light exactly; cabinet size and position not changed. Retain blank space around tool.",
+      "generatedPath": "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-f4da061b-98a1-42ce-a4fc-149f4be8f3b3.png"
+    },
+    {
+      "key": "gelato-state-served",
+      "refs": [
+        "/Users/liangzixuan/Desktop/ivy/ios/Ivy/Assets.xcassets/Scenes/Gelato/gelato-tasting.imageset/gelato-tasting@3x.png",
+        "/Users/liangzixuan/Desktop/ivy/art/object-state-design/07-gelato-serving.png",
+        "/Users/liangzixuan/Desktop/ivy/ios/Ivy/Assets.xcassets/Scenes/Yard/story-yard-base.imageset/story-yard-base@3x.png"
+      ],
+      "prompt": "undefinedPlace one teal paper cup with gold jasmine motif, creamy jasmine gelato and a small white jasmine flower on EXISTING ceramic saucer at image right. Cup base contact center normalized (.808,.731), base footprint about .078 image width; cup upper silhouette extends up to y=.60, below the four decorative display symbol plaques bottom at y=.585. Total cup silhouette x=.762..853,y=.60..75. The base sits INSIDE the dish, saucer rim visible around it. No wooden spoons, no tool or hand; player has separate spoon. Warm overhead left light and contact shadow in dish. Preserve saucer position, size and whole cart exactly. Not a giant cup; keep display symbols unobscured.",
+      "generatedPath": "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-cff0646e-980c-4028-8ca2-90cfbd82e340.png"
+    },
+    {
+      "key": "bt-state-empty",
+      "refs": [
+        "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-89cfe0f5-6b51-41bb-9c01-67009cab00c6.png"
+      ],
+      "prompt": "Edit this production game background into ONE matching state, not a contact sheet. Preserve exactly the image dimensions, 2:1 framing, camera, all furniture positions and sizes, lighting, brushwork, background texture, edges and every unmentioned detail. Do not zoom, crop, relight, redraw scenery or shift objects. Output highest native resolution matching input, no labels, no UI. ONLY this change: Remove the menu book from open lower drawer and its contact shadow. Restore continuous wooden drawer floor behind it. Preserve drawer position, depth, front lip, 4 blank brass discs, all hardware and entire rest of scene exactly.",
+      "generatedPath": "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-443ed26c-ddb6-4612-9caf-ff29fde90df6.png"
+    },
+    {
+      "key": "drawer-state-empty",
+      "refs": [
+        "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-0f340ec9-8681-4f5f-8f3e-8d29a00ae90a.png"
+      ],
+      "prompt": "Edit this production game background into ONE matching state, not a contact sheet. Preserve exactly the image dimensions, 2:1 framing, camera, all furniture positions and sizes, lighting, brushwork, background texture, edges and every unmentioned detail. Do not zoom, crop, relight, redraw scenery or shift objects. Output highest native resolution matching input, no labels, no UI. ONLY this change: Remove ONLY the eraser and its tiny contact shadow. Restore cream linen weave beneath it. Open drawer shape, wood grain, brass hardware, lamp, books and all light remain exactly unchanged.",
+      "generatedPath": "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-8c1a74cc-0de7-4397-b0a2-56c59619a407.png"
+    },
+    {
+      "key": "box-state-petal",
+      "refs": [
+        "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-b91732e4-db75-4235-9c01-eb93341820c3.png"
+      ],
+      "prompt": "Edit this production game background into ONE matching state, not a contact sheet. Preserve exactly the image dimensions, 2:1 framing, camera, all furniture positions and sizes, lighting, brushwork, background texture, edges and every unmentioned detail. Do not zoom, crop, relight, redraw scenery or shift objects. Output highest native resolution matching input, no labels, no UI. ONLY this change: Remove ONLY right-side brass token and its shadow, restore linen below it. Keep the left red petal pixel-position, scale, angle, texture, shadow EXACTLY unchanged. Do not recenter it. Preserve box and surrounding scene exactly.",
+      "generatedPath": "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-66326637-1a43-4aa0-a249-e1797bc84b8b.png"
+    },
+    {
+      "key": "box-state-token",
+      "refs": [
+        "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-b91732e4-db75-4235-9c01-eb93341820c3.png"
+      ],
+      "prompt": "Edit this production game background into ONE matching state, not a contact sheet. Preserve exactly the image dimensions, 2:1 framing, camera, all furniture positions and sizes, lighting, brushwork, background texture, edges and every unmentioned detail. Do not zoom, crop, relight, redraw scenery or shift objects. Output highest native resolution matching input, no labels, no UI. ONLY this change: Remove ONLY left red petal and its contact shadow, restore linen below it. Keep the right brass token pixel-position, scale, elliptical perspective, texture and shadow EXACTLY unchanged. Do not recenter it. Preserve box and surrounding scene exactly.",
+      "generatedPath": "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-d5261ae7-7709-4030-bfa7-85f7308a49d1.png"
+    },
+    {
+      "key": "box-state-empty",
+      "refs": [
+        "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-b91732e4-db75-4235-9c01-eb93341820c3.png"
+      ],
+      "prompt": "Edit this production game background into ONE matching state, not a contact sheet. Preserve exactly the image dimensions, 2:1 framing, camera, all furniture positions and sizes, lighting, brushwork, background texture, edges and every unmentioned detail. Do not zoom, crop, relight, redraw scenery or shift objects. Output highest native resolution matching input, no labels, no UI. ONLY this change: Remove both red petal and brass token and their contact shadows. Restore continuous linen inside box. Keep box, open lid, edges, camera, hinges, lock, lamps and surrounding scene exactly unchanged.",
+      "generatedPath": "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-fb659858-19a2-47c1-ae6d-4e468e6ce201.png"
+    },
+    {
+      "key": "drawer-state-closed",
+      "refs": [
+        "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-0f340ec9-8681-4f5f-8f3e-8d29a00ae90a.png",
+        "/Users/liangzixuan/Desktop/ivy/ios/Ivy/Assets.xcassets/Scenes/Hall/memory-drawer-closed.imageset/memory-drawer-closed@3x.png"
+      ],
+      "prompt": "undefinedClose the drawer by sliding it into this same desk. Eraser is now hidden. Second reference shows physically closed arrangement; use only drawer mechanics, NOT a changed camera. Maintain first reference exact desk, lamp, books, carpet and masonry. Brass knobs and keyhole move with drawer front to closed position. Single full scene.",
+      "generatedPath": "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-c46d6694-0144-4dee-92a7-194def9fdb6b.png"
+    },
+    {
+      "key": "bt-state-closed",
+      "refs": [
+        "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-89cfe0f5-6b51-41bb-9c01-67009cab00c6.png",
+        "/Users/liangzixuan/Desktop/ivy/art/noodles-menu-design/source/counter.png"
+      ],
+      "prompt": "undefinedPush lower menu drawer CLOSED; menu now hidden. Second reference shows closed drawer front positions only. Preserve first reference exact full restaurant counter view, upper drawer, ledger, slit, tiles, hanging lamps and background. Exactly four BLANK brass lock discs and single handle on closed front, no symbols or menu. Do not crop into closeup.",
+      "generatedPath": "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-0786828b-0c55-4da6-b03e-637ce9416c76.png"
+    },
+    {
+      "key": "box-state-closed",
+      "refs": [
+        "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-b91732e4-db75-4235-9c01-eb93341820c3.png",
+        "/Users/liangzixuan/Desktop/ivy/ios/Ivy/Assets.xcassets/Scenes/Bedroom/memory-box-closed.imageset/memory-box-closed@3x.png"
+      ],
+      "prompt": "undefinedClose this box lid on its hinges; both contents invisible. Keep SAME box footprint centered, front face bottom around y=.92, same camera and surrounding lamps/table from FIRST image. Second reference shows approved cream-inset closed lid with ornate wood brass corners. On lid cream inset, add small dark brown handwritten exact words 'i love u', centered at normalized (.50,.45), width .13 of image, following lid perspective; no other lettering. Leave lower cream lid clear around normalized x=.35..65,y=.56..69 for runtime interactive answer well (do NOT paint a well or UI). This is the same box closed, not a smaller repositioned box.",
+      "generatedPath": "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-f4933617-d58f-4cd5-b04c-164c45aba80d.png",
+      "revision": {
+        "prompt": "Edit this ONE 2:1 production background for Ivy game. Keep the same exact CLOSED wooden rose box identity, cream lid with exact handwritten 'i love u', brass floral corners, tabletop fabric, globe lamp and phone, warm amber / dark teal hand-painted pixel storybook style. Adjust composition ONLY for the established puzzle layout: the complete closed box occupies LEFT half, normalized bounding box x=.05..46 y=.28..82, lid inscription centered x=.25 y=.43. RIGHT half x=.53..94 y=.23..80 is clear continuous teal fabric tabletop, with room for a separate runtime input well; do NOT draw any input well, buttons, text fields or UI. Camera remains same oblique overhead perspective and table does not become deeper; this is a wider inspection crop, all physical proportions realistic. Move globe lamp mostly off left edge and telephone to far upper right without entering clear right-center table. Preserve exact box details and inscription, coherent shadows and matte texture. One 2:1 full image, highest native resolution, not a board. No other wording.",
+        "referenceGeneratedPath": "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-36603099-9e0c-4eae-ae1c-e9c500dfd88f.png"
+      }
+    },
+    {
+      "key": "pot-state-empty",
+      "refs": [
+        "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-a9b04687-82c0-4707-b50b-de9f96394ccb.png"
+      ],
+      "prompt": "undefinedRemove ONLY brass ivy key and its shadow from stone bench moss ring. Preserve moss ring, bench texture, plant, pot at LEFT, lantern, every leaf and light exactly.",
+      "generatedPath": "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-8e2f6683-fa3c-486b-90be-ebacf9ed0daa.png"
+    },
+    {
+      "key": "pot-state-covered",
+      "refs": [
+        "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-a9b04687-82c0-4707-b50b-de9f96394ccb.png",
+        "/Users/liangzixuan/Desktop/ivy/ios/Ivy/Assets.xcassets/Scenes/Yard/memory-pot-covered.imageset/memory-pot-covered@3x.png"
+      ],
+      "prompt": "undefinedMove terracotta pot and its saucer/ivy from left to center so base covers the moss ring and key. Key and ring now hidden under saucer. Second reference shows original centered pot state. Keep FIRST image bench, lantern, scale and camera exactly, no scene redesign; update only pot/ivy position and its physical shadow.",
+      "generatedPath": "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-b208be9d-035f-4f60-9e3e-1a2b758fbf44.png"
+    },
+    {
+      "key": "book-state-empty",
+      "refs": [
+        "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-7fd0a267-e915-46ec-8911-6b5acc7fc8a1.png"
+      ],
+      "prompt": "undefinedRemove ONLY the flight ticket and its contact shadow. Restore blank cream paper below it; preserve page's curled lower-right corner, all book edges and spine, page texture, bookmark, cup, tray and lighting exactly.",
+      "generatedPath": "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-320a784c-1dcc-439b-97d1-9343baf3417e.png"
+    },
+    {
+      "key": "cabinet-state-empty",
+      "refs": [
+        "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-f4da061b-98a1-42ce-a4fc-149f4be8f3b3.png"
+      ],
+      "prompt": "undefinedRemove ONLY scoop (metal bowl, neck, lever, wooden handle) and its shadow from cabinet. KEEP same small brass mounting plate and clip on back wall in same position. Reveal the empty U-shaped brass clip where scoop neck rested. Cabinet remains open, exact same door angle, all scenery unchanged.",
+      "generatedPath": "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-5b7fc33a-95b5-4c50-b667-71c8fb600a7c.png"
+    },
+    {
+      "key": "cabinet-state-closed",
+      "refs": [
+        "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-f4da061b-98a1-42ce-a4fc-149f4be8f3b3.png",
+        "/Users/liangzixuan/Desktop/ivy/ios/Ivy/Assets.xcassets/Scenes/Gelato/gelato-box-closed.imageset/gelato-box-closed@3x.png"
+      ],
+      "prompt": "undefinedSwing the existing right-hinged cabinet door CLOSED, hiding scoop and clip. Second reference shows door closure and coin slot position only. Keep first image exact fixed cabinet frame, size, cart, ivy and harbour perspective/lighting. Do not move cabinet or camera.",
+      "generatedPath": "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-1c22194d-b243-42f6-ad54-16d015317ebe.png"
+    },
+    {
+      "key": "gelato-state-empty",
+      "refs": [
+        "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-cff0646e-980c-4028-8ca2-90cfbd82e340.png"
+      ],
+      "prompt": "undefinedRemove ONLY the jasmine gelato paper cup, contents and its contact shadow; leave the existing ceramic saucer entirely empty in exactly same place, size and angle. Preserve all cart details, four symbol plaques, background and light.",
+      "generatedPath": "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-3937292c-e4ac-41d8-a1e2-785a54511818.png"
+    },
+    {
+      "key": "gelato-state-tasted",
+      "refs": [
+        "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-cff0646e-980c-4028-8ca2-90cfbd82e340.png"
+      ],
+      "prompt": "undefinedOne small spoonful has been taken from the FRONT of the jasmine gelato mound, leaving a visible shallow concave scoop mark. Preserve cup silhouette, exact position, scale, saucer, flower, gold motif and all scene details and lighting. No hands, no new spoon, no missing cup, no text. The only changed pixels are the small scooped area on ice cream surface.",
+      "generatedPath": "/Users/liangzixuan/.codex/generated_images/01a0d19b-5131-7900-9c02-e3240cf965ed/exec-e2f07c82-c297-46ae-81f5-b9b885443fda.png"
+    }
+  ]
+}
