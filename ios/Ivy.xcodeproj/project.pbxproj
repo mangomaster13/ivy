@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C260924C0000000000000001 /* CinemaPuzzle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C260924C0000000000000002; };
+		C260924C0000000000000003 /* CinemaViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C260924C0000000000000004; };
 		F260924D0000000000000003 /* DictionaryViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = F260924D0000000000000004; };
 		F260924D0000000000000001 /* DictionaryPuzzle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F260924D0000000000000002; };
 		F26092400000000000000003 /* GelatoWordPuzzleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26092400000000000000004; };
@@ -74,6 +76,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C260924C0000000000000002 /* CinemaPuzzle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CinemaPuzzle.swift; sourceTree = "<group>"; };
+		C260924C0000000000000004 /* CinemaViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CinemaViews.swift; sourceTree = "<group>"; };
 		F260924D0000000000000004 /* DictionaryViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryViews.swift; sourceTree = "<group>"; };
 		F260924D0000000000000002 /* DictionaryPuzzle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryPuzzle.swift; sourceTree = "<group>"; };
 		F26092400000000000000004 /* GelatoWordPuzzleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GelatoWordPuzzleTests.swift; sourceTree = "<group>"; };
@@ -204,6 +208,8 @@
 				F02020260000000000000008 /* LaterMemories.swift */,
 				F02020260000000000000006 /* JourneyMap.swift */,
 				F19091900000000000000002 /* GelatoCloseups.swift */,
+				C260924C0000000000000002 /* CinemaPuzzle.swift */,
+				C260924C0000000000000004 /* CinemaViews.swift */,
 				F260924D0000000000000002 /* DictionaryPuzzle.swift */,
 				F260924D0000000000000004 /* DictionaryViews.swift */,
 				F26092400000000000000002 /* GelatoWordPuzzle.swift */,
@@ -370,6 +376,8 @@
 				F02020260000000000000007 /* LaterMemories.swift in Sources */,
 				F02020260000000000000005 /* JourneyMap.swift in Sources */,
 				F19091900000000000000001 /* GelatoCloseups.swift in Sources */,
+				C260924C0000000000000001 /* CinemaPuzzle.swift in Sources */,
+				C260924C0000000000000003 /* CinemaViews.swift in Sources */,
 				F260924D0000000000000001 /* DictionaryPuzzle.swift in Sources */,
 				F260924D0000000000000003 /* DictionaryViews.swift in Sources */,
 				F26092400000000000000001 /* GelatoWordPuzzle.swift in Sources */,

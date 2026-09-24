@@ -23,37 +23,7 @@ struct LaterMemoryView: View {
                 Text("Bad dinner. Great company.").font(.system(size: 21)).multilineTextAlignment(.center)
             }.foregroundStyle(IvyType.ink).padding(30).background(IvyType.cream, in: RoundedRectangle(cornerRadius: 8))
         case .perfume: PerfumeCloseupView(store: store, panel: .perfume)
-        case .cinema:
-            if solved {
-                HStack(spacing: 0) {
-                    Image(systemName: "hand.point.right.fill").font(.system(size: 54))
-                    Image(systemName: "hand.point.left.fill").font(.system(size: 54))
-                }.foregroundStyle(IvyType.cream).transition(.scale.combined(with: .opacity))
-                Text(EggId.cinema.memoryLine).font(.system(size: 21)).multilineTextAlignment(.center)
-                reward(.cinema, "take our two tickets")
-            } else {
-                HStack(spacing: 20) {
-                    VStack(spacing: 12) {
-                        Text("On the poster: H O P E\nOur tickets: C3 + C4").font(IvyType.hand(22)).multilineTextAlignment(.center)
-                        LazyVGrid(columns: Array(repeating: GridItem(.fixed(52)), count: 3), spacing: 8) {
-                            ForEach(0..<6) { i in
-                                Button {
-                                    if store.memories.cinemaSeats.contains(i) { store.memories.cinemaSeats.remove(i) }
-                                    else if store.memories.cinemaSeats.count < 2 { store.memories.cinemaSeats.insert(i) }
-                                    store.persistNow()
-                                } label: {
-                                    Text("C\(i+1)").font(IvyType.hand(21)).foregroundStyle(IvyType.ink)
-                                        .frame(width: 52, height: 48)
-                                        .background(HandcutKey().fill(store.memories.cinemaSeats.contains(i) ? Color.orange : IvyType.cream))
-                                }
-                            }
-                        }
-                    }.frame(maxWidth: 230)
-                    WordAnswer(text: $store.memories.cinemaDraft, placeholder: "the film on our tickets", glyphs: "pheomslart", limit: 4, feedbackStore: store) { store.solveLater(.cinema) }
-                        .onChange(of: store.memories.cinemaDraft) { _, _ in store.persistNow() }
-                }
-
-            }
+        case .cinema: CinemaCloseupView(store: store, panel: .cinema)
         case .ferris:
             Text("☾ · leaf").multilineTextAlignment(.center)
             if solved {

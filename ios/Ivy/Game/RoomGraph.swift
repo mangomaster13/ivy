@@ -114,8 +114,8 @@ enum RoomGraph {
             ]
         case .cinema:
             return [
-                DiegeticHotspot(edge: .cinemaBack, rect: back, label: "Le Labo doorway"),
-                DiegeticHotspot(edge: .cinemaExit, rect: forward, label: "EXIT")
+                DiegeticHotspot(edge: .cinemaBack, rect: CGRect(x: 9, y: 12, width: 50, height: 130), label: "Le Labo doorway"),
+                DiegeticHotspot(edge: .cinemaExit, rect: CGRect(x: 198, y: 37, width: 25, height: 84), label: "Bookstall doorway")
             ]
         case .dictionary:
             return [

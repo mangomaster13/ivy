@@ -25,7 +25,8 @@ struct MemoryProgress: Codable {
     var cityLooseOrder: [Int]? = nil // First visit shuffles the nine loose positions once.
     var legacyRoomAccess: Bool? = nil
     var scents: [Int] = [30, 22, 10]
-    var cinemaSeats: Set<Int> = []
+    var cinema: CinemaProgress? = nil
+    var cinemaSeats: Set<Int> = [] // Legacy decoding only.
     var sunsetFrame = 0.15 // Legacy decoding only.
     var dictionary: DictionaryProgress? = nil
     var ferrisMatches: Set<Int> = []
@@ -67,6 +68,7 @@ struct MemoryProgress: Codable {
 }
 
 enum MemoryPanel: String, CaseIterable {
+    case cinemaCase, cinemaProjector, cinemaTicket
     case gelatoOrder, gelatoNote, dictionarySong
     case pot, drawer, linen, wholeBox, dispenser, flight, ticket, travelBook, yunnan, bouquet, city, bath, menu, tasting, keycard
     case bigTop, mexican, perfume, cinema, dictionary, ferris, taxi, blanket
@@ -93,7 +95,7 @@ enum MemoryPanel: String, CaseIterable {
         case .bigTop, .mexican, .bigTopMenuSearch, .bigTopOrder, .bigTopMenu, .bigTopLedger, .bigTopMirror: .noodle
         case .bigTopSign: .gelato
         case .perfume, .perfumeWood, .perfumeBotanical, .perfumeSpice, .perfumeLab, .perfumeFormula, .perfumeMix: .perfume
-        case .cinema: .cinema
+        case .cinema, .cinemaCase, .cinemaProjector, .cinemaTicket: .cinema
         case .dictionary, .dictionarySong: .dictionary
         case .ferris: .ferris
         case .taxi: .taxi
@@ -145,6 +147,8 @@ extension GameStore {
         }
         if panel.room == .perfume, sceneView == 0 { return }
         switch panel {
+        case .cinemaProjector where !cinema.filmInserted && !cinema.solved:
+            guard requireInteractionTool(.cinemaFilm, missing: "The projector has an empty gate.") else { return }
         case .bigTopLedger where !exploration.clues.contains(.bigTopLedger):
             guard requireInteractionTool(.bigTopPencil, missing: "The next page kept a few faint impressions.") else { return }
         case .bigTopMirror:
@@ -187,6 +191,7 @@ extension GameStore {
             returnToRecipe = overlay == .adventure(.recipe) && panel == .menu
             memoryNavigation = []
         }
+        if panel == .cinemaTicket { discover(.cinemaTicket) }
         if panel == .dictionary { discover(.dictionaryEntries) }
         if panel == .dictionarySong { discover(.dictionaryLyric) }
         if panel == .menu { discover(.recipe) }
@@ -197,6 +202,7 @@ extension GameStore {
             persistNow()
         }
         sceneHint = ""; overlay = .memory(panel)
+        if panel == .cinemaCase { openCinemaCase() }
         if panel == .bigTopSign { persistNow() }
         if panel == .bigTop && bigTop.orderSolved { collectDinner() }
         if panel == .perfume && perfumery.arranged && !collected.contains(.perfume) { collectPerfumes() }
@@ -356,7 +362,7 @@ extension GameStore {
         let solved: Bool
         switch panel {
         case .bigTop, .perfume: return // Dedicated physical puzzle operations own these rewards.
-        case .cinema: solved = memories.cinemaDraft.trimmingCharacters(in: .whitespacesAndNewlines).uppercased() == "HOPE" && memories.cinemaSeats == [2, 3]
+        case .cinema: return // Projection and whole-seat submission own completion.
         case .dictionary: return // Only actual handwriting can solve the word.
         case .ferris: solved = memories.ferrisMatches == [0, 1]
         case .taxi: solved = memories.taxiDraft.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "stay"
@@ -368,6 +374,7 @@ extension GameStore {
     func migrateMemories() {
         memories.sanitize()
         migrateDictionary()
+        migrateCinema()
         if memories.cityJigsaw == nil && memories.cityPieces == [2, 0, 3, 1] && !memories.citySolved {
             memories.cityJigsaw = []
         }

@@ -372,6 +372,9 @@ private struct ClueNotebookView: View {
                 case .bigTopLedger, .bigTopMirror:
                     BigTopEvidenceArtwork(mirrored: clue == .bigTopMirror, notebook: true)
                         .frame(maxHeight: compact ? 105 : 150)
+                case .cinemaTicket:
+                    Image("later-cinema-ticket-clue").resizable().scaledToFit()
+                        .accessibilityLabel(store.clueText(.cinemaTicket))
                 case .dictionaryEntries:
                     ZStack {
                         GelatoPaperExcerpt(image: "later-dictionary-open-book-background",

@@ -24,6 +24,8 @@ struct MemoryCloseupView: View {
             GelatoClueView(store: store, panel: panel)
         } else if [.menu, .tasting, .dispenser].contains(panel) {
             GelatoCloseupView(store: store, panel: panel)
+        } else if [.cinema, .cinemaCase, .cinemaProjector, .cinemaTicket].contains(panel) {
+            CinemaCloseupView(store: store, panel: panel)
         } else if panel == .dictionary || panel == .dictionarySong {
             DictionaryCloseupView(store: store, panel: panel)
         } else if panel == .yunnan {
@@ -140,7 +142,7 @@ struct MemoryCloseupView: View {
         case .blanket: .scene("memory-blanket-open")
         case .perfume: .scene("memory-perfume")
         case .dictionary, .dictionarySong: .scene("later-dictionary-open-book-background")
-        case .cinema: .scene("memory-cinema")
+        case .cinema, .cinemaCase, .cinemaProjector, .cinemaTicket: .scene("later-cinema-projection-booth-background")
         case .taxi: .scene("memory-taxi")
         case .bigTop, .mexican: .scene("memory-noodle")
         case .ferris: .scene("memory-ferris")
@@ -330,7 +332,7 @@ struct WordAnswer: View {
 }
 
 extension AdventureTool {
-    var imageName: String { self == .fountainPen ? "later-dictionary-fountain-pen" : isFragranceTool ? fragranceImageName : self == .dinnerMenu ? "bt2-menu-cover" : self == .ticket ? "ticket-paper" : self == .sewingKit ? "memory-twine" : self == .eraser ? "tool-eraser" : self == .napkin ? "tool-cloth" : "tool-" + rawValue }
+    var imageName: String { self == .cinemaFilm ? "later-cinema-acetate-film" : self == .fountainPen ? "later-dictionary-fountain-pen" : isFragranceTool ? fragranceImageName : self == .dinnerMenu ? "bt2-menu-cover" : self == .ticket ? "ticket-paper" : self == .sewingKit ? "memory-twine" : self == .eraser ? "tool-eraser" : self == .napkin ? "tool-cloth" : "tool-" + rawValue }
 }
 extension GameStore {
     func traceTicket() {

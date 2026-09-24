@@ -39,7 +39,7 @@ enum EggId: String, CaseIterable, Codable, Identifiable {
         case .perfume: "ll-perfume-trio"
         case .plane: "memory-ticket"
         case .gelato: "memory-gelato-cup"
-        case .cinema: "memory-cinema-ticket"
+        case .cinema: "later-cinema-keepsake"
         case .noodle: "bt-dinner"
         case .taxi: "memory-taxi-receipt"
         case .ferris: "memory-ferris-ticket"
@@ -107,7 +107,7 @@ enum Room: String, Codable {
         case .gelato: "bt2-gelato"
         case .noodle: "bt2-room"
         case .perfume: "ll4-street"
-        case .cinema: "memory-cinema"
+        case .cinema: "later-cinema-projection-booth-background"
         case .dictionary: "later-dictionary-stall-background"
         case .ferris: "memory-ferris"
         case .taxi: "memory-taxi"
@@ -735,6 +735,9 @@ final class GameStore {
         if room == .perfume, edge == .perfumeForward, !perfumery.cinemaUnlocked && !collected.contains(.perfume) {
             showSceneHint("That familiar scent, somewhere nearby.", presentation: .interaction); return
         }
+        if room == .cinema, edge == .cinemaExit, !cinema.exitUnlocked && !cinema.solved && !collected.contains(.cinema) {
+            showSceneHint("The last picture is still waiting.", presentation: .interaction); return
+        }
         if room == .plane, edge == .planeDepart { openMemory(.flight); return }
         if room == .corridor, edge == .corridorForward, !roomDoorIsOpen {
             overlay = corridorUnlocked ? .memory(.keycard) : .hotelLock
@@ -1089,6 +1092,11 @@ final class GameStore {
                 memories.used.subtract(bottles)
             }
             if index <= EggId.cinema.slotIndex {
+                memories.cinema = nil
+                exploration.tools.remove(.cinemaFilm)
+                exploration.clues.remove(.cinemaTicket)
+                memories.picked.remove(.cinemaFilm)
+                memories.used.remove(.cinemaFilm)
                 memories.cinemaSeats = []
                 memories.cinemaDraft = ""
             }

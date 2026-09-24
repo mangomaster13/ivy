@@ -1,6 +1,6 @@
 # 香水铺后彩蛋 · 道具与操作设计稿
 
-状态：玩法方向已确认；按 Yard 风格制作的分层 PNG 素材已交付于 `art/later-eggs/production/` 并导入 Xcode Assets.xcassets，Dictionary 已接入（2026-09-24），其余新场景代码尚未引用；均未经本轮用户验收。素材文件、资源名、状态切换和叠层约定见该目录的 `README.md`。目标收藏顺序中的 `dictionary` 取代旧 `sunset`；旧存档的 `sunset` 进度须映射到 `dictionary`，不能丢失收藏或重玩要求。香水收藏的新 ID 为 `perfume`，旧 `supermarket` 进度也须迁移。
+状态：玩法方向已确认；按 Yard 风格制作的分层 PNG 素材已交付于 `art/later-eggs/production/` 并导入 Xcode Assets.xcassets，Dictionary、Cinema 已接入（2026-09-24；Cinema 的缺口素材尚不匹配定稿，见 [接入记录](cinema/IMPLEMENTATION.md)），其余新场景代码尚未引用；均未经本轮用户验收。素材文件、资源名、状态切换和叠层约定见该目录的 `README.md`。目标收藏顺序中的 `dictionary` 取代旧 `sunset`；旧存档的 `sunset` 进度须映射到 `dictionary`，不能丢失收藏或重玩要求。香水收藏的新 ID 为 `perfume`，旧 `supermarket` 进度也须迁移。
 
 | 地点 | 可拾取工具及来源 | 主动操作 | 完成与回访 |
 | --- | --- | --- | --- |

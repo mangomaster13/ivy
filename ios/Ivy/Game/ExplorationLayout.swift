@@ -119,7 +119,7 @@ extension GameStore {
             .init("Laboratory cabinet", 33, 9, 79, 70, .memory(.perfumeLab)),
             .init("Blending bench", 42, 68, 183, 71, .memory(.perfumeMix)),
             .init("Bottling press", 235, 19, 49, 112, .memory(.perfumeMix))]
-        case (.cinema, 0): [.init("tickets", 95, 45, 135, 75, .memory(.cinema))]
+        case (.cinema, 0): CinemaLayout.spots
         case (.dictionary, 0): DictionaryLayout.spots(penAvailable: !memories.picked.contains(.fountainPen) && !dictionary.solved)
         case (.ferris, 0): [.init("ride tickets", 95, 45, 135, 75, .memory(.ferris))]
         case (.taxi, 0): [.init("taxi meter", 95, 45, 135, 65, .memory(.taxi))]

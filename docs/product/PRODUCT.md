@@ -16,7 +16,7 @@ Ivy 是送给一个人的私人横屏 iPhone 回忆解谜游戏。院子和大�
 | --- | --- | --- |
 | 香水店与收藏 | 房间与收藏枚举均已改 `perfume`，旧值可解码 | 玩家场景称 Le Labo，收藏 ID 改 `perfume`；读取旧存档并迁移 |
 | 影院后的关卡 | Dictionary 书摊、手写词条和 `dictionary` ID 已接入；旧 `sunset` 完成事实迁移 | 用户验收笔迹识别、修改、保存及回访 |
-| 后四站 | Cinema、Ferris、Taxi 仍使用早期简版操作 | 采用[已确认设计](../gameplay/2026-09-23-later-eggs-tool-design.md)；已交付的素材尚未接入 |
+| 后四站 | Cinema 已接入胶片叠图与选座，缺口素材及运行验收待完成；Ferris、Taxi 仍使用早期简版操作 | 采用[已确认设计](../gameplay/2026-09-23-later-eggs-tool-design.md)；已交付的素材尚未接入 |
 | Gelato / Big Top | 连续转轴水路、灯管整串判定和八格描图纸已接入源码，设备游玩待验收 | 保留已确认的空间与证据链；具体防穷举机制见[已批准方案](../gameplay/2026-09-23-anti-greedy-puzzles.md) |
 
 表中的旧名称仅用于说明迁移来源，不是新玩法名称。本轮源码接入与用户游玩验收分别记录。
