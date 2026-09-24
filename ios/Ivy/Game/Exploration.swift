@@ -5,6 +5,7 @@ enum AdventureTool: String, Codable, CaseIterable, Identifiable {
     case brassKey, magnifier, cloth, napkin, sewingKit, coin, scoop, ticket
     // Preserve the old save identifier while replacing the physical tool.
     case eraser = "pencil"
+    case ferrisTicket, ferrisPhone
     case dinnerMenu, bigTopPencil, bigTopInspectionMirror, fountainPen, cinemaFilm
     case gaiacWood, cedar, incense, oakmoss, patchouli, vetiver
     case bergamot, grapefruit, petitgrain, orangeBlossom, iris, violet, jasmine
@@ -13,6 +14,8 @@ enum AdventureTool: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
+        case .ferrisTicket: "Ferris wheel ticket"
+        case .ferrisPhone: "phone"
         case .cinemaFilm: "three transparent films"
         case .fountainPen: "fountain pen"
         case .ticket: "ticket"
@@ -47,6 +50,8 @@ enum AdventureTool: String, Codable, CaseIterable, Identifiable {
     }
     var description: String {
         switch self {
+        case .ferrisTicket: "Two places in a carriage above the city."
+        case .ferrisPhone: "A phone for one photograph together."
         case .cinemaFilm: "Three transparent films, each carrying scattered fragments of the same picture."
         case .fountainPen: "A blue fountain pen from the bookstall."
         case .ticket: "A paper ticket kept between the pages."

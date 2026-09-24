@@ -1107,7 +1107,13 @@ final class GameStore {
                 memories.picked.remove(.fountainPen)
                 memories.used.remove(.fountainPen)
             }
-            if index <= EggId.ferris.slotIndex { memories.ferrisMatches = [] }
+            if index <= EggId.ferris.slotIndex {
+                memories.ferrisMatches = []
+                memories.ferris = nil
+                exploration.tools.subtract([.ferrisTicket, .ferrisPhone])
+                memories.picked.subtract([.ferrisTicket, .ferrisPhone])
+                memories.used.subtract([.ferrisTicket, .ferrisPhone])
+            }
             if index <= EggId.taxi.slotIndex { memories.taxiDraft = "" }
         }
 

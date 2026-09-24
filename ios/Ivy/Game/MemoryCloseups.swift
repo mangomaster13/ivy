@@ -147,7 +147,7 @@ struct MemoryCloseupView: View {
         case .cinema, .cinemaCase, .cinemaProjector, .cinemaTicket: .scene("later-cinema-projection-booth-background")
         case .taxi: .scene("memory-taxi")
         case .bigTop, .mexican: .scene("memory-noodle")
-        case .ferris: .scene("memory-ferris")
+        case .ferris, .ferrisTicket, .ferrisGate, .ferrisCabin, .ferrisCamera: .scene("memory-ferris")
         case .ticket: .puzzle
         case .travelBook: .scene("memory-travel-book")
         case .yunnan: .scene("explore-plane-window")

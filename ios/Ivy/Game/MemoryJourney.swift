@@ -29,7 +29,8 @@ struct MemoryProgress: Codable {
     var cinemaSeats: Set<Int> = [] // Legacy decoding only.
     var sunsetFrame = 0.15 // Legacy decoding only.
     var dictionary: DictionaryProgress? = nil
-    var ferrisMatches: Set<Int> = []
+    var ferrisMatches: Set<Int> = [] // Legacy pair matching, migration only.
+    var ferris: FerrisProgress? = nil
     var bigTop: BigTopProgress? = nil
     var perfumery: PerfumeProgress? = nil
     // Stable clue identity survives new discoveries and decodes from older saves.
@@ -68,6 +69,7 @@ struct MemoryProgress: Codable {
 }
 
 enum MemoryPanel: String, CaseIterable {
+    case ferrisTicket, ferrisGate, ferrisCabin, ferrisCamera
     case cinemaCase, cinemaProjector, cinemaTicket
     case gelatoOrder, gelatoNote, dictionarySong
     case pot, drawer, linen, wholeBox, dispenser, flight, ticket, travelBook, yunnan, bouquet, city, bath, menu, tasting, keycard
@@ -97,7 +99,7 @@ enum MemoryPanel: String, CaseIterable {
         case .perfume, .perfumeWood, .perfumeBotanical, .perfumeSpice, .perfumeLab, .perfumeFormula, .perfumeMix: .perfume
         case .cinema, .cinemaCase, .cinemaProjector, .cinemaTicket: .cinema
         case .dictionary, .dictionarySong: .dictionary
-        case .ferris: .ferris
+        case .ferris, .ferrisTicket, .ferrisGate, .ferrisCabin, .ferrisCamera: .ferris
         case .taxi: .taxi
         }
     }
@@ -147,6 +149,17 @@ extension GameStore {
         }
         if panel.room == .perfume, sceneView == 0 { return }
         switch panel {
+        case .ferrisTicket where !ferris.playlistSolved:
+            showSceneHint("The iPod still holds our songs.", presentation: .interaction)
+            return
+        case .ferrisCabin where !ferris.ticketUsed:
+            showSceneHint("The gate is waiting for a ticket.", presentation: .interaction)
+            return
+        case .ferrisCamera:
+            guard ferris.ticketUsed else { return }
+            if ferris.photoTaken { replayKeepsake(.ferris); return }
+            guard ferris.phoneTaken, selectedTool == .ferrisPhone,
+                  exploration.tools.contains(.ferrisPhone) else { return }
         case .cinemaProjector where !cinema.filmInserted && !cinema.solved:
             guard requireInteractionTool(.cinemaFilm, missing: "The projector has an empty gate.") else { return }
         case .bigTopLedger where !exploration.clues.contains(.bigTopLedger):
@@ -375,6 +388,7 @@ extension GameStore {
         memories.sanitize()
         migrateDictionary()
         migrateCinema()
+        migrateFerris()
         if memories.cityJigsaw == nil && memories.cityPieces == [2, 0, 3, 1] && !memories.citySolved {
             memories.cityJigsaw = []
         }

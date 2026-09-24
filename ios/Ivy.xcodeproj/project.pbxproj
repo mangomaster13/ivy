@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F260924F0000000000000005 /* FerrisPuzzleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F260924F0000000000000006; };
+		F260924F0000000000000001 /* FerrisPuzzle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F260924F0000000000000002; };
 		C260924C0000000000000001 /* CinemaPuzzle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C260924C0000000000000002; };
 		C260924C0000000000000003 /* CinemaViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C260924C0000000000000004; };
 		F260924D0000000000000003 /* DictionaryViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = F260924D0000000000000004; };
@@ -76,6 +78,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F260924F0000000000000006 /* FerrisPuzzleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FerrisPuzzleTests.swift; sourceTree = "<group>"; };
+		F260924F0000000000000002 /* FerrisPuzzle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FerrisPuzzle.swift; sourceTree = "<group>"; };
 		C260924C0000000000000002 /* CinemaPuzzle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CinemaPuzzle.swift; sourceTree = "<group>"; };
 		C260924C0000000000000004 /* CinemaViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CinemaViews.swift; sourceTree = "<group>"; };
 		F260924D0000000000000004 /* DictionaryViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryViews.swift; sourceTree = "<group>"; };
@@ -211,6 +215,7 @@
 				C260924C0000000000000002 /* CinemaPuzzle.swift */,
 				C260924C0000000000000004 /* CinemaViews.swift */,
 				F260924D0000000000000002 /* DictionaryPuzzle.swift */,
+				F260924F0000000000000002 /* FerrisPuzzle.swift */,
 				F260924D0000000000000004 /* DictionaryViews.swift */,
 				F26092400000000000000002 /* GelatoWordPuzzle.swift */,
 				F26092300000000000000002 /* GelatoGutter.swift */,
@@ -258,6 +263,7 @@
 				D01920260000000000000004 /* HallTests.swift */,
 				E01920260000000000000006 /* WonderlandTests.swift */,
 				F26092400000000000000004 /* GelatoWordPuzzleTests.swift */,
+				F260924F0000000000000006 /* FerrisPuzzleTests.swift */,
 				7A1B2C3D4E5F608192A3B082 /* StoreHarness.swift */,
 				7A1B2C3D4E5F608192A3B083 /* MailboxKeyTests.swift */,
 				7A1B2C3D4E5F608192A3B084 /* DoorIvyTests.swift */,
@@ -379,6 +385,7 @@
 				C260924C0000000000000001 /* CinemaPuzzle.swift in Sources */,
 				C260924C0000000000000003 /* CinemaViews.swift in Sources */,
 				F260924D0000000000000001 /* DictionaryPuzzle.swift in Sources */,
+				F260924F0000000000000001 /* FerrisPuzzle.swift in Sources */,
 				F260924D0000000000000003 /* DictionaryViews.swift in Sources */,
 				F26092400000000000000001 /* GelatoWordPuzzle.swift in Sources */,
 				F26092300000000000000001 /* GelatoGutter.swift in Sources */,
@@ -423,6 +430,7 @@
 				D01920260000000000000003 /* HallTests.swift in Sources */,
 				E01920260000000000000005 /* WonderlandTests.swift in Sources */,
 				F26092400000000000000003 /* GelatoWordPuzzleTests.swift in Sources */,
+				F260924F0000000000000005 /* FerrisPuzzleTests.swift in Sources */,
 				7A1B2C3D4E5F608192A3B086 /* StoreHarness.swift in Sources */,
 				7A1B2C3D4E5F608192A3B087 /* MailboxKeyTests.swift in Sources */,
 				7A1B2C3D4E5F608192A3B088 /* DoorIvyTests.swift in Sources */,
