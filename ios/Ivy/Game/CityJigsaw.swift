@@ -72,8 +72,7 @@ struct CityJigsawView: View {
     }
 
     private func tile(_ piece: Int, edge: CGFloat, origin: CGPoint, layout: CityGridLayout) -> some View {
-        CityGridPiece(piece: piece, edge: edge)
-            .overlay(Rectangle().stroke(selected == piece ? IvyType.cream.opacity(0.7) : .clear, lineWidth: 1))
+        CityGridPiece(piece: piece, edge: edge, selected: selected == piece)
             .frame(width: max(48, edge), height: max(48, edge))
             .contentShape(Rectangle())
             .onTapGesture {
@@ -158,7 +157,10 @@ private struct CityGridLayout {
 private struct CityGridPiece: View {
     let piece: Int
     let edge: CGFloat
+    var selected = false
+
     var body: some View {
+        let outline = RoundedRectangle(cornerRadius: edge * 0.035, style: .continuous)
         Canvas { context, size in
             context.fill(Path(CGRect(origin: .zero, size: size)), with: .color(IvyType.ink))
             context.clip(to: Path(CGRect(origin: .zero, size: size)))
@@ -167,6 +169,14 @@ private struct CityGridPiece: View {
                 width: size.width * 3, height: size.height * 3))
         }
         .frame(width: edge, height: edge)
-        .overlay(Rectangle().strokeBorder(IvyType.cream.opacity(0.35), lineWidth: max(0.5, edge * 0.006)))
+        .clipShape(outline)
+        .background {
+            outline.fill(IvyType.ink)
+                .offset(y: edge * 0.012)
+        }
+        .overlay {
+            outline.strokeBorder(IvyType.cream.opacity(selected ? 0.8 : 0.45),
+                                 lineWidth: max(0.75, edge * 0.012))
+        }
     }
 }
