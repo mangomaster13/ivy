@@ -20,8 +20,8 @@ struct MemoryCloseupView: View {
             BigTopCloseupView(store: store, panel: panel)
         } else if [.perfume, .perfumeWood, .perfumeBotanical, .perfumeSpice, .perfumeLab, .perfumeFormula, .perfumeMix].contains(panel) {
             PerfumeCloseupView(store: store, panel: panel)
-        } else if panel == .rainGutter {
-            GelatoGutterView(store: store)
+        } else if [.gelatoOrder, .gelatoNote, .rainGutter].contains(panel) {
+            GelatoClueView(store: store, panel: panel)
         } else if [.menu, .tasting, .dispenser].contains(panel) {
             GelatoCloseupView(store: store, panel: panel)
         } else if panel == .yunnan {
@@ -148,7 +148,8 @@ struct MemoryCloseupView: View {
         case .bouquet, .city: .defocusedScene("hk-bedroom")
         case .keycard: .scene("explore-corridor-cart")
         case .menu, .tasting: .scene("explore-gelato-service")
-        case .rainGutter: .scene("gelato-gutter-empty")
+        case .rainGutter, .gelatoOrder: .scene("gelato-word-order")
+        case .gelatoNote: .scene("gelato-word-note")
         case .flight: .puzzle
         case .bigTopSign: .scene("bt2-neon-wall")
         case .bigTopMenuSearch: .scene("bt2-counter-eight")

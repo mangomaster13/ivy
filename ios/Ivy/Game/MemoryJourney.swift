@@ -15,6 +15,7 @@ struct MemoryProgress: Codable {
     var rose: RoseProgress? = nil
     var bedroomLampOn: Bool? = nil
     var gelatoWater: GelatoWaterProgress? = nil
+    var gelatoWords: GelatoWordProgress? = nil
     var cityPieces: [Int] = [2, 0, 3, 1]
     var citySolved = false
     // Retain old placement data for migration into the nine-piece grid.
@@ -56,6 +57,7 @@ struct MemoryProgress: Codable {
         }
         if let order = cityLooseOrder, order.count != 9 || Set(order) != Set(0..<9) { cityLooseOrder = nil }
         gelatoWater?.sanitize()
+        gelatoWords?.sanitize()
         if scents.count != 3 || Set(scents) != [10, 22, 30] { scents = [30, 22, 10] }
         if let flavor, !(0..<4).contains(flavor) { self.flavor = nil }
         folds = folds.intersection([0, 1]); cinemaSeats = cinemaSeats.intersection(0..<6)
@@ -64,6 +66,7 @@ struct MemoryProgress: Codable {
 }
 
 enum MemoryPanel: String, CaseIterable {
+    case gelatoOrder, gelatoNote
     case pot, drawer, linen, wholeBox, dispenser, flight, ticket, travelBook, yunnan, bouquet, city, bath, menu, tasting, keycard
     case bigTop, mexican, perfume, cinema, sunset, ferris, taxi, blanket
     case bigTopSign, bigTopMenuSearch, bigTopOrder, bigTopMenu, rainGutter
@@ -85,7 +88,7 @@ enum MemoryPanel: String, CaseIterable {
         case .linen, .keycard: .corridor
         case .wholeBox, .bouquet, .city, .bath, .blanket: .bedroom
         case .flight, .ticket, .travelBook, .yunnan: .plane
-        case .dispenser, .menu, .tasting, .rainGutter: .gelato
+        case .dispenser, .menu, .tasting, .rainGutter, .gelatoOrder, .gelatoNote: .gelato
         case .bigTop, .mexican, .bigTopMenuSearch, .bigTopOrder, .bigTopMenu: .noodle
         case .bigTopSign: .gelato
         case .perfume, .perfumeWood, .perfumeBotanical, .perfumeSpice, .perfumeLab, .perfumeFormula, .perfumeMix: .perfume
@@ -127,8 +130,14 @@ extension GameStore {
         let panel: MemoryPanel
         if requestedPanel == .bigTop && !bigTop.orderSolved { panel = .bigTopMenuSearch }
         else if requestedPanel == .bigTopOrder && bigTop.menuPlaced { panel = .bigTopMenu }
+        else if requestedPanel == .rainGutter { panel = .gelatoOrder }
+        else if requestedPanel == .tasting && !gelatoWords.flavorSolved && !collected.contains(.gelato) { panel = .menu }
         else { panel = requestedPanel }
         guard room == panel.room, !isHallTransitioning, collectingEgg == nil else { return }
+        if panel == .tasting, collected.contains(.gelato) {
+            replayKeepsake(.gelato)
+            return
+        }
         if panel == .bouquet, collected.contains(.rose) {
             replayKeepsake(.rose)
             return
@@ -173,12 +182,8 @@ extension GameStore {
             memoryNavigation = []
         }
         if panel == .menu { discover(.recipe) }
-        if panel == .rainGutter, memories.gelatoWater == nil {
-            var water = GelatoWaterProgress()
-            water.angles = GelatoWaterProgress.restingAngles
-            memories.gelatoWater = water
-            persistNow()
-        }
+        if panel == .gelatoOrder { discover(.gelatoOrder) }
+        if panel == .gelatoNote { discover(.gelatoLeaves) }
         if panel == .city, memories.cityLooseOrder == nil {
             memories.cityLooseOrder = Array(0..<9).shuffled()
             persistNow()
@@ -301,25 +306,18 @@ extension GameStore {
         if memories.cityBoard?.contains(where: { $0 == piece }) == true { returnCityPiece(piece) }
         else { persistNow() }
     }
-    func swapMenu(_ a: Int, _ b: Int) {
-        guard room == .gelato, overlay == .memory(.menu), !memories.menuSolved,
-              (0..<4).contains(a), (0..<4).contains(b) else { return }
-        memories.menu.swapAt(a, b); persistNow()
-    }
-    func confirmMenu() {
-        guard overlay == .memory(.menu), room == .gelato else { return }
-        guard memories.menu == [0, 1, 2, 3] else { showInputError("The flavours and their labels do not quite match."); IvyHaptics.light(); return }
-        memories.menuSolved = true; discover(.recipe); sceneHint = ""; IvyHaptics.success(); persistNow()
-    }
+    // Legacy entry points cannot bypass the complete-chain and typed-answer gates.
+    func confirmMenu() { submitGelatoChain() }
     func taste(_ index: Int) {
-        guard room == .gelato, overlay == .memory(.tasting), !collected.contains(.gelato), (0..<4).contains(index) else { return }
-        guard memories.menuSolved || (gelatoWater.tagRevealed && exploration.clues.contains(.recipe)) else {
-            IvyHaptics.light(); return
+        guard room == .gelato, overlay == .memory(.tasting), !isIntro,
+              !isHallTransitioning, collectingEgg == nil, !collected.contains(.gelato),
+              gelatoWords.flavorSolved, index == 2 else { return }
+        guard selectedTool == .scoop, exploration.tools.contains(.scoop) else {
+            showSceneHint("The little cup is waiting.", presentation: .interaction)
+            return
         }
-        guard selectedTool == .scoop, exploration.tools.contains(.scoop) else { IvyHaptics.light(); return }
-        memories.flavor = index
-        if index == 2 { consume(.scoop); collect(.gelato) }
-        else { showSceneHint(RememberedFlavor.notes[index]); persistNow() }
+        memories.flavor = 2
+        consume(.scoop); collect(.gelato)
     }
     func confirmTaste() {
         if let flavor = memories.flavor { taste(flavor) }
@@ -422,6 +420,7 @@ extension GameStore {
             consume(.ticket)
         }
         exploration.tools.subtract(memories.used)
+        migrateGelatoWords()
         migrateFoodAndFragrance()
     }
 }

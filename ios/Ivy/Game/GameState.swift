@@ -1062,9 +1062,10 @@ final class GameStore {
                 memories.menuSolved = false
                 memories.flavor = nil
                 memories.gelatoWater = nil
+                memories.gelatoWords = nil
                 exploration.freezerTemperature = -4
                 exploration.scoops = []
-                exploration.clues.subtract([.recipe, .temperature, .rainRelation])
+                exploration.clues.subtract([.recipe, .temperature, .rainRelation, .gelatoOrder, .gelatoLeaves])
                 exploration.tools.subtract([.coin, .scoop])
                 memories.picked.subtract([.coin, .scoop])
                 memories.used.subtract([.coin, .scoop])

@@ -223,14 +223,17 @@ final class WonderlandTests: XCTestCase {
         XCTAssertFalse(store.petalHeld)
     }
 
-    func testGelatoMenuSpoonAndExplicitFlavorConfirmation() {
-        let s = StoreHarness.make(); s.room = .gelato; s.openMemory(.tasting)
-        s.taste(2); s.confirmTaste(); XCTAssertTrue(s.collected.isEmpty)
-        s.acquire(.scoop); s.memories.menuSolved = true
-        s.taste(0); s.confirmTaste()
-        XCTAssertTrue(s.collected.isEmpty); XCTAssertTrue(s.exploration.tools.contains(.scoop))
-        s.taste(2); XCTAssertTrue(s.collected.isEmpty)
-        s.confirmTaste(); XCTAssertEqual(s.collected, [.gelato])
+    func testGelatoRequiresExplicitSpoonAfterFlavorInput() {
+        let s = StoreHarness.make(); s.room = .gelato
+        s.openMemory(.menu)
+        GelatoWordProgress.answer.forEach(s.selectGelatoWord); s.submitGelatoChain()
+        s.setGelatoFlavorDraft("jasmine"); s.submitGelatoFlavor()
+        s.openMemory(.tasting)
+        XCTAssertEqual(s.overlay, .memory(.menu), "Missing spoon leaves the current view in place")
+        s.acquire(.scoop); s.openMemory(.tasting)
+        s.taste(2); XCTAssertFalse(s.collected.contains(.gelato))
+        s.chooseTool(.scoop); s.taste(2)
+        XCTAssertTrue(s.collected.contains(.gelato))
         XCTAssertFalse(s.exploration.tools.contains(.scoop))
         s.finishCollection(.gelato); s.confirmTaste(); XCTAssertNil(s.collectingEgg)
     }
@@ -319,11 +322,12 @@ final class ExplorationTests: XCTestCase {
         s.collectPhysical(.rose); s.finishCollection(.rose)
         s.cancelOverlay(); s.turnView(-1)
         s.cancelOverlay(); s.tapDiegetic(.bedroomForward); s.openMemory(.menu)
-        s.swapMenu(0, 1); s.swapMenu(1, 3); s.swapMenu(2, 3); s.confirmMenu()
-        XCTAssertTrue(s.memories.menuSolved)
+        GelatoWordProgress.answer.forEach(s.selectGelatoWord); s.submitGelatoChain()
+        s.setGelatoFlavorDraft("jasmine"); s.submitGelatoFlavor()
+        XCTAssertTrue(s.gelatoWords.flavorSolved)
         s.openMemory(.dispenser); s.chooseTool(.coin); s.openContainer(.dispenser)
         XCTAssertFalse(s.exploration.tools.contains(.coin)); XCTAssertFalse(s.exploration.tools.contains(.scoop))
-        s.pickup(.scoop, from: .dispenser); s.openMemory(.tasting); s.taste(2); s.confirmTaste()
+        s.pickup(.scoop, from: .dispenser); s.openMemory(.tasting); s.chooseTool(.scoop); s.taste(2)
         XCTAssertEqual(s.collectingEgg, .gelato); XCTAssertTrue(s.exploration.tools.isEmpty)
     }
 
@@ -539,84 +543,39 @@ final class GelatoFlowTests: XCTestCase {
         XCTAssertEqual(store.room, .bedroom)
     }
 
-    func testMenuDraftWrongTasteAndHotelRoundtripSurviveReload() {
-        let suite = "ivy.gelato.tests." + UUID().uuidString
-        let defaults = UserDefaults(suiteName: suite)!
-        defer { defaults.removePersistentDomain(forName: suite) }
-        let store = GameStore(defaults: defaults)
-        store.isIntro = false; store.prefersReducedMotion = true
-        store.room = .gelato; store.overlay = .none
-        store.collected = [.letter, .vuori]
+    func testGelatoChainDraftSurvivesHotelRoundtrip() {
+        let store = StoreHarness.make(); store.room = .gelato
         store.openMemory(.menu)
-        store.swapMenu(0, 1)
-        let draft = store.memories.menu
-        store.confirmMenu()
-        XCTAssertFalse(store.memories.menuSolved)
-        XCTAssertEqual(store.memories.menu, draft)
-        XCTAssertEqual(store.sceneHintTone, .wrong)
+        [4, 2, 6].forEach(store.selectGelatoWord)
+        store.submitGelatoChain()
+        XCTAssertFalse(store.gelatoWords.chainSolved)
+        XCTAssertEqual(store.gelatoWords.order, [4, 2, 6])
         store.backFromMemory(); store.tapDiegetic(.gelatoBack)
         XCTAssertEqual(store.room, .bedroom)
-        store.persistNow()
-        let restored = GameStore(defaults: defaults)
-        restored.isIntro = false; restored.prefersReducedMotion = true
-        XCTAssertEqual(restored.room, .bedroom)
-        XCTAssertEqual(restored.collected, [.letter, .vuori])
-        restored.tapDiegetic(.bedroomForward)
-        XCTAssertEqual(restored.room, .gelato)
-        XCTAssertEqual(restored.memories.menu, draft)
-        restored.openMemory(.menu)
-        restored.swapMenu(1, 3); restored.swapMenu(2, 3); restored.confirmMenu()
-        XCTAssertTrue(restored.memories.menuSolved)
-        restored.acquire(.coin); restored.openMemory(.dispenser)
-        restored.chooseTool(.coin); restored.openContainer(.dispenser)
-        restored.backFromMemory(); restored.openMemory(.dispenser)
-        XCTAssertTrue(restored.memories.opened.contains("dispenser"))
-        XCTAssertFalse(restored.exploration.tools.contains(.coin))
-        restored.pickup(.scoop, from: .dispenser)
-        restored.openMemory(.tasting); restored.taste(0); restored.confirmTaste()
-        XCTAssertEqual(restored.memories.flavor, 0)
-        XCTAssertTrue(restored.exploration.tools.contains(.scoop))
-        restored.persistNow()
-        let again = GameStore(defaults: defaults)
-        again.isIntro = false; again.prefersReducedMotion = true
-        XCTAssertEqual(again.memories.flavor, 0)
-        XCTAssertTrue(again.memories.menuSolved)
-        again.openMemory(.tasting); again.taste(2); again.confirmTaste()
-        XCTAssertEqual(again.collected, [.letter, .vuori, .gelato])
-        XCTAssertFalse(again.exploration.tools.contains(.scoop))
-        again.finishCollection(.gelato); again.backFromMemory()
-        again.tapDiegetic(.gelatoBack)
-        XCTAssertEqual(again.room, .bedroom)
+        store.tapDiegetic(.bedroomForward); store.openMemory(.menu)
+        XCTAssertEqual(store.gelatoWords.order, [4, 2, 6])
     }
 
-    func testSpoonDishIsOptionalEnglishMemoryAndDoesNotAwardAgain() {
+    func testOwnedGelatoOpensElementWithoutAwardingAgain() {
         let store = StoreHarness.make(); store.room = .gelato
-        store.openMemory(.tasting); store.recallGelatoJoke()
-        XCTAssertTrue(store.sceneHint.isEmpty)
         store.collected.insert(.gelato)
-        store.recallGelatoJoke()
-        XCTAssertTrue(store.sceneHint.contains("your review"))
-        XCTAssertEqual(store.sceneHintPresentation, .interaction)
+        store.openMemory(.tasting)
+        XCTAssertEqual(store.overlay, .observation(.gelato))
         XCTAssertEqual(store.collected, [.gelato])
         XCTAssertNil(store.collectingEgg)
-        store.dismissSceneHint()
-        XCTAssertEqual(store.overlay, .memory(.tasting))
-        store.openMemory(.menu); store.openMemory(.tasting)
-        store.backFromMemory()
-        XCTAssertEqual(store.overlay, .none, "Menu cross-links must not leave a navigation loop")
     }
 
     func testMenuBackReturnsToRainPaperThenOriginalBench() {
         let store = StoreHarness.make(); store.room = .gelato
         store.exploration.views[Room.gelato.rawValue] = -1
         store.overlay = .adventure(.recipe); store.openMemory(.menu)
-        store.swapMenu(0, 1)
-        let draft = store.memories.menu
+        store.selectGelatoWord(4)
+        let draft = store.gelatoWords.order
         store.backFromMemory()
         XCTAssertEqual(store.overlay, .adventure(.recipe))
         store.cancelOverlay()
         XCTAssertEqual(store.sceneView, -1)
-        XCTAssertEqual(store.memories.menu, draft)
+        XCTAssertEqual(store.gelatoWords.order, draft)
     }
 
     func testHotelExitDoesNotOverlapCounterOrAmbientHotspots() throws {

@@ -2,6 +2,13 @@
 
 import SwiftUI
 
+struct GameTextInputFocusKey: PreferenceKey {
+    static let defaultValue = false
+    static func reduce(value: inout Bool, nextValue: () -> Bool) {
+        value = value || nextValue()
+    }
+}
+
 /// Root-owned layout budgets shared by the content viewport and inventory.
 enum GameLayout {
     static let footerHeight: CGFloat = 54

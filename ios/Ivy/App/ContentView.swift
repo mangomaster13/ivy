@@ -9,6 +9,7 @@ struct ContentView: View {
     @Environment(\.scenePhase) private var scenePhase
     /// Strip walk/shake when Reduce Motion is on.
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var isEnteringAnswer = false
     #if DEBUG
     @State private var showingResetChoices = false
     #endif
@@ -21,7 +22,7 @@ struct ContentView: View {
                 IntroView { store.dismissIntro() }
             } else {
                 GeometryReader { geometry in
-                    let contentHeight = max(0, geometry.size.height - GameLayout.footerHeight)
+                    let contentHeight = max(0, geometry.size.height - (isEnteringAnswer ? 0 : GameLayout.footerHeight))
                     let stageSize = GameLayout.stageSize(
                         in: CGSize(width: max(0, geometry.size.width - 2 * GameLayout.navigationGutter),
                                    height: contentHeight),
@@ -68,14 +69,17 @@ struct ContentView: View {
                                 }
                             }
                             #endif
-                        AdventureTray(store: store)
-                            .frame(width: geometry.size.width, height: GameLayout.footerHeight)
+                        if !isEnteringAnswer {
+                            AdventureTray(store: store)
+                                .frame(width: geometry.size.width, height: GameLayout.footerHeight)
+                        }
                     }
                 }
             }
         }
         .allowsHitTesting(store.collectingEgg == nil && store.replayingEgg == nil && !store.isHallTransitioning)
         .statusBarHidden(true)
+        .onPreferenceChange(GameTextInputFocusKey.self) { isEnteringAnswer = $0 }
         #if DEBUG
         .confirmationDialog("Reset before which keepsake?", isPresented: $showingResetChoices) {
             ForEach(EggId.allCases) { egg in
@@ -255,8 +259,10 @@ struct ContentView: View {
             }
             if store.sceneView == 0 { WonderlandAtmosphere(store: store, scale: scale) }
             if store.room == .gelato, store.sceneView == 1 {
-                GelatoGutterArtwork(store: store)
-                    .frame(width: 320 * scale, height: 160 * scale)
+                let rect = GelatoWordArtwork.orderRect
+                GelatoOrderPaper()
+                    .frame(width: rect.width * scale, height: rect.height * scale)
+                    .position(x: rect.midX * scale, y: rect.midY * scale)
                     .allowsHitTesting(false).accessibilityHidden(true)
             }
             FoodAndFragranceWorld(store: store, scale: scale)

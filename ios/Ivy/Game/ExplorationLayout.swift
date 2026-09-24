@@ -52,15 +52,14 @@ extension GameStore {
             .init("window", 242, 15, 60, 84, .memory(.city)),
             .init("desk lamp switch", 68, 24, 36, 56, .roseHidingPlace(1))]
         case (.gelato, -1): [
-            .init("Menu", 131, 95, 26, 12, .recipe),
+            .init("note on the bench", 131, 95, 26, 12, .memory(.gelatoNote)),
             .init("potted plant", 81, 60, 38, 61, .ambient("The basil likes this weather better than we do.")),
             .init("rain puddle", 108, 143, 78, 13, .ambient("The whole street fits inside this puddle."))]
         case (.gelato, 1): [
-            // Match the gutter plate: cabinet face below the dish, counter below the channel.
-            .init("utensil cabinet", 161, 120, 67, 37, .dispenser),
-            .init("gelato counter", 3, 77, 139, 38, .memory(.tasting)),
-            .init("rain gutter and three diverters", 20, 28, 191, 46, .memory(.rainGutter)),
-            .init("marked rainwater dish", 185, 96, 42, 20, .memory(.rainGutter)),
+            .init("utensil cabinet", 147, 71, 30, 30, .dispenser),
+            .init("gelato counter", 18, 73, 112, 19, .memory(.tasting)),
+            .init("old order slip", GelatoWordArtwork.orderRect.minX, GelatoWordArtwork.orderRect.minY,
+                  GelatoWordArtwork.orderRect.width, GelatoWordArtwork.orderRect.height, .memory(.gelatoOrder)),
             .init("awning", 15, 5, 138, 21, .ambient("A little roof against a very big rain."))]
         case (.yard, 0): [
             .init("sky", 115, 1, 115, 25, .ambient("Some words hide behind clouds. Some stay with you.")),

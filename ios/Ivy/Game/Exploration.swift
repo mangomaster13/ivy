@@ -60,7 +60,7 @@ enum AdventureTool: String, Codable, CaseIterable, Identifiable {
 
 enum AdventureClue: String, Codable, CaseIterable, Identifiable {
     case gardenDate, label, travelOrder, mirror, music, recipe, temperature, rainRelation
-    case gaiacFormula, bergamoteFormula, mousseFormula, perfumeOrder
+    case gaiacFormula, bergamoteFormula, mousseFormula, perfumeOrder, gelatoOrder, gelatoLeaves
     var id: String { rawValue }
     var title: String {
         switch self {
@@ -72,6 +72,8 @@ enum AdventureClue: String, Codable, CaseIterable, Identifiable {
         case .recipe: "our rainy-day order"
         case .temperature: "the cold cabinet"
         case .rainRelation: "what the rain carried"
+        case .gelatoOrder: "an old order"
+        case .gelatoLeaves: "a note on the bench"
         case .gaiacFormula: "Gaiac 10"
         case .bergamoteFormula: "Bergamote 22"
         case .mousseFormula: "Mousse de Chene 30"
@@ -146,7 +148,7 @@ extension GameStore {
         case (.corridor, 1): "explore-corridor-mirror"
         case (.bedroom, 1): memories.bedroomLampOn == true ? "explore-bedroom-desk" : "explore-bedroom-desk-off"
         case (.gelato, -1): "explore-gelato-bench"
-        case (.gelato, 1): "gelato-gutter-empty"
+        case (.gelato, 1): "explore-gelato-service"
         default: nil
         }
     }
@@ -219,7 +221,13 @@ extension GameStore {
         case .mirror:
             [2, 0, 3, 1].map { "\(ExplorationProgress.symbolNames[$0]): \(exploration.hotelCode[$0])" }.joined(separator: "    ")
         case .music: "high → low → middle"
-        case .recipe: "Citrus · pepper\nMagnolia · longan\nLoquat · jasmine\nBasil · tomato\nFruit and flowers came after the other fruit and flowers."
+        case .recipe:
+            GelatoWordProgress.words.indices.map { index in
+                let mark = gelatoWords.chainSolved ? " (leaf under " + GelatoWordProgress.markedLetters[index] + ")" : ""
+                return GelatoWordProgress.words[index] + mark
+            }.joined(separator: " · ")
+        case .gelatoOrder: "CUP → PEACH. The final P of CUP and the first P of PEACH share an underline and a curved connector."
+        case .gelatoLeaves: "Follow the chain. Read the leaves. A two-leaf sprout matches the marks on the paper."
         case .temperature: "Serving temperature: −12°C."
         case .rainRelation: "Five-petal blossom points to crescent moon."
         case .gaiacFormula, .bergamoteFormula, .mousseFormula:
@@ -327,18 +335,8 @@ extension GameStore {
     }
 
     func serveGelato() {
-        guard room == .gelato, overlay == .gelato, !collected.contains(.gelato) else { return }
-        guard exploration.tools.contains(.scoop), exploration.freezerTemperature == -12 else {
-            IvyHaptics.light(); return
-        }
-        guard exploration.scoops.count == 3 else { IvyHaptics.light(); return }
-        guard exploration.scoops == ExplorationProgress.gelatoAnswer else {
-            IvyHaptics.light()
-            IvyHaptics.warning()
-            return
-        }
-        collect(.gelato)
-        persistNow()
+        guard room == .gelato, overlay == .gelato else { return }
+        openMemory(.tasting)
     }
 
     func undoScoop() {

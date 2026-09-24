@@ -371,6 +371,18 @@ private struct ClueNotebookView: View {
                 switch clue {
                 case .travelOrder:
                     TravelOrderSymbols(symbolSize: compact ? 27 : 33)
+                case .gelatoOrder:
+                    GelatoOrderPaper().aspectRatio(1.5, contentMode: .fit)
+                        .accessibilityLabel(store.clueText(clue))
+                case .gelatoLeaves:
+                    GelatoPaperExcerpt(image: "gelato-word-note", sourceSize: CGSize(width: 1536, height: 1024),
+                                       bounds: CGRect(x: 200, y: 220, width: 1100, height: 590))
+                        .accessibilityLabel(store.clueText(clue))
+                case .recipe:
+                    GelatoPaperExcerpt(image: store.gelatoWords.chainSolved ? "gelato-words-marked" : "gelato-words-unmarked",
+                                       sourceSize: CGSize(width: 1774, height: 887),
+                                       bounds: CGRect(x: 190, y: 220, width: 1140, height: 530))
+                        .accessibilityLabel(store.clueText(clue))
                 case .rainRelation:
                     Image("gelato-float-tag").resizable().interpolation(.high).scaledToFit()
                         .accessibilityLabel(store.clueText(.rainRelation))

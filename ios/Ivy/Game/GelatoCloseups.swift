@@ -51,28 +51,23 @@ struct GelatoCloseupView: View {
     private var kept: Bool { store.collected.contains(.gelato) }
     private var image: String {
         switch panel {
-        case .menu: "gelato-menu-readable"
         case .dispenser: opened ? "gelato-box-open" : "gelato-box-closed"
         default: "gelato-tasting"
         }
     }
 
     var body: some View {
-        GelatoStage(store: store, image: image, back: store.backFromMemory, feedbackHeight: panel == .menu ? 40 : 58) { stage in
-            switch panel {
-            case .menu: menu()
-            case .dispenser: utensils(stage)
-            default: tasting(stage)
+        if panel == .menu {
+            GelatoWordMenuView(store: store)
+        } else {
+            GelatoStage(store: store, image: image, back: store.backFromMemory) { stage in
+                if panel == .dispenser { utensils(stage) }
+                else { tasting(stage) }
+            }
+            .inventoryToolDrop(store: store, accepting: panel == .dispenser && !opened ? [.coin] : []) { _ in
+                store.openContainer(.dispenser)
             }
         }
-        .inventoryToolDrop(store: store, accepting: panel == .dispenser && !opened ? [.coin] : panel == .tasting && !kept ? [.scoop] : []) { _ in
-            if panel == .dispenser { store.openContainer(.dispenser) }
-        }
-    }
-
-    private func menu() -> some View {
-        Color.clear.accessibilityElement(children: .ignore)
-            .accessibilityLabel("Dry menu: Citrus and Pepper, pomelo, mandarin and pink peppercorn; Magnolia and Longan, magnolia and fresh longan; Loquat and Jasmine, white loquat and jasmine; Basil and Tomato, basil and green tomato. The fruit and flowers came after the other fruit and flowers.")
     }
 
     private func utensils(_ stage: GelatoStageGeometry) -> some View {
@@ -96,36 +91,18 @@ struct GelatoCloseupView: View {
     }
 
     private func tasting(_ stage: GelatoStageGeometry) -> some View {
-        let centers: [CGFloat] = [0.235, 0.405, 0.585, 0.756]
-        return ZStack(alignment: .topLeading) {
-            ForEach(0..<4) { index in
-                Button { store.taste(index) } label: {
-                    Color.clear.frame(width: stage.artWidth * 0.155, height: max(48, stage.artWidth * 0.115))
-                        .contentShape(Rectangle())
-                }.buttonStyle(.plain).disabled(kept)
-                    .accessibilityLabel(RememberedFlavor.names[index])
-                    .accessibilityValue(store.memories.flavor == index ? "Selected" : "")
-                    .position(stage.point(centers[index], 0.42))
-            }
-            if kept {
-                Image("memory-gelato-cup").resizable().interpolation(.high).scaledToFit()
-                    .frame(width: 116, height: 116)
-                    .position(stage.point(0.50, 0.73))
-                    .accessibilityLabel("White loquat and jasmine gelato keepsake")
-                Button(action: store.recallGelatoJoke) {
-                    Image(AdventureTool.scoop.imageName).resizable().interpolation(.high).scaledToFit()
-                        .frame(width: 65, height: 48).contentShape(Rectangle())
-                }.buttonStyle(.plain).accessibilityLabel("Little spoon dish")
-                    .position(stage.point(0.81, 0.72))
-            } else {
-                if let flavor = store.memories.flavor {
-                    Image("memory-flavor-\(flavor)").resizable().interpolation(.high).scaledToFit()
-                        .frame(width: 42, height: 42)
-                        .position(stage.point(0.81, 0.695)).accessibilityHidden(true)
-                }
-            }
+        Button { store.taste(2) } label: {
+            Image("memory-gelato-cup").resizable().interpolation(.high).scaledToFit()
+                .frame(width: stage.artWidth * 0.17, height: stage.size.height * 0.28)
+                .frame(minWidth: 48, minHeight: 48)
+                .contentShape(Rectangle())
         }
+        .buttonStyle(.plain)
+        .inventoryToolDrop(store: store, accepting: kept ? [] : [.scoop]) { _ in store.taste(2) }
+        .accessibilityLabel("Taste the jasmine gelato with the selected spoon")
+        .position(stage.point(0.50, 0.77))
     }
+
 }
 
 /// Legacy recipe entry uses the readable menu, without a second inspection layer.
