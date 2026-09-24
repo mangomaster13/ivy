@@ -12,10 +12,8 @@ enum GameCopy {
     static let cancel = "Cancel"
     /// Confirm control on the input board.
     static let confirm = "Enter"
-    /// Title spoken on the boot card. The pixel plate is the tap line, not this sentence.
+    /// Spoken line on the intro artwork.
     static let introTitle = "Come in from the cold."
-    /// Spoken action for the full-screen intro tap.
-    static let introEnter = "Tap to start the adventure."
     /// Pixel BACK plate on the lyric lock.
     static let lockBack = "Back"
     /// Pixel DEL plate on the lyric lock.

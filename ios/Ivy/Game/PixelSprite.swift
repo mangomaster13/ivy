@@ -5,10 +5,6 @@ import UIKit
 enum SpriteSheet {
     /// Three compact 24x72 anchored sway poses, shared by both yard walls.
     case storyVine
-    /// Intro vine beats: 5 columns × 4 rows of `GameCanvas.introSize`. Index 0 is the first stroke.
-    case introSpread
-    /// Intro night twinkle: one row of four 400×176 cells.
-    case introStars
     /// Twelve high-resolution scroll poses, 4 columns × 3 rows. Render at half world scale.
     case letterScroll
 
@@ -16,8 +12,6 @@ enum SpriteSheet {
     var imageName: String {
         switch self {
         case .storyVine: "story-vine-sheet"
-        case .introSpread: "intro-spread-sheet"
-        case .introStars: "intro-star-sheet"
         case .letterScroll: "story-scroll-sheet"
         }
     }
@@ -26,7 +20,6 @@ enum SpriteSheet {
     var cell: CGSize {
         switch self {
         case .storyVine: CGSize(width: 24, height: 72)
-        case .introSpread, .introStars: GameCanvas.introSize
         case .letterScroll: CGSize(width: 448, height: 300)
         }
     }
@@ -38,8 +31,6 @@ enum SpriteSheet {
     var columns: Int {
         switch self {
         case .storyVine: 3
-        case .introSpread: 5
-        case .introStars: 4
         case .letterScroll: 4
         }
     }

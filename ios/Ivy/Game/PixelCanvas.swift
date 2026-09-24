@@ -20,22 +20,12 @@ enum SceneArtwork {
 enum GameCanvas {
     /// Playable plate size.
     static let size = CGSize(width: 320, height: 160)
-    /// First-run intro plate; wider so vines can reach the landscape edges.
-    static let introSize = CGSize(width: 400, height: 176)
     /// Horizontal game pixels.
     static let width: CGFloat = 320
     /// Vertical game pixels.
     static let height: CGFloat = 160
     /// Cloud strip width and wrap period.
     static let cloudPeriod = 320
-    /// Vine-writing beats on the boot card. Matches `intro-spread-sheet` and `FRAMES` in `scripts/generate_intro_spread.py`.
-    static let introFrames = 20
-    /// Hold per intro beat, in milliseconds.
-    static let introFrameMilliseconds = 180
-    /// Intro star ping-pong. Matches `STAR_FRAMES` in `scripts/generate_intro_spread.py`.
-    static let introStarFrames = 4
-    /// Hold per star twinkle beat, in milliseconds.
-    static let introStarFrameMilliseconds = 320
     /// Registered roll-to-sheet poses from `scripts/export_yard.swift`.
     static let envelopeFrames = 12
     /// Hold per unroll beat, in milliseconds (the first pose gets a longer hold).

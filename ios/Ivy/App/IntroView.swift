@@ -1,143 +1,111 @@
 import SwiftUI
-import UIKit
 
-/// Full-screen first run: one vine writes the tap line, then a tap cuts to the yard.
+/// First-run invitation: ivy grows across the title while the Yard artwork warms.
 struct IntroView: View {
-    /// Leave the card for the first playable room.
     var onEnter: () -> Void
-    /// Freeze on the finished sentence and skip the blink.
+
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    /// 0 is bare night; 1...`GameCanvas.introFrames` crop `intro-spread-sheet`.
-    @State private var ivyFrame = 0
-    /// Ping-pong 0...3 on `intro-star-sheet`. Starts on a mid-bright night.
-    @State private var starFrame = 1
-    /// True once the sentence has formed (or was skipped there).
-    @State private var showPrompt = false
-    /// Pulse the living sentence until tap.
-    @State private var tapBlink = true
-    /// Guards a double-tap through into the yard.
+    @State private var growth: CGFloat = 0
+    @State private var crawlComplete = false
+    @State private var yardReady = false
+    @State private var tipSway = false
     @State private var didEnter = false
+
+    private let artworkSize = CGSize(width: 1774, height: 887)
 
     var body: some View {
         ZStack {
-            Color("Night")
-                .ignoresSafeArea()
-            PixelCanvas(imageName: "intro-spread-base", canvasSize: GameCanvas.introSize) { scale in
-                let size = CGSize(
-                    width: GameCanvas.introSize.width * scale,
-                    height: GameCanvas.introSize.height * scale
-                )
+            Color("Night").ignoresSafeArea()
+
+            GeometryReader { geometry in
+                let scale = min(geometry.size.width / artworkSize.width,
+                                geometry.size.height / artworkSize.height)
+
                 ZStack(alignment: .topLeading) {
-                    PixelSpriteFrame(sheet: .introStars, index: starFrame, scale: scale)
-                        .allowsHitTesting(false)
-                    if ivyFrame > 0 {
-                        PixelSpriteFrame(sheet: .introSpread, index: ivyFrame - 1, scale: scale)
-                            .opacity(showPrompt && !tapBlink ? 0.72 : 1)
+                    Image("intro-yard-background")
+                        .interpolation(.high)
+                        .resizable()
+                        .frame(width: artworkSize.width * scale, height: artworkSize.height * scale)
+                        .contentShape(Rectangle())
+                        .onTapGesture(perform: finishCrawl)
+                        .accessibilityHidden(true)
+
+                    Image("intro-title")
+                        .interpolation(.high)
+                        .resizable()
+                        .frame(width: 650 * scale, height: 325 * scale)
+                        .mask(alignment: .leading) {
+                            Rectangle().frame(width: 650 * scale * growth)
+                        }
+                        .position(x: 452 * scale, y: 229 * scale)
+                        .accessibilityLabel("Ivy")
+
+                    Image("intro-tagline")
+                        .interpolation(.high)
+                        .resizable()
+                        .frame(width: 600 * scale, height: 200 * scale)
+                        .position(x: 483 * scale, y: 395 * scale)
+                        .opacity(crawlComplete ? 1 : 0)
+                        .accessibilityLabel(GameCopy.introTitle)
+
+                    if crawlComplete && !yardReady && !reduceMotion {
+                        Image("ui-ivy-sprig")
+                            .interpolation(.high)
+                            .resizable()
+                            .frame(width: 42 * scale, height: 14 * scale)
+                            .rotationEffect(.degrees(tipSway ? 4 : -4), anchor: .leading)
+                            .position(x: 711 * scale, y: 178 * scale)
                             .allowsHitTesting(false)
+                            .accessibilityHidden(true)
+                            .task {
+                                withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) {
+                                    tipSway = true
+                                }
+                            }
+                    }
+
+                    if crawlComplete && yardReady {
+                        PuzzleButton("Enter", width: 120, action: enter)
+                            .position(x: 352 * scale, y: 730 * scale)
                     }
                 }
-                .frame(width: size.width, height: size.height)
+                .frame(width: artworkSize.width * scale, height: artworkSize.height * scale)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .contentShape(Rectangle())
-        .onTapGesture(perform: handleTap)
         .statusBarHidden(true)
-        .accessibilityElement(children: .ignore)
-        .accessibilityAddTraits(.isButton)
-        .accessibilityLabel(GameCopy.introTitle)
-        .accessibilityHint(showPrompt ? GameCopy.introEnter : "Skip to the start prompt")
-        .task {
-            await runIntro()
-        }
-        .task {
-            await twinkleStars()
-        }
-        .task(id: showPrompt) {
-            await blinkTapLine()
-        }
+        .task { await crawlIvy() }
+        .task { await prepareYard() }
     }
 
-    /// One vine writes the line, then holds until tap.
-    private func runIntro() async {
-        warmPlates()
+    private func crawlIvy() async {
         if reduceMotion {
-            skipToPrompt()
+            finishCrawl()
             return
         }
-        for frame in 1...GameCanvas.introFrames {
-            if didEnter || showPrompt { return }
-            ivyFrame = frame
-            try? await Task.sleep(for: .milliseconds(GameCanvas.introFrameMilliseconds))
+        for frame in 1...40 {
+            if Task.isCancelled || crawlComplete { return }
+            growth = CGFloat(frame) / 40
+            try? await Task.sleep(for: .milliseconds(55))
         }
-        showPrompt = true
+        crawlComplete = true
     }
 
-    /// Decode intro beats and the first room so cuts are frames, not hitches.
-    private func warmPlates() {
-        SpriteAtlas.warm(
-            "intro-spread-base",
-            SpriteSheet.introSpread.imageName,
-            SpriteSheet.introStars.imageName,
-            "story-yard-base",
-            "story-cloud",
-            SpriteSheet.storyVine.imageName
-        )
+    private func finishCrawl() {
+        guard !crawlComplete else { return }
+        growth = 1
+        crawlComplete = true
     }
 
-    /// Hold on the finished vine sentence.
-    private func skipToPrompt() {
-        ivyFrame = GameCanvas.introFrames
-        showPrompt = true
-        tapBlink = true
+    private func prepareYard() async {
+        await Task.yield()
+        _ = SceneArtwork.image(named: "story-yard-base")
+        SpriteAtlas.warm("story-cloud", SpriteSheet.storyVine.imageName)
+        yardReady = true
     }
 
-    /// Yard-wind language: ping-pong nearest-neighbor, freeze on Reduce Motion.
-    private func twinkleStars() async {
-        if reduceMotion {
-            starFrame = 1
-            return
-        }
-        var direction = 1
-        while !didEnter {
-            try? await Task.sleep(for: .milliseconds(GameCanvas.introStarFrameMilliseconds))
-            if didEnter { return }
-            starFrame += direction
-            if starFrame >= GameCanvas.introStarFrames - 1 {
-                starFrame = GameCanvas.introStarFrames - 1
-                direction = -1
-            } else if starFrame <= 0 {
-                starFrame = 0
-                direction = 1
-            }
-        }
-    }
-
-    /// First tap lands on the prompt; the next tap opens the yard.
-    private func handleTap() {
-        if didEnter { return }
-        if !showPrompt {
-            skipToPrompt()
-            return
-        }
-        enter()
-    }
-
-    /// The sentence pulses until Reduce Motion or the yard cut.
-    private func blinkTapLine() async {
-        guard showPrompt, !reduceMotion else {
-            tapBlink = true
-            return
-        }
-        while !didEnter {
-            try? await Task.sleep(for: .milliseconds(700))
-            if didEnter { return }
-            tapBlink.toggle()
-        }
-    }
-
-    /// One-shot dismiss.
     private func enter() {
-        guard !didEnter else { return }
+        guard !didEnter, yardReady else { return }
         didEnter = true
         IvyHaptics.light()
         onEnter()
