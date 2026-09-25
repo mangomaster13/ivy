@@ -55,8 +55,7 @@ struct HallPrizeView: View {
     @State private var revealTask: Task<Void, Never>?
     @State private var justPulled = false
     @State private var letterOpen = false
-    @State private var letterFrame = 0
-    @State private var unrollLetter = false
+    @State private var letterReady = false
 
     var body: some View {
         Group {
@@ -68,12 +67,10 @@ struct HallPrizeView: View {
             else { store.cancelOverlay() }
         }
         .task(id: letterOpen) {
-            guard letterOpen, unrollLetter else { return }
+            guard letterOpen, !letterReady else { return }
             do {
-                for next in 0..<GameCanvas.envelopeFrames {
-                    letterFrame = next
-                    try await Task.sleep(for: .milliseconds(180))
-                }
+                try await Task.sleep(for: .milliseconds(650))
+                withAnimation(.easeInOut(duration: reduceMotion ? 0.1 : 0.35)) { letterReady = true }
             } catch { return }
         }
         .onChange(of: scenePhase) { _, phase in
@@ -102,7 +99,7 @@ struct HallPrizeView: View {
                 Image("lottery-token-\(activeEgg.rawValue)")
                     .resizable().interpolation(.high)
                     .frame(width: 33 * scale, height: 25 * scale)
-                    .position(x: 173 * scale, y: 61 * scale)
+                    .position(x: 164 * scale, y: 68 * scale)
                     .accessibilityHidden(true)
             }
             if !store.lotteryDrawn {
@@ -111,7 +108,7 @@ struct HallPrizeView: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .position(x: 262 * scale, y: 60 * scale)
+                .position(x: 245 * scale, y: 57 * scale)
                 .accessibilityLabel("Pull the keepsake machine lever")
                 .accessibilityHint("Tap or drag the lever down")
                 .simultaneousGesture(
@@ -125,7 +122,7 @@ struct HallPrizeView: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .position(x: 167 * scale, y: 94 * scale)
+                .position(x: 162 * scale, y: 99 * scale)
                 .accessibilityLabel("Open the letter from the machine")
             }
         }
@@ -159,30 +156,20 @@ struct HallPrizeView: View {
     }
 
     private func openLetter() {
-        unrollLetter = justPulled && !reduceMotion
-        letterFrame = unrollLetter ? 0 : GameCanvas.envelopeFrames - 1
+        letterReady = !justPulled || reduceMotion
         justPulled = false
         letterOpen = true
     }
 
     private var letterContent: some View {
-        GeometryReader { proxy in
-            let scale = min((proxy.size.width - 48) / 448, (proxy.size.height - 24) / 300)
-            ZStack {
-                Color("Night")
-                PixelSpriteFrame(sheet: .letterScroll, index: letterFrame, scale: scale)
-                if letterFrame == GameCanvas.envelopeFrames - 1 {
-                    VStack(spacing: 10 * scale) {
-                        IvyType.inscription("one more day, with you")
-                            .font(IvyType.script(22 * scale))
-                        IvyType.inscription("a day for just the two of us.\nno plans to keep, no hurry home.\ni'll take care of the little things.")
-                            .font(IvyType.script(16 * scale)).multilineTextAlignment(.center)
-                        IvyType.inscription("Love always leads me home—to you.")
-                            .font(IvyType.script(16 * scale))
-                    }
-                    .foregroundStyle(IvyType.ink).padding(24).transition(.opacity)
-                }
-            }.frame(width: proxy.size.width, height: proxy.size.height)
+        ZStack {
+            PixelCanvas(imageName: "letter-sealed", pixelArt: false) { _ in }
+            PixelCanvas(imageName: "letter-finale", pixelArt: false) { _ in }
+                .opacity(letterReady ? 1 : 0)
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(letterReady
+            ? "One day, then forever. I’ve loved these days with you. I want all the ordinary ones ahead. One day, then another—until we call it forever. Love always leads me home—to you."
+            : "A letter for you")
     }
 }

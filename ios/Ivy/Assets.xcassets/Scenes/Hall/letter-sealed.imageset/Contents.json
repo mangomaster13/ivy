@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "story-envelope.png",
+      "filename" : "letter-sealed.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "story-envelope@2x.png",
+      "filename" : "letter-sealed@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "story-envelope@3x.png",
+      "filename" : "letter-sealed@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
