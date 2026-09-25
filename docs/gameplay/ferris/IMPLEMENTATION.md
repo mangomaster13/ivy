@@ -1,32 +1,26 @@
-# Ferris · iPod, ticket, selfie
+# Ferris · glockenspiel, ticket, harbour postcard
 
-用户于 2026-09-24 批准实现本流程，并明确选择**经典圆形转盘 iPod**。替代旧两票配对和未接入的配重方案。代码与资源已接入；没有运行测试、验证构建、设备或游戏截图，尚未经用户游玩验收。
+2026-09-25: user approved replacing the iPod, boys and selfie with a glockenspiel ticket puzzle and a harbour postcard sequence, then authorized recommended choices without further questions and checkpoint pushes on main. Code and artwork are connected; no tests, validation builds, device launches or runtime screenshots were run. Player acceptance remains outstanding.
 
-## 玩家流程
+## Player flow
 
-1. 摩天轮下，点两位男孩共用的耳机，打开经典转盘 iPod 的歌单近景，五首歌全部可见。拖动一首歌到新位置，或点选后使用 Up / Down；VoiceOver 同样有上下移动动作。
-2. 按 Play 整组判定。顺序错误保留草稿，不给逐首正确提示。正确顺序：Taylor Swift — Enchanted / Dean Lewis — I don’t want to say goodbye / The 1975 — Part of the band / 林忆莲 — 也许 / Taylor Swift — Lover。
-3. 正确后回到外景并转到售票处。点柜台票槽打开近景，单独点击拿取 ticket，进入 Tools，不自动选中。此处 Play 是谜题提交，不播放歌曲录音，也没有等待。
-4. 到检票口，主动选择 ticket 后点票槽，或把票从 Tools 拖到票槽。只有检票事实才开放车厢；单纯持有票不能登车。点已开车门进入。
-5. 点座位上的手机单独拿取；主动选中手机打开自拍取景，或选中后点窗户／拖到窗户。按 Photo 快门才完成。
-6. 保存原 `ferris` 收藏并直接显示 Element。票和手机不占收藏槽；回访可看歌序、进入已开放车厢并查看自拍，无需重做。
+1. At the wheel, inspect the wooden glockenspiel. The top staff shows nine equal notes. In Explore mode, striking any of seven naturally ascending bars shows its staff position; no listening or external music knowledge is required. The complete score enters Notes on inspection, without a clue-reading gate.
+2. Toggle the physical recording switch. Strikes append to the lower staff. Undo removes the last note; leaving/reopening preserves notes and recording mode. Pulling the handle judges the entire phrase, never a correct prefix. Wrong input stays editable. Answer, from low E4 to D5 indexed 0...6: `0,2,4,3,1,5,6,2,0`.
+3. Correct input persists completion and returns to the cabinet. The ticket protrudes from its actual slot; inspect and take it separately. Choose the ticket in Tools and use it at the reader. Only then enter the carriage.
+4. Take the postcard from the right seat. Use the root page arrows to revisit three elevation views: near warehouse roof, clock tower behind it, observatory farther back. Place the actively selected postcard into the left-shelf press; placement opens the focused machine directly and removes the card from Tools without consuming ownership.
+5. Turn three drums to warehouse → clock tower → observatory, applying the card's Near to far diagram. All three positions accept any motif, including duplicates. Pull the handle for a whole impression. Wrong attempts retain the drums and leave no permanent ink. Correct input stamps the card but grants no collectible yet.
+6. Take the stamped card back into Tools. Use the cabin door to return to the exit platform. Select the card and use the postbox slot; posting consumes it, saves the original `ferris` collectible and shows Element. The right-hand walkway then leads to Taxi. Revisit keeps the sent card available as a memory and does not require a consumed tool.
 
-## 状态与兼容
+The music puzzle is the main inference/encoding task: seven possible notes over a complete nine-note phrase, with no prefix feedback. The three-stamp sequence is explicitly a light observation interlude after it: 27 raw combinations or six permutations, not a brute-force-resistant second main puzzle. No time/attempt penalties, extra decoys or clue-reading locks were added.
 
-`FerrisPuzzle.swift` 的 `FerrisProgress` 保存完整歌序、playlistSolved、ticketTaken、ticketUsed、phoneTaken、photoTaken；出过票由 playlistSolved 推导。所有动作检查房间、近景、工具与先决事实。工具领取和使用复用 acquire / use / consume；Back 复用 memoryNavigation。
+## State and compatibility
 
-`MemoryProgress.ferris` 是可选新字段，新记录逐字段容错解码。旧收藏、opened("ferris") 保留完成和通行；旧两票已匹配但未领奖的档保留谜题已解、等待拿票；旧已到 Taxi 的档保留通行，不凭访问记录额外发自拍收藏。十三个收藏 ID 不变。重置入口只更新规则，没有执行任何用户存档重置。
+`FerrisProgress` holds music draft, recording mode, ticket facts, elevation, card pickup/placement, stamp draft, stamped/retrieved/posted facts and exit access. GameStore guards each action's room, overlay and immediate prerequisites. `ferrisCamera` is retained as an internal old panel identifier for the press; no camera UI remains. New `ferrisPostcard` is a tool, never a fourteenth collectible.
 
-`FerrisViews.swift` 是唯一物件布局入口。四景共用 320×160 坐标：耳机连着两位男孩，iPod 由黄衣男孩拿在手中；票从售票柜台正面票槽伸出；检票器固定入口栏杆；手机平放车厢右侧座面。拿取后各自的独立层消失。两位男孩按用户照片重绘为卡通形象；黄衣男孩为自然圆脸、短卷发、无帽、黄色短袖。车厢自拍同样为卡通画面。
+Decoder migration: `playlistSolved` → `musicSolved`; `phoneTaken` → `postcardTaken`; `photoTaken` → `posted`. Prior ticket facts persist. Existing owned/opened ferris sets posted; old matched ticket pairs preserve solved music. Existing downstream Taxi access preserves passage without manufacturing postcard ownership. A malformed local field does not discard the rest of the save. Retired phone tools are removed without triggering pickup UI. Restoring or migrating never forces the footer tab.
 
-五行各至少 48pt；最小内容预算 533×266，屏幕近景使用实体 LCD 的相机裁切和右侧共享操作栏，不滚动、不裁歌曲、不改字体来塞行。错误对话独立叠加且可点空白关闭，不移动列表。实际大小与拖拽手感待用户验收。
+Source and scene contracts: [art README](../../../art/ferris/score-postcard/README.md). Current plan: [implementation plan](../../superpowers/plans/2026-09-25-ferris-score-postcard.md). Existing unrelated Taxi edits are excluded from Ferris commits.
 
-## 素材与剩余边界
+## Verification boundary
 
-摩天轮下行人、售票处、开关两态的检票处、空车厢和卡通自拍源图见 [四景资源记录](../../../art/ferris/sequence/README.md)；题字与缩放见 [歌单资源记录](../../../art/ferris/playlist/README.md)。屏幕五首歌是独立精确题字素材，非图片生成器猜字。
-
-用户选择基于私人记忆的顺序题，当前无额外线索、音频或听歌识别。不会逐项泄露答案，但仍可穷举 120 个排列；这项明确取舍不扩展为其他关卡的规则。
-
-## 手动验收入口
-
-新进度从 Dictionary 前往 Ferris；旧完成档免重玩。请检查错误排序、拖拽与点选上下移动、退出再进保留草稿、出票后未拿票不能进车厢、拿票后必须主动检票、拿手机后必须主动选择和按快门、完成后回访与原收藏保留。新增 `FerrisPuzzleTests` 覆盖状态与迁移，但本轮未执行。
+Performed: source-flow inspection and visual inspection of generated art/lettering composites; production asset export. Not performed: XCTest execution, game compilation, simulator/device launch, runtime screenshots or gesture testing. `FerrisPuzzleTests.swift` contains one runnable state/compatibility check covering exploration vs recording, wrong drafts, complete submission, active tool selection, stamping vs posting, persistence, invalid indices and old saves. These assertions have not been run.

@@ -28,7 +28,7 @@ enum EggId: String, CaseIterable, Codable, Identifiable {
     }
 
     /// Independent transparent keepsake artwork shared by the bar and tap celebration.
-    var iconName: String { self == .taxi ? "later-taxi-keepsake" : self == .dictionary ? "later-dictionary-keepsake" : self == .noodle ? "bt-dinner" : self == .perfume ? "ll-perfume-trio" : self == .keycard ? "sheraton-keycard" : self == .city ? "city-jigsaw-master" : "keepsake-\(rawValue)" }
+    var iconName: String { self == .ferris ? "ferris-postcard-finished" : self == .taxi ? "later-taxi-keepsake" : self == .dictionary ? "later-dictionary-keepsake" : self == .noodle ? "bt-dinner" : self == .perfume ? "ll-perfume-trio" : self == .keycard ? "sheraton-keycard" : self == .city ? "city-jigsaw-master" : "keepsake-\(rawValue)" }
 
     /// Physical memory and puzzle artwork, separate from the transparent keepsake icon.
     var collectionImageName: String {
@@ -42,7 +42,7 @@ enum EggId: String, CaseIterable, Codable, Identifiable {
         case .cinema: "later-cinema-keepsake"
         case .noodle: "bt-dinner"
         case .taxi: "later-taxi-receipt-stay"
-        case .ferris: "ferris-selfie"
+        case .ferris: "ferris-postcard-finished"
         case .dictionary: "later-dictionary-keepsake"
         case .keycard: "sheraton-keycard"
         case .city: "city-jigsaw-master"
@@ -109,7 +109,7 @@ enum Room: String, Codable {
         case .perfume: "ll4-street"
         case .cinema: "later-cinema-projection-booth-background"
         case .dictionary: "later-dictionary-bookmark-stall"
-        case .ferris: "later-ferris-exterior-background"
+        case .ferris: "ferris-music-cabinet"
         case .taxi: "later-taxi-interior-background"
         }
     }
@@ -199,8 +199,9 @@ final class GameStore {
         if room == .yard { return yardImageName }
         if room == .ferris {
             let underlying = elementReturnOverlay ?? overlay
+            if underlying == .memory(.ferrisPostbox) { return "ferris-postbox" }
             if underlying == .memory(.ferrisCabin) || underlying == .memory(.ferrisCamera) {
-                return "ferris-cabin-interior"
+                return ferrisCabinImage
             }
         }
         if room == .taxi {
@@ -757,6 +758,9 @@ final class GameStore {
         if room == .taxi, edge == .taxiDoor, !taxi.arrived {
             showSceneHint("The cab is still on its way.", presentation: .interaction); return
         }
+        if room == .ferris, edge == .ferrisForward, !ferris.exitUnlocked && !collected.contains(.ferris) {
+            showSceneHint("A postcard is still waiting to be sent.", presentation: .interaction); return
+        }
         if room == .plane, edge == .planeDepart { openMemory(.flight); return }
         if room == .corridor, edge == .corridorForward, !roomDoorIsOpen {
             overlay = corridorUnlocked ? .memory(.keycard) : .hotelLock
@@ -1141,9 +1145,10 @@ final class GameStore {
             if index <= EggId.ferris.slotIndex {
                 memories.ferrisMatches = []
                 memories.ferris = nil
-                exploration.tools.subtract([.ferrisTicket, .ferrisPhone])
-                memories.picked.subtract([.ferrisTicket, .ferrisPhone])
-                memories.used.subtract([.ferrisTicket, .ferrisPhone])
+                exploration.clues.subtract([.ferrisScore, .ferrisHarbour])
+                exploration.tools.subtract([.ferrisTicket, .ferrisPhone, .ferrisPostcard])
+                memories.picked.subtract([.ferrisTicket, .ferrisPhone, .ferrisPostcard])
+                memories.used.subtract([.ferrisTicket, .ferrisPhone, .ferrisPostcard])
             }
             if index <= EggId.taxi.slotIndex { memories.taxiDraft = "" }
         }

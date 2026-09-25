@@ -98,6 +98,9 @@ struct ToolButton: View {
                 if tool.isFragranceTool { FragranceBottleArtwork(tool: tool, showLabel: false) }
                 else if tool == .cinemaFilm { CinemaFilmStack() }
                 else if tool == .dinnerMenu { DinnerMenuArtwork() }
+                else if tool == .ferrisPostcard && store.ferris.stamped {
+                    Image("ferris-postcard-finished").resizable().interpolation(.high).scaledToFit()
+                }
                 else { Image(tool.imageName).resizable().interpolation(.high).scaledToFit() }
             }
             .frame(width: 30, height: 30)
@@ -373,6 +376,12 @@ private struct ClueNotebookView: View {
                 case .bigTopLedger, .bigTopMirror:
                     BigTopEvidenceArtwork(mirrored: clue == .bigTopMirror, notebook: true)
                         .frame(maxHeight: compact ? 105 : 150)
+                case .ferrisScore:
+                    Image("ferris-score").resizable().scaledToFit()
+                        .accessibilityLabel(store.clueText(clue))
+                case .ferrisHarbour:
+                    Image("ferris-postcard-clue").resizable().scaledToFit()
+                        .accessibilityLabel(store.clueText(clue))
                 case .cinemaTicket:
                     Image("later-cinema-ticket-clue").resizable().scaledToFit()
                         .accessibilityLabel(store.clueText(.cinemaTicket))

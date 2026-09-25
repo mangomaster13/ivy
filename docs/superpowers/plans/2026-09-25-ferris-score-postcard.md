@@ -23,9 +23,9 @@
 ## Work sequence
 
 - [x] Read current flow, rules, source images and shared controls; preserve initial worktree text in `/tmp/ivy-ferris-start` to isolate staging from unrelated work.
-- [ ] Generate and inspect cabinet, three cabin elevations, press closeup, postcard and exit postbox. Export from the selected source at each scale; author exact note/lettering layers independently. Record coordinates from the actual images in FerrisLayout and art README.
-- [ ] Implement music input and durable ticket facts in `ios/Ivy/Game/FerrisPuzzle.swift`, replace the iPod view in `FerrisViews.swift`, and add the score Notes entry.
-- [ ] Implement reversible cabin observation, postcard placement, press and posting in the same files; connect panel/tool cases, collection image, Element copy, reset and exit guards.
-- [ ] Update `ios/IvyTests/FerrisPuzzleTests.swift` with a runnable end-to-end state check: wrong melody retained; full melody grants only ticket eligibility; ticket selection required; invalid stamp attempt retained; completed card cannot award until selected and posted; duplicate posting idempotent; save round trip and legacy photo/phone/ticket migration. Do not execute it.
-- [ ] Update the Ferris implementation record and targeted current-guide rows; do not include pre-existing Taxi changes in commits.
+- [x] Generate and inspect cabinet, three cabin elevations, press closeup, postcard and exit postbox. Export from the selected source at each scale; author exact note/lettering layers independently. Record coordinates from the actual images in FerrisLayout and art README.
+- [x] Implement music input and durable ticket facts in `ios/Ivy/Game/FerrisPuzzle.swift`, replace the iPod view in `FerrisViews.swift`, and add the score Notes entry.
+- [x] Implement reversible cabin observation, postcard placement, press and posting in the same files; connect panel/tool cases, collection image, Element copy, reset and exit guards.
+- [x] Update `ios/IvyTests/FerrisPuzzleTests.swift` with a runnable end-to-end state check: wrong melody retained; full melody grants only ticket eligibility; ticket selection required; invalid stamp attempt retained; completed card cannot award until selected and posted; duplicate posting idempotent; save round trip and legacy photo/phone/ticket migration. Do not execute it.
+- [x] Update the Ferris implementation record and targeted current-guide rows; do not include pre-existing Taxi changes in commits.
 - [ ] Commit and push completed milestones on main using normal Git, with precise unverified-runtime disclosure. Final delivery reports source inspection and artwork inspection separately from tests/builds that were not run.

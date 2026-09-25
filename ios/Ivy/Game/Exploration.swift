@@ -5,7 +5,7 @@ enum AdventureTool: String, Codable, CaseIterable, Identifiable {
     case brassKey, magnifier, cloth, napkin, sewingKit, coin, scoop, ticket
     // Preserve the old save identifier while replacing the physical tool.
     case eraser = "pencil"
-    case ferrisTicket, ferrisPhone
+    case ferrisTicket, ferrisPhone, ferrisPostcard
     case dinnerMenu, bigTopPencil, bigTopInspectionMirror, fountainPen, cinemaFilm
     case gaiacWood, cedar, incense, oakmoss, patchouli, vetiver
     case bergamot, grapefruit, petitgrain, orangeBlossom, iris, violet, jasmine
@@ -16,6 +16,7 @@ enum AdventureTool: String, Codable, CaseIterable, Identifiable {
         switch self {
         case .ferrisTicket: "Ferris wheel ticket"
         case .ferrisPhone: "phone"
+        case .ferrisPostcard: "Harbour postcard"
         case .cinemaFilm: "three transparent films"
         case .fountainPen: "fountain pen"
         case .ticket: "ticket"
@@ -51,7 +52,8 @@ enum AdventureTool: String, Codable, CaseIterable, Identifiable {
     var description: String {
         switch self {
         case .ferrisTicket: "Two places in a carriage above the city."
-        case .ferrisPhone: "A phone for one photograph together."
+        case .ferrisPhone: "A phone from an earlier journey."
+        case .ferrisPostcard: "A little piece of the harbour, ready for its own journey."
         case .cinemaFilm: "Three transparent films, each carrying scattered fragments of the same picture."
         case .fountainPen: "A blue fountain pen from the bookstall."
         case .ticket: "A paper ticket kept between the pages."
@@ -75,10 +77,13 @@ enum AdventureClue: String, Codable, CaseIterable, Identifiable {
     case gardenDate, label, travelOrder, mirror, music, recipe, temperature, rainRelation
     case gaiacFormula, bergamoteFormula, mousseFormula, perfumeOrder, gelatoOrder, gelatoLeaves
     case bigTopLedger, bigTopMirror, dictionaryLyric, dictionaryEntries, cinemaTicket, taxiRoute
+    case ferrisScore, ferrisHarbour
     var id: String { rawValue }
     var title: String {
         switch self {
         case .cinemaTicket: "two seats, one memory"
+        case .ferrisScore: "a melody above the harbour"
+        case .ferrisHarbour: "near and far"
         case .taxiRoute: "a route back home"
         case .dictionaryLyric: "a song between pages"
         case .dictionaryEntries: "a missing word"
@@ -156,10 +161,10 @@ extension GameStore {
         }
     }
     var sideImageName: String? {
-        if room == .ferris, [.memory(.ferrisCabin), .memory(.ferrisCamera)].contains(elementReturnOverlay ?? overlay) {
+        if room == .ferris, [.memory(.ferrisCabin), .memory(.ferrisCamera), .memory(.ferrisPostbox)].contains(elementReturnOverlay ?? overlay) {
             return nil
         }
-        switch (room, sceneView) {
+        return switch (room, sceneView) {
         case (.bedroom, -1): "memory-bath"
         case (.noodle, 1): bigTopCounterImageName
         case (.perfume, 1): "ll4-entry"
@@ -174,8 +179,8 @@ extension GameStore {
         case (.bedroom, 1): memories.bedroomLampOn == true ? "explore-bedroom-desk" : "explore-bedroom-desk-off"
         case (.gelato, -1): "explore-gelato-bench"
         case (.gelato, 1): "explore-gelato-service"
-        case (.ferris, 0): "ferris-promenade"
-        case (.ferris, 1): "ferris-ticket-booth"
+        case (.ferris, 0): "ferris-music-cabinet"
+        case (.ferris, 1): ferris.ticketUsed ? "ferris-postbox" : "ferris-boarding-closed"
         default: nil
         }
     }
@@ -195,7 +200,6 @@ extension GameStore {
         if tool == .ticket { openMemory(.ticket); return }
         selectedTool = selectedTool == tool ? nil : tool
         sceneHint = ""
-        if tool == .ferrisPhone, selectedTool == tool, overlay == .memory(.ferrisCabin) { openFerrisCamera() }
     }
 
     func acquire(_ tool: AdventureTool) {
@@ -246,9 +250,10 @@ extension GameStore {
             line = held ? "There is a little ink waiting in your bag." : "The page is waiting for ink."
         case .ferrisTicket:
             line = held ? "The ticket in your bag might open the way."
-                : (ferris.playlistSolved ? "A ticket is waiting in the dispenser." : "The gate is waiting for a ticket.")
-        case .ferrisPhone:
-            line = held ? "Something in your bag could keep this moment." : "A phone is resting on the seat."
+                : (ferris.musicSolved ? "A ticket is waiting in the dispenser." : "The gate is waiting for a ticket.")
+        case .ferrisPostcard:
+            line = held ? "The postcard in your bag might fit here." : "A postcard is resting on the seat."
+        case .ferrisPhone: return
         default: return
         }
         showSceneHint(line, presentation: .interaction)
@@ -280,6 +285,8 @@ extension GameStore {
     func clueText(_ clue: AdventureClue) -> String {
         return switch clue {
         case .cinemaTicket: "HOPE. TWO SEATS, ONE MEMORY."
+        case .ferrisScore: "Nine equal notes, from left to right: " + FerrisProgress.melody.map { FerrisProgress.noteNames[$0] }.joined(separator: "; ")
+        case .ferrisHarbour: "Three landmarks: pier warehouse, clock tower, hill observatory. An arrow runs from a large foreground shape toward smaller distant shapes. Near to far."
         case .taxiRoute: "EAST FROM THE PIER. VIA THE LANTERN MARKET. TUNNEL CLOSED."
         case .dictionaryLyric: "In the dictionary of love, ‘forever’ cannot be found."
         case .dictionaryEntries: "FORETELL — to sense what may come.\nFORGIVE — to let a memory be gentle.\nAn entry is missing; the facing page is blank."
@@ -348,7 +355,7 @@ extension GameStore {
         if !collected.contains(.perfume) { return "Beyond the groceries, a familiar scent is waiting." }
         if !collected.contains(.cinema) { return "Two cinema tickets still remember the dark and the screen." }
         if !collected.contains(.dictionary) { return "The old bookstall has kept a song and an unfinished page." }
-        if !collected.contains(.ferris) { return "Five songs on an iPod, and two places above the city." }
+        if !collected.contains(.ferris) { return "A melody below the wheel, and a postcard above the harbour." }
         if !collected.contains(.taxi) { return "One last ride. The taxi meter has kept the end of our night." }
         return "Every keepsake is here. The pages still remember, whenever you want to return."
     }

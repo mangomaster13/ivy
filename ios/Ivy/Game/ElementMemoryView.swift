@@ -187,7 +187,7 @@ extension EggId {
         case .perfume: "Gaiac 10, Bergamote 22, Mousse de Chene 30. Our little collection, one bottle at a time."
         case .cinema: "I forgot the plot. I remember your arms around me."
         case .dictionary: "Some words belong in our story."
-        case .ferris: "Five songs before the ride. One photograph above the city. You, beside me."
+        case .ferris: "A melody below. The harbour above. A little piece of this evening, sent with love."
         case .taxi: "The ride had to end. I wasn't ready to say goodbye."
         }
     }

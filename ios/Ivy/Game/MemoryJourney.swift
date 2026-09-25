@@ -71,7 +71,7 @@ struct MemoryProgress: Codable {
 }
 
 enum MemoryPanel: String, CaseIterable {
-    case ferrisTicket, ferrisGate, ferrisCabin, ferrisCamera
+    case ferrisTicket, ferrisGate, ferrisCabin, ferrisCamera, ferrisPostbox
     case cinemaCase, cinemaProjector, cinemaTicket
     case gelatoOrder, gelatoNote, dictionarySong
     case pot, drawer, linen, wholeBox, dispenser, flight, ticket, travelBook, yunnan, bouquet, city, bath, menu, tasting, keycard
@@ -101,7 +101,7 @@ enum MemoryPanel: String, CaseIterable {
         case .perfume, .perfumeWood, .perfumeBotanical, .perfumeSpice, .perfumeLab, .perfumeFormula, .perfumeMix: .perfume
         case .cinema, .cinemaCase, .cinemaProjector, .cinemaTicket: .cinema
         case .dictionary, .dictionarySong: .dictionary
-        case .ferris, .ferrisTicket, .ferrisGate, .ferrisCabin, .ferrisCamera: .ferris
+        case .ferris, .ferrisTicket, .ferrisGate, .ferrisCabin, .ferrisCamera, .ferrisPostbox: .ferris
         case .taxi, .taxiCard, .taxiReceipt: .taxi
         }
     }
@@ -170,17 +170,19 @@ extension GameStore {
         case .taxiReceipt where !taxi.arrived:
             showSceneHint("The cab is still on its way.", presentation: .interaction)
             return
-        case .ferrisTicket where !ferris.playlistSolved:
-            showSceneHint("The ticket is waiting on a few familiar songs.", presentation: .interaction)
+        case .ferrisTicket where !ferris.musicSolved:
+            showSceneHint("The ticket is waiting for a complete melody.", presentation: .interaction)
             return
         case .ferrisCabin where !ferris.ticketUsed:
             showSceneHint("The gate hasn't let us through yet.", presentation: .interaction)
             return
         case .ferrisCamera:
             guard ferris.ticketUsed else { return }
-            if ferris.photoTaken { replayKeepsake(.ferris); return }
-            guard ferris.phoneTaken, selectedTool == .ferrisPhone,
-                  exploration.tools.contains(.ferrisPhone) else { hintForTool(.ferrisPhone); return }
+            if ferris.posted { replayKeepsake(.ferris); return }
+            guard ferris.postcardPlaced else { hintForTool(.ferrisPostcard); return }
+        case .ferrisPostbox where !ferris.ticketUsed:
+            showSceneHint("The carriage is still waiting for its passengers.", presentation: .interaction)
+            return
         case .cinemaProjector where !cinema.filmInserted && !cinema.solved:
             guard requireInteractionTool(.cinemaFilm, missing: "An empty space where the film should be.") else { return }
         case .bigTopLedger where !exploration.clues.contains(.bigTopLedger):
@@ -225,6 +227,7 @@ extension GameStore {
             returnToRecipe = overlay == .adventure(.recipe) && panel == .menu
             memoryNavigation = []
         }
+        if panel == .ferris { discover(.ferrisScore) }
         if panel == .cinemaTicket { discover(.cinemaTicket) }
         if panel == .dictionary { discover(.dictionaryEntries) }
         if panel == .dictionarySong { discover(.dictionaryLyric) }
@@ -409,7 +412,7 @@ extension GameStore {
         case (.memory(.perfume), .perfume): collectPerfumes(); return
         case (.memory(.cinema), .cinema): allowed = memories.opened.contains("cinema")
         case (.memory(.dictionary), .dictionary): allowed = memories.opened.contains("dictionary")
-        case (.memory(.ferris), .ferris): return // The camera owns this keepsake.
+        case (.memory(.ferris), .ferris): return // Posting the postcard owns this keepsake.
         case (.memory(.taxiReceipt), .taxi): takeTaxiReceipt(); return
         default: allowed = false
         }
