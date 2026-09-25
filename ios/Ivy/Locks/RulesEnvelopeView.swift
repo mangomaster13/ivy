@@ -1,56 +1,85 @@
 import SwiftUI
 
-/// Authored sealed and open letter scenes share the root content viewport.
 struct RulesEnvelopeView: View {
     @Bindable var store: GameStore
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var ready = false
-    @State private var closing = false
 
     var body: some View {
-        ZStack {
-            PixelCanvas(imageName: "letter-sealed", pixelArt: false) { _ in }
-            PixelCanvas(imageName: "letter-first", pixelArt: false) { _ in }
-                .opacity(ready && !closing ? 1 : 0)
+        LetterOpeningView(
+            imageName: "letter-first-paper",
+            reading: GameCopy.rulesEnvelope,
+            onOpened: { store.markEnvelopeUnrolled() },
+            onClose: { store.dismissEnvelope() }
+        )
+        .statusBarHidden(true)
+    }
+}
+
+/// Both letters wait for a tap, unfurl once per visit, and dismiss immediately after reading.
+struct LetterOpeningView: View {
+    let imageName: String
+    let reading: String
+    let onOpened: () -> Void
+    let onClose: () -> Void
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var opening = false
+    @State private var ready = false
+    @State private var progress: CGFloat = 0
+
+    var body: some View {
+        Group {
+            if opening {
+                PixelCanvas(imageName: "letter-desk", pixelArt: false) { scale in
+                    // 1774×887 source paper x=387...1395, y=55...808.
+                    // The texture keeps its size; only the exposed band and curl positions move.
+                    let centerY: CGFloat = 77.84
+                    let halfHeight: CGFloat = 67.92 * progress
+                    ZStack(alignment: .topLeading) {
+                        Image(imageName).resizable().interpolation(.high)
+                            .frame(width: 320 * scale, height: 160 * scale)
+                            .mask(alignment: .topLeading) {
+                                Rectangle()
+                                    .frame(width: 320 * scale, height: 2 * halfHeight * scale)
+                                    .position(x: 160 * scale, y: centerY * scale)
+                            }
+                        if !ready {
+                            Image("letter-curl").resizable().interpolation(.high)
+                                .frame(width: 182 * scale, height: (6 + 8 * (1 - progress)) * scale)
+                                .position(x: 161 * scale, y: (centerY - halfHeight) * scale)
+                            Image("letter-curl").resizable().interpolation(.high)
+                                .frame(width: 182 * scale, height: (6 + 8 * (1 - progress)) * scale)
+                                .scaleEffect(x: 1, y: -1)
+                                .position(x: 161 * scale, y: (centerY + halfHeight) * scale)
+                        }
+                    }
+                    .accessibilityHidden(true)
+                }
+            } else {
+                PixelCanvas(imageName: "letter-sealed", pixelArt: false) { _ in }
+            }
         }
         .contentShape(Rectangle())
         .onTapGesture(perform: handleTap)
-        .statusBarHidden(true)
         .accessibilityElement(children: .ignore)
         .accessibilityAddTraits(.isButton)
-        .accessibilityLabel(ready ? GameCopy.rulesEnvelope : "A letter for you")
-        .accessibilityHint(ready ? "Tap to return to the yard" : "Tap to open the letter")
+        .accessibilityLabel(ready ? reading : "A letter for you")
+        .accessibilityHint(ready ? "Tap to close the letter" : "Tap to unroll the letter")
         .accessibilityAction { handleTap() }
-        .task(id: "\(store.envelopePlayID)-\(reduceMotion)") {
-            if store.envelopeDidUnroll || reduceMotion {
-                finishOpening()
-                return
+        .task(id: opening) {
+            guard opening else { return }
+            if reduceMotion {
+                progress = 1
+            } else {
+                withAnimation(.easeInOut(duration: 1.2)) { progress = 1 }
+                do { try await Task.sleep(for: .milliseconds(1200)) }
+                catch { return }
             }
-            do {
-                try await Task.sleep(for: .milliseconds(650))
-                finishOpening()
-            } catch { return }
-        }
-        .task(id: closing) {
-            guard closing else { return }
-            do {
-                try await Task.sleep(for: .milliseconds(reduceMotion ? 100 : 220))
-                store.dismissEnvelope()
-            } catch { return }
+            ready = true
+            onOpened()
         }
     }
 
     private func handleTap() {
-        guard !closing else { return }
-        if ready {
-            withAnimation(.easeOut(duration: reduceMotion ? 0.1 : 0.2)) { closing = true }
-        } else { finishOpening() }
-    }
-
-    private func finishOpening() {
-        withAnimation(.easeOut(duration: reduceMotion ? 0.1 : 0.4)) {
-            ready = true
-        }
-        store.markEnvelopeUnrolled()
+        if ready { onClose() }
+        else if !opening { opening = true }
     }
 }

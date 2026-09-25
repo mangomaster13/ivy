@@ -40,6 +40,22 @@ func export(_ image: CGImage, _ name: String, group: String = "Hall", width: Int
 }
 
 try export(load("closed"), "letter-sealed")
+try export(load("desk"), "letter-desk")
+// The curl's source alpha includes generous margins. Trim to its actual painted edge.
+let curl = load("curl")
+let curlContext = context(curl.width, curl.height)
+curlContext.draw(curl, in: CGRect(x: 0, y: 0, width: curl.width, height: curl.height))
+let pixels = curlContext.data!.assumingMemoryBound(to: UInt8.self)
+var left = curl.width, right = 0, bottom = curl.height, top = 0
+for y in 0..<curl.height {
+    for x in 0..<curl.width where pixels[(y * curl.width + x) * 4 + 3] > 12 {
+        left = min(left, x); right = max(right, x)
+        bottom = min(bottom, y); top = max(top, y)
+    }
+}
+precondition(left < right && bottom < top, "Missing painted curl")
+let trimmedCurl = curl.cropping(to: CGRect(x: left, y: bottom, width: right - left + 1, height: top - bottom + 1))!
+try export(trimmedCurl, "letter-curl", width: 340)
 try export(load("envelope"), "story-envelope", group: "Yard", width: 480)
 for state in ["idle", "lever", "envelope-half", "envelope-full", "heart"] {
     try export(load("machine-" + state), "lottery-machine-" + state)
@@ -87,4 +103,19 @@ for (name, lines) in letters {
     NSGraphicsContext.restoreGraphicsState()
     try png(c.makeImage()!, source.appendingPathComponent(name + ".png"))
     try export(c.makeImage()!, name)
+    // Extract the approved paper silhouette on its original canvas, not a new layout.
+    let cutout = context(paper.width, paper.height)
+    let outline = CGMutablePath()
+    let points: [CGPoint] = [
+        CGPoint(x: 404, y: 63), CGPoint(x: 1372, y: 55),
+        CGPoint(x: 1395, y: 797), CGPoint(x: 1381, y: 808),
+        CGPoint(x: 387, y: 806), CGPoint(x: 399, y: 287)
+    ]
+    outline.addLines(between: points.map { CGPoint(x: $0.x, y: 887 - $0.y) })
+    outline.closeSubpath()
+    cutout.scaleBy(x: CGFloat(paper.width) / 1774, y: CGFloat(paper.height) / 887)
+    cutout.addPath(outline)
+    cutout.clip()
+    cutout.draw(c.makeImage()!, in: CGRect(x: 0, y: 0, width: 1774, height: 887))
+    try export(cutout.makeImage()!, name + "-paper")
 }

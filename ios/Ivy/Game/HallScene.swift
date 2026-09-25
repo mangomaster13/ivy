@@ -53,9 +53,7 @@ struct HallPrizeView: View {
     @State private var revealFrame = 0
     @State private var activeEgg: EggId?
     @State private var revealTask: Task<Void, Never>?
-    @State private var justPulled = false
     @State private var letterOpen = false
-    @State private var letterReady = false
 
     var body: some View {
         Group {
@@ -65,13 +63,6 @@ struct HallPrizeView: View {
         .gameBackAction {
             if letterOpen { letterOpen = false }
             else { store.cancelOverlay() }
-        }
-        .task(id: letterOpen) {
-            guard letterOpen, !letterReady else { return }
-            do {
-                try await Task.sleep(for: .milliseconds(650))
-                withAnimation(.easeInOut(duration: reduceMotion ? 0.1 : 0.35)) { letterReady = true }
-            } catch { return }
         }
         .onChange(of: scenePhase) { _, phase in
             if phase != .active, store.lotteryDrawn {
@@ -132,7 +123,6 @@ struct HallPrizeView: View {
 
     private func pullLever() {
         guard store.pullLottery() else { return }
-        justPulled = true
         revealFrame = 1
         if reduceMotion {
             withAnimation(.easeInOut(duration: 0.18)) { revealFrame = 4 }
@@ -156,20 +146,15 @@ struct HallPrizeView: View {
     }
 
     private func openLetter() {
-        letterReady = !justPulled || reduceMotion
-        justPulled = false
         letterOpen = true
     }
 
     private var letterContent: some View {
-        ZStack {
-            PixelCanvas(imageName: "letter-sealed", pixelArt: false) { _ in }
-            PixelCanvas(imageName: "letter-finale", pixelArt: false) { _ in }
-                .opacity(letterReady ? 1 : 0)
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(letterReady
-            ? "One day, then forever. I’ve loved these days with you. I want all the ordinary ones ahead. One day, then another—until we call it forever. Love always leads me home—to you."
-            : "A letter for you")
+        LetterOpeningView(
+            imageName: "letter-finale-paper",
+            reading: "One day, then forever. I’ve loved these days with you. I want all the ordinary ones ahead. One day, then another—until we call it forever. Love always leads me home—to you.",
+            onOpened: {},
+            onClose: { letterOpen = false }
+        )
     }
 }
