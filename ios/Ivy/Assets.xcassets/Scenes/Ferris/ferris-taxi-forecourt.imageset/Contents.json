@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "ferris-taxi-forecourt.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "ferris-taxi-forecourt@2x.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "ferris-taxi-forecourt@3x.png",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
