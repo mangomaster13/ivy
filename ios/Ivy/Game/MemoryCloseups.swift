@@ -52,10 +52,6 @@ struct MemoryCloseupView: View {
         } else {
         KeepsakeSheet(back: store.backFromMemory, surface: inspectionSurface) {
             VStack(spacing: 8) {
-                if panel == .ticket {
-                    // Balance the feedback row so the paper stays centered on the panel.
-                    Color.clear.frame(height: 52)
-                }
                 GeometryReader { geometry in
                     content(height: geometry.size.height)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -201,7 +197,7 @@ struct MemoryCloseupView: View {
     private func ticket(height: CGFloat) -> some View {
         GeometryReader { geometry in
             let ticketWidth = min(620, max(0, geometry.size.width),
-                                  max(0, height - 24) * 2.2)
+                                  max(0, height) * 2.2)
             TicketRubbingView(store: store)
                 .frame(width: ticketWidth, height: ticketWidth / 2.2)
                 .frame(width: geometry.size.width, height: geometry.size.height, alignment: .center)
@@ -287,7 +283,7 @@ struct WordAnswer: View {
 }
 
 extension AdventureTool {
-    var imageName: String { self == .ferrisPostcard ? "ferris-postcard" : self == .ferrisTicket ? "ferris-navigation-ticket" : self == .ferrisPhone ? "ferris-selfie-phone" : self == .cinemaFilm ? "cinema-film-blank" : self == .fountainPen ? "later-dictionary-fountain-pen" : isFragranceTool ? fragranceImageName : self == .dinnerMenu ? "bt2-menu-cover" : self == .ticket ? "ticket-paper" : self == .sewingKit ? "memory-twine" : self == .eraser ? "tool-eraser" : self == .napkin ? "tool-cloth" : "tool-" + rawValue }
+    var imageName: String { self == .ferrisPostcard ? "ferris-postcard" : self == .ferrisTicket ? "ferris-navigation-ticket" : self == .ferrisPhone ? "ferris-selfie-phone" : self == .cinemaFilm ? "cinema-film-blank" : self == .fountainPen ? "later-dictionary-fountain-pen" : isFragranceTool ? fragranceImageName : self == .dinnerMenu ? "bt2-menu-cover" : self == .ticket ? "plane-ticket-paper" : self == .sewingKit ? "memory-twine" : self == .eraser ? "tool-eraser" : self == .napkin ? "tool-cloth" : "tool-" + rawValue }
 }
 extension GameStore {
     var potImageName: String {

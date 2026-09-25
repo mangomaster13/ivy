@@ -282,24 +282,21 @@ struct TicketRubbingView: View {
         GeometryReader { geometry in
             let w = geometry.size.width, h = geometry.size.height
             ZStack(alignment: .topLeading) {
-                Image("ticket-paper").resizable().interpolation(.high).frame(width: w, height: h)
-                Text("Hangzhou → Hong Kong")
-                    .font(.custom("Georgia-Italic", size: min(27, w * 0.055)))
-                    .foregroundStyle(Color(red: 0.35, green: 0.27, blue: 0.12))
-                    .frame(width: w * 0.72, height: h * 0.18)
-                    .position(x: w * 0.43, y: h * 0.31)
-                IvyType.inscription("our first journey")
-                    .font(IvyType.script(min(25, w * 0.048)))
-                    .foregroundStyle(Color(red: 0.35, green: 0.27, blue: 0.12))
-                    .frame(width: w * 0.66, height: h * 0.16)
-                    .position(x: w * 0.43, y: h * 0.46)
+                Image("plane-ticket-paper").resizable().interpolation(.high).scaledToFit()
+                    .frame(width: w, height: h)
+                    .shadow(color: .black.opacity(0.24), radius: 3, y: 3)
+                    .accessibilityHidden(true)
+                Image("plane-ticket-lettering").resizable().interpolation(.high).scaledToFit()
+                    .frame(width: w, height: h)
+                    .accessibilityLabel("Hangzhou to Hong Kong. Our first journey.")
                 RubbingSurface(progress: store.rubbingBinding(.travelOrder), material: .graphite,
                                revealed: store.exploration.clues.contains(.travelOrder), canRub: store.selectedTool == .eraser,
                                toolImage: AdventureTool.eraser.imageName, label: "Graphite-marked ticket",
                                save: store.persistNow, completion: store.traceTicket, blocked: { store.hintForTool(.eraser) }) {
                     TravelOrderSymbols(symbolSize: min(33, w * 0.068))
-                }.frame(width: w * 0.73, height: h * 0.35)
-                    .position(x: w * 0.43, y: h * 0.70)
+                // Same normalized stroke/clue coordinates; only the paper placement changes.
+                }.frame(width: w * 0.73, height: h * 0.28)
+                    .position(x: w * 0.43, y: h * 0.72)
             }
         }.aspectRatio(2.2, contentMode: .fit)
     }

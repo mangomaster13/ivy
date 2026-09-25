@@ -20,7 +20,8 @@ struct JourneyMapView: View {
         let longitudeScale = cos(35.0 * .pi / 180)
         let mapWidth = 65 * longitudeScale
         let mapHeight = 38.0
-        let scale = min(max(0, size.width - 48) / mapWidth, max(0, size.height - 48) / mapHeight)
+        // The map lives within the atlas's printed face, inside its cream border.
+        let scale = min(size.width * 0.82 / mapWidth, size.height * 0.78 / mapHeight)
         return CGPoint(
             x: (size.width - mapWidth * scale) / 2 + (longitude - 72) * longitudeScale * scale,
             y: (size.height - mapHeight * scale) / 2 + (55 - latitude) * scale)
@@ -30,10 +31,14 @@ struct JourneyMapView: View {
         GeometryReader { geometry in
             let controlsWidth: CGFloat = 160
             let gap: CGFloat = 20
-            let mapWidth = min(560, max(0, geometry.size.width - controlsWidth - gap))
+            let mapWidth = min(560, max(0, geometry.size.width - controlsWidth - gap), geometry.size.height * 1.5)
             HStack(spacing: gap) {
                 GeometryReader { g in
                     ZStack(alignment: .topLeading) {
+                        Image("plane-atlas-paper").resizable().interpolation(.high).scaledToFit()
+                            .frame(width: g.size.width, height: g.size.height)
+                            .shadow(color: .black.opacity(0.25), radius: 3, y: 3)
+                            .accessibilityHidden(true)
                         Canvas { context, size in
                             for ring in ChinaGeometry.rings {
                                 var path = Path()
@@ -42,8 +47,18 @@ struct JourneyMapView: View {
                                     if index == 0 { path.move(to: p) } else { path.addLine(to: p) }
                                 }
                                 path.closeSubpath()
-                                context.fill(path, with: .color(Color(red: 0.38, green: 0.48, blue: 0.35)))
-                                context.stroke(path, with: .color(IvyType.cream.opacity(0.65)), lineWidth: 1)
+                                context.drawLayer { land in
+                                    land.clip(to: path)
+                                    land.draw(Image("plane-atlas-land"), in: CGRect(origin: .zero, size: size))
+                                    // Continue the paper's physical creases across the printed land.
+                                    for x in [0.176, 0.312, 0.466, 0.682] {
+                                        let seam = Path(CGRect(x: size.width * x, y: 0, width: 1, height: size.height))
+                                        land.fill(seam, with: .color(IvyType.cream.opacity(0.28)))
+                                    }
+                                    land.fill(Path(CGRect(x: 0, y: size.height * 0.494, width: size.width, height: 1)),
+                                              with: .color(IvyType.cream.opacity(0.28)))
+                                }
+                                context.stroke(path, with: .color(Color(red: 0.25, green: 0.29, blue: 0.23)), lineWidth: 1)
                             }
                             if store.memories.routeCorrect {
                                 let start = point(120.1551, 30.2741, size), end = point(114.1694, 22.3193, size)
@@ -54,10 +69,16 @@ struct JourneyMapView: View {
                         ForEach(Array(JourneyCity.all.enumerated()), id: \.element.id) { index, city in
                             Button { store.selectCity(city.name) } label: {
                                 ZStack {
-                                    Circle().fill(IvyType.ink).frame(width: 22, height: 22)
-                                    Circle().fill(store.memories.origin == city.name || store.memories.destination == city.name ? Color(red: 0.82, green: 0.61, blue: 0.29) : IvyType.cream).frame(width: 13, height: 13)
-                                    if store.memories.origin == city.name { Text("1").font(IvyType.hand(15)).foregroundStyle(IvyType.ink) }
-                                    if store.memories.destination == city.name { Text("2").font(IvyType.hand(15)).foregroundStyle(IvyType.ink) }
+                                    Circle().fill(Color(red: 0.22, green: 0.17, blue: 0.10)).frame(width: 18, height: 18)
+                                        .shadow(color: .black.opacity(0.3), radius: 1, y: 1)
+                                    Circle().fill(RadialGradient(colors: [IvyType.cream, Color(red: 0.76, green: 0.53, blue: 0.23), Color(red: 0.37, green: 0.25, blue: 0.12)], center: .topLeading, startRadius: 0, endRadius: 17))
+                                        .frame(width: 14, height: 14)
+                                    if store.memories.origin == city.name || store.memories.destination == city.name {
+                                        Circle().fill(IvyType.cream).frame(width: 22, height: 22)
+                                            .overlay(Circle().stroke(IvyType.ink, lineWidth: 1))
+                                        Image(store.memories.origin == city.name ? "plane-route-one" : "plane-route-two")
+                                            .resizable().scaledToFit().frame(width: 21, height: 21)
+                                    }
                                 }.frame(width: 48, height: 48).contentShape(Circle())
                             }.buttonStyle(.plain).position(point(city.longitude, city.latitude, g.size))
                                 .accessibilityLabel("City marker \(index + 1)").disabled(departing)
@@ -84,7 +105,7 @@ struct JourneyMapView: View {
                     })
                 // Keep the map's geographic projection uniform while allowing the
                 // panel to use more of the available stage on wide phones.
-                }.frame(width: mapWidth, height: min(300, geometry.size.height))
+                }.frame(width: mapWidth, height: mapWidth / 1.5)
                 VStack(spacing: 20) {
                     HStack(spacing: 16) {
                         selection(1, selected: store.memories.origin != nil)
@@ -92,9 +113,14 @@ struct JourneyMapView: View {
                             .foregroundStyle(IvyType.cream.opacity(0.6))
                         selection(2, selected: store.memories.destination != nil)
                     }
-                    PuzzleButton(departing ? "on our way…" : "depart") {
+                    PuzzleButton("", width: 144) {
                         departing = store.prepareFlightDeparture()
                     }
+                        .overlay {
+                            Image(departing ? "plane-departing" : "plane-depart").resizable().scaledToFit()
+                                .frame(width: 124, height: 32).allowsHitTesting(false).accessibilityHidden(true)
+                        }
+                        .accessibilityLabel(departing ? "on our way…" : "depart")
                         .disabled(departing)
                         .opacity(store.canDepart ? 1 : 0.45)
                 }.frame(width: controlsWidth, height: min(300, geometry.size.height))
@@ -109,12 +135,11 @@ struct JourneyMapView: View {
         }
     }
     private func selection(_ number: Int, selected: Bool) -> some View {
-        Text("\(number)")
-            .font(IvyType.hand(23))
-            .foregroundStyle(selected ? IvyType.ink : IvyType.cream.opacity(0.65))
+        Image(number == 1 ? "plane-route-one" : "plane-route-two")
+            .resizable().scaledToFit().frame(width: 32, height: 32)
             .frame(width: 48, height: 48)
-            .background(Circle().fill(selected ? IvyType.cream : IvyType.ink.opacity(0.35)))
-            .overlay(Circle().stroke(IvyType.cream.opacity(0.45), lineWidth: 1))
+            .background(Circle().fill(IvyType.cream.opacity(selected ? 1 : 0.5)))
+            .overlay(Circle().stroke(Color(red: 0.65, green: 0.47, blue: 0.23), lineWidth: 2))
             .accessibilityLabel("Selection \(number)")
             .accessibilityValue(selected ? "Selected" : "Empty")
     }
