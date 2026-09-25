@@ -140,7 +140,7 @@ struct ExplorationProgress: Codable {
         scoops = Array(scoops.prefix(3))
         stitches = stitches.intersection([0, 1, 2])
         for (key, value) in views {
-            let allowed = key == "perfume" ? [0, 1, 2, 3, 4] :
+            let allowed = key == "ferris" ? [0, 1, 2] : key == "perfume" ? [0, 1, 2, 3, 4] :
                 (["corridor", "gelato", "bedroom"].contains(key) ? [-1, 0, 1] :
                 (["yard", "hall", "plane", "noodle", "ferris"].contains(key) ? [0, 1] : [0]))
             if !allowed.contains(value) { views[key] = 0 }
@@ -151,11 +151,15 @@ struct ExplorationProgress: Codable {
 
 extension GameStore {
     var sceneView: Int { exploration.views[room.rawValue] ?? 0 }
-    var sceneViews: [Int] { room == .perfume ? (sceneView == 0 ? [0] : [1, 2, 3, 4]) : Self.sceneViews(in: room) }
+    var sceneViews: [Int] {
+        if room == .ferris { return [sceneView] } // Doors change places; cabin arrows change elevation.
+        return room == .perfume ? (sceneView == 0 ? [0] : [1, 2, 3, 4]) : Self.sceneViews(in: room)
+    }
     static func sceneViews(in room: Room) -> [Int] {
         switch room {
         case .corridor, .gelato: [-1, 0, 1]
-        case .yard, .hall, .plane, .bedroom, .noodle, .ferris: [0, 1]
+        case .yard, .hall, .plane, .bedroom, .noodle: [0, 1]
+        case .ferris: [0, 1, 2]
         case .perfume: [0, 1, 2, 3, 4]
         default: [0]
         }
@@ -179,8 +183,9 @@ extension GameStore {
         case (.bedroom, 1): memories.bedroomLampOn == true ? "explore-bedroom-desk" : "explore-bedroom-desk-off"
         case (.gelato, -1): "explore-gelato-bench"
         case (.gelato, 1): "explore-gelato-service"
-        case (.ferris, 0): "ferris-music-cabinet"
-        case (.ferris, 1): ferris.ticketUsed ? "ferris-postbox" : "ferris-boarding-closed"
+        case (.ferris, 0): "ferris-ticket-booth"
+        case (.ferris, 1): "ferris-taxi-forecourt"
+        case (.ferris, 2): ferrisCabinImage
         default: nil
         }
     }

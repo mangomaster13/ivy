@@ -20,7 +20,7 @@ When the user supplies a photograph as a visual reference for a scene, object, s
 
 ## Text artwork and Notes — user revision 2026-09-20
 
-Ferris 于 2026-09-25 改为钟琴与明信片，不再显示 iPod 歌单或人物自拍。此前五首歌曲原名（含 `林忆莲 — 也许`）的文字例外仅属历史素材，不扩展到新界面。新乐谱用精确五线与音符图形，探索反馈和录制草稿不显示逐音正确性；题字仍独立导出。
+Ferris 于 2026-09-25 改为钟琴与明信片，不再显示 iPod 歌单或人物自拍。此前五首歌曲原名（含 `林忆莲 — 也许`）的文字例外仅属历史素材，不扩展到新界面。新乐谱采用四段碎谱与相同首尾音连接规则，用精确五线与音符图形，不显示完整目标旋律；探索反馈和录制草稿不显示逐音正确性，题字仍独立导出。售票处、乘坐车厢与出口是主场景；点击售票窗口才进入乐器近景，车厢不能用关闭近景的 Back 代替实体下车。
 
 Outside Notes, interactive lock-pad text and the player's live handwriting in Dictionary, visible lettering must be designed artwork, not ad hoc native text over an illustration. This includes physical recipe books, signs, product labels, perfume-box inscriptions and Dictionary's printed lyric bookmark. Notes and lock pads retain native interactive text; Dictionary's written strokes are drawn and saved from the player's input, not preprinted as completion art. This revision supersedes earlier requirements for native display lettering outside those exceptions; preserve approved wording, type style, interaction and accessibility semantics when changing its rendering.
 

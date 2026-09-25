@@ -281,6 +281,11 @@ struct ContentView: View {
                 HotspotMarker(rect: spot.rect, scale: scale, label: spot.object.label,
                               action: { store.tapMemory(spot.object) })
             }
+            if store.room == .ferris, store.sceneView == 1 {
+                HotspotMarker(rect: FerrisLayout.postboxSlot, scale: scale,
+                              label: "Post the stamped postcard", action: store.postFerrisPostcard)
+                    .inventoryToolDrop(store: store, accepting: [.ferrisPostcard]) { _ in store.postFerrisPostcard() }
+            }
             if store.room == .perfume, store.sceneView == 4 {
                 PerfumeBenchControls(store: store)
                     .frame(width: 320 * scale, height: 160 * scale)
@@ -318,8 +323,8 @@ struct ContentView: View {
                     label: "Front door",
                     action: { store.tapYardDoor() }
                 )
-            } else if store.sceneView == 0 {
-                ForEach(RoomGraph.hotspots(in: store.room)) { spot in
+            } else {
+                ForEach(store.diegeticSpots) { spot in
                     HotspotMarker(
                         rect: spot.rect,
                         scale: scale,
@@ -360,6 +365,10 @@ struct ContentView: View {
             store.inspect(spot)
             return
         }
+        if store.sceneView != 0, let spot = store.diegeticSpots.first(where: { RoomHotspots.hitRect($0.rect, scale: scale).contains(location) }) {
+            store.tapDiegetic(spot.edge)
+            return
+        }
         if store.sceneView != 0 { store.tapMiss(); return }
         switch store.room {
         case .yard:
@@ -390,7 +399,7 @@ struct ContentView: View {
                 store.tapMemory(spot.object)
                 return
             }
-            if let spot = RoomGraph.hotspots(in: store.room).first(where: {
+            if let spot = store.diegeticSpots.first(where: {
                 RoomHotspots.hitRect($0.rect, scale: scale).contains(location)
             }) {
                 store.tapDiegetic(spot.edge)

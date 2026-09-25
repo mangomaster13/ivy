@@ -377,7 +377,7 @@ private struct ClueNotebookView: View {
                     BigTopEvidenceArtwork(mirrored: clue == .bigTopMirror, notebook: true)
                         .frame(maxHeight: compact ? 105 : 150)
                 case .ferrisScore:
-                    Image("ferris-score").resizable().scaledToFit()
+                    Image("ferris-fragment-clue").resizable().scaledToFit()
                         .accessibilityLabel(store.clueText(clue))
                 case .ferrisHarbour:
                     Image("ferris-postcard-clue").resizable().scaledToFit()

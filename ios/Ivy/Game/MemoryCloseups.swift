@@ -26,7 +26,7 @@ struct MemoryCloseupView: View {
             GelatoCloseupView(store: store, panel: panel)
         } else if [.cinema, .cinemaCase, .cinemaProjector, .cinemaTicket].contains(panel) {
             CinemaCloseupView(store: store, panel: panel)
-        } else if [.ferris, .ferrisTicket, .ferrisGate, .ferrisCabin, .ferrisCamera, .ferrisPostbox].contains(panel) {
+        } else if [.ferris, .ferrisTicket, .ferrisGate, .ferrisCabin, .ferrisCamera, .ferrisPostbox, .ferrisScoreGuide].contains(panel) {
             FerrisCloseupView(store: store, panel: panel)
         } else if [.taxi, .taxiCard, .taxiReceipt].contains(panel) {
             TaxiCloseupView(store: store, panel: panel)
@@ -178,7 +178,7 @@ struct MemoryCloseupView: View {
         case .cinema, .cinemaCase, .cinemaProjector, .cinemaTicket: .scene("later-cinema-projection-booth-background")
         case .taxi, .taxiCard, .taxiReceipt: .scene(store.roomImageName)
         case .bigTop, .mexican: .scene("memory-noodle")
-        case .ferris, .ferrisTicket, .ferrisGate, .ferrisCabin, .ferrisCamera, .ferrisPostbox: .scene("ferris-music-cabinet")
+        case .ferris, .ferrisTicket, .ferrisGate, .ferrisCabin, .ferrisCamera, .ferrisPostbox, .ferrisScoreGuide: .scene("ferris-music-cabinet")
         case .ticket: .puzzle
         case .travelBook: .scene(store.travelBookImageName)
         case .yunnan: .scene("explore-plane-window")
@@ -287,7 +287,7 @@ struct WordAnswer: View {
 }
 
 extension AdventureTool {
-    var imageName: String { self == .ferrisPostcard ? "ferris-postcard" : self == .ferrisTicket ? "ferris-ride-ticket" : self == .ferrisPhone ? "ferris-selfie-phone" : self == .cinemaFilm ? "cinema-film-blank" : self == .fountainPen ? "later-dictionary-fountain-pen" : isFragranceTool ? fragranceImageName : self == .dinnerMenu ? "bt2-menu-cover" : self == .ticket ? "ticket-paper" : self == .sewingKit ? "memory-twine" : self == .eraser ? "tool-eraser" : self == .napkin ? "tool-cloth" : "tool-" + rawValue }
+    var imageName: String { self == .ferrisPostcard ? "ferris-postcard" : self == .ferrisTicket ? "ferris-navigation-ticket" : self == .ferrisPhone ? "ferris-selfie-phone" : self == .cinemaFilm ? "cinema-film-blank" : self == .fountainPen ? "later-dictionary-fountain-pen" : isFragranceTool ? fragranceImageName : self == .dinnerMenu ? "bt2-menu-cover" : self == .ticket ? "ticket-paper" : self == .sewingKit ? "memory-twine" : self == .eraser ? "tool-eraser" : self == .napkin ? "tool-cloth" : "tool-" + rawValue }
 }
 extension GameStore {
     var potImageName: String {

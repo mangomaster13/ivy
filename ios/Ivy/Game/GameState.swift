@@ -28,7 +28,7 @@ enum EggId: String, CaseIterable, Codable, Identifiable {
     }
 
     /// Independent transparent keepsake artwork shared by the bar and tap celebration.
-    var iconName: String { self == .ferris ? "ferris-postcard-finished" : self == .taxi ? "later-taxi-keepsake" : self == .dictionary ? "later-dictionary-keepsake" : self == .noodle ? "bt-dinner" : self == .perfume ? "ll-perfume-trio" : self == .keycard ? "sheraton-keycard" : self == .city ? "city-jigsaw-master" : "keepsake-\(rawValue)" }
+    var iconName: String { self == .taxi ? "later-taxi-keepsake" : self == .dictionary ? "later-dictionary-keepsake" : self == .noodle ? "bt-dinner" : self == .perfume ? "ll-perfume-trio" : self == .keycard ? "sheraton-keycard" : self == .city ? "city-jigsaw-master" : "keepsake-\(rawValue)" }
 
     /// Physical memory and puzzle artwork, separate from the transparent keepsake icon.
     var collectionImageName: String {
@@ -42,7 +42,7 @@ enum EggId: String, CaseIterable, Codable, Identifiable {
         case .cinema: "later-cinema-keepsake"
         case .noodle: "bt-dinner"
         case .taxi: "later-taxi-receipt-stay"
-        case .ferris: "ferris-postcard-finished"
+        case .ferris: "keepsake-ferris"
         case .dictionary: "later-dictionary-keepsake"
         case .keycard: "sheraton-keycard"
         case .city: "city-jigsaw-master"
@@ -744,7 +744,7 @@ final class GameStore {
 
     /// Walk a diegetic object; the hotel door requires committed room access.
     func tapDiegetic(_ edge: DiegeticEdge) {
-        guard canExplore, sceneView == 0 else { return }
+        guard canExplore, diegeticSpots.contains(where: { $0.edge == edge }) else { return }
         if room == .gelato, edge == .gelatoForward, !bigTop.signSolved { openMemory(.bigTopSign); return }
         if room == .noodle, edge == .noodleForward, !bigTop.orderSolved && !bigTop.streetUnlocked && !collected.contains(.noodle) {
             showSceneHint("Our table is still waiting for its order.", presentation: .interaction); return
@@ -776,7 +776,7 @@ final class GameStore {
             return
         }
         IvyHaptics.light()
-        transition(to: next)
+        transition(to: next, view: edge == .taxiBack ? 1 : 0)
     }
 
     /// Dismisses talk or input. Drafts stay. Envelope returns to the yard.

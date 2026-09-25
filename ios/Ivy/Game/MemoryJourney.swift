@@ -71,7 +71,7 @@ struct MemoryProgress: Codable {
 }
 
 enum MemoryPanel: String, CaseIterable {
-    case ferrisTicket, ferrisGate, ferrisCabin, ferrisCamera, ferrisPostbox
+    case ferrisTicket, ferrisGate, ferrisCabin, ferrisCamera, ferrisPostbox, ferrisScoreGuide
     case cinemaCase, cinemaProjector, cinemaTicket
     case gelatoOrder, gelatoNote, dictionarySong
     case pot, drawer, linen, wholeBox, dispenser, flight, ticket, travelBook, yunnan, bouquet, city, bath, menu, tasting, keycard
@@ -101,7 +101,7 @@ enum MemoryPanel: String, CaseIterable {
         case .perfume, .perfumeWood, .perfumeBotanical, .perfumeSpice, .perfumeLab, .perfumeFormula, .perfumeMix: .perfume
         case .cinema, .cinemaCase, .cinemaProjector, .cinemaTicket: .cinema
         case .dictionary, .dictionarySong: .dictionary
-        case .ferris, .ferrisTicket, .ferrisGate, .ferrisCabin, .ferrisCamera, .ferrisPostbox: .ferris
+        case .ferris, .ferrisTicket, .ferrisGate, .ferrisCabin, .ferrisCamera, .ferrisPostbox, .ferrisScoreGuide: .ferris
         case .taxi, .taxiCard, .taxiReceipt: .taxi
         }
     }
@@ -140,8 +140,12 @@ extension GameStore {
         else if requestedPanel == .rainGutter { panel = .gelatoOrder }
         else if requestedPanel == .menu && collected.contains(.gelato) { panel = .tasting }
         else if requestedPanel == .tasting && !gelatoWords.flavorSolved && !collected.contains(.gelato) { panel = .menu }
+        else if requestedPanel == .ferris && ferris.musicSolved { panel = .ferrisTicket }
         else { panel = requestedPanel }
         guard room == panel.room, !isHallTransitioning, collectingEgg == nil else { return }
+        if panel == .ferrisCabin { enterFerrisCabin(); return }
+        if panel == .ferrisPostbox { exitFerrisCabin(); return }
+        if [.ferris, .ferrisTicket, .ferrisGate, .ferrisScoreGuide].contains(panel), sceneView != 0 { return }
         if panel == .tasting, collected.contains(.gelato) {
             replayKeepsake(.gelato)
             return
@@ -173,11 +177,13 @@ extension GameStore {
         case .ferrisTicket where !ferris.musicSolved:
             showSceneHint("The ticket is waiting for a complete melody.", presentation: .interaction)
             return
+        case .ferrisGate where !ferris.ticketUsed:
+            guard requireInteractionTool(.ferrisTicket, missing: "The gate is waiting for a ticket.") else { return }
         case .ferrisCabin where !ferris.ticketUsed:
             showSceneHint("The gate hasn't let us through yet.", presentation: .interaction)
             return
         case .ferrisCamera:
-            guard ferris.ticketUsed else { return }
+            guard ferris.ticketUsed, sceneView == 2 else { return }
             if ferris.posted { replayKeepsake(.ferris); return }
         case .ferrisPostbox where !ferris.ticketUsed:
             showSceneHint("The carriage is still waiting for its passengers.", presentation: .interaction)

@@ -2,8 +2,11 @@ import Foundation
 
 struct FerrisProgress: Codable, Equatable {
     // Seven ascending staff positions, E4 through D5. One duration, no ear training.
-    static let melody = [0, 2, 4, 3, 1, 5, 6, 2, 0]
+    // Shuffled fragments share their end/start note. Use each once, from E to D.
+    static let fragments = [[0, 1, 4], [4, 3, 6], [2, 5, 0], [0, 3, 2]]
+    static let melody = [0, 3, 2, 5, 0, 1, 4, 3, 6]
     static let noteNames = ["E, bottom line", "F, first space", "G, second line", "A, second space", "B, third line", "C, third space", "D, fourth line"]
+    static let joinRule = "Use every paper once. Join equal end and start notes; play the shared note once. Begin on E, the bottom line. Finish on D, the fourth line. All notes have equal duration."
     static let landmarks = ["Pier warehouse", "Clock tower", "Hill observatory"]
     var musicSolved = false
     var notes: [Int] = []
@@ -142,12 +145,31 @@ extension GameStore {
     }
 
     func enterFerrisCabin() {
-        guard ferrisActive, overlay == .memory(.ferrisGate), ferris.ticketUsed else { return }
-        openMemory(.ferrisCabin)
+        guard ferrisActive, (overlay == .none && [0, 1].contains(sceneView)) || overlay == .memory(.ferrisGate) else { return }
+        guard ferris.ticketUsed else { openMemory(.ferrisGate); return }
+        ferris.height = 0
+        moveFerrisScene(to: 2)
+    }
+
+    func exitFerrisCabin() {
+        guard ferrisActive, overlay == .none, sceneView == 2, ferris.ticketUsed else { return }
+        guard ferris.height == 0 else {
+            showSceneHint("The door opens at the platform.", presentation: .interaction)
+            return
+        }
+        moveFerrisScene(to: 1)
+    }
+
+    private func moveFerrisScene(to view: Int) {
+        memoryNavigation = []
+        overlay = .none
+        exploration.views[Room.ferris.rawValue] = view
+        dismissSceneHint()
+        persistNow()
     }
 
     func changeFerrisHeight(_ delta: Int) {
-        guard ferrisActive, overlay == .memory(.ferrisCabin), ferris.ticketUsed, (delta == -1 || delta == 1) else { return }
+        guard ferrisActive, overlay == .none, sceneView == 2, ferris.ticketUsed, (delta == -1 || delta == 1) else { return }
         ferris.height = min(2, max(0, ferris.height + delta))
         dismissSceneHint()
         persistNow()
@@ -179,7 +201,7 @@ extension GameStore {
     }
 
     func postFerrisPostcard() {
-        guard ferrisActive, overlay == .memory(.ferrisPostbox), ferris.ticketUsed else { return }
+        guard ferrisActive, overlay == .none, sceneView == 1, ferris.ticketUsed else { return }
         if ferris.posted { replayKeepsake(.ferris); return }
         guard ferris.stamped, ferris.cardRetrieved else {
             showSceneHint("The postcard still has a little journey to make.", presentation: .interaction)
@@ -197,7 +219,7 @@ extension GameStore {
     }
 
     func leaveFerrisPlatform() {
-        guard ferrisActive, overlay == .memory(.ferrisPostbox) else { return }
+        guard ferrisActive, overlay == .none, sceneView == 1 else { return }
         guard ferris.exitUnlocked || collected.contains(.ferris) else {
             showSceneHint("A postcard is still waiting to be sent.", presentation: .interaction)
             return
@@ -217,6 +239,10 @@ extension GameStore {
         if exploration.tools.contains(.ferrisPhone) || memories.picked.contains(.ferrisPhone) { progress.postcardTaken = true }
         progress.sanitize()
         ferris = progress
+        // View 1 used to be the unboarded gate as well as the exit. View 2 is the cabin.
+        if !progress.ticketUsed, [1, 2].contains(exploration.views["ferris"] ?? 0) {
+            exploration.views["ferris"] = 0
+        }
         if progress.posted { memories.opened.insert("ferris"); collected.insert(.ferris) }
         exploration.tools.remove(.ferrisPhone)
         if selectedTool == .ferrisPhone { selectedTool = nil }

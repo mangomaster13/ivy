@@ -3,6 +3,64 @@ import XCTest
 
 @MainActor
 final class FerrisPuzzleTests: XCTestCase {
+    func testGateRequiresHeldTicketUntilUsed() {
+        let suite = "ivy.ferris.gate.tests." + UUID().uuidString
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let store = GameStore(defaults: defaults)
+        store.isIntro = false
+        store.room = .ferris
+        store.overlay = .none
+
+        for musicSolved in [false, true] {
+            store.ferris.musicSolved = musicSolved
+            store.openMemory(.ferrisGate)
+            XCTAssertEqual(store.overlay, .none)
+            XCTAssertFalse(store.sceneHint.isEmpty)
+            XCTAssertTrue(store.memoryNavigation.isEmpty)
+        }
+
+        store.ferris.musicSolved = false
+        store.openMemory(.ferris)
+        store.openMemory(.ferrisGate)
+        XCTAssertEqual(store.overlay, .memory(.ferris))
+        XCTAssertTrue(store.memoryNavigation.isEmpty)
+
+        store.ferris.ticketTaken = true
+        store.exploration.tools.insert(.ferrisTicket)
+        store.openMemory(.ferrisGate)
+        XCTAssertEqual(store.overlay, .memory(.ferrisGate))
+        XCTAssertNil(store.selectedTool)
+        store.backFromMemory()
+        XCTAssertEqual(store.overlay, .memory(.ferris))
+
+        store.ferris.ticketUsed = true
+        store.exploration.tools.remove(.ferrisTicket)
+        store.openMemory(.ferrisGate)
+        XCTAssertEqual(store.overlay, .memory(.ferrisGate))
+        XCTAssertTrue(store.sceneHint.isEmpty)
+    }
+
+    func testFragmentChainNeedsEveryPaper() {
+        let fragments = FerrisProgress.fragments
+        var solutions: [[Int]] = []
+        func join(_ phrase: [Int], remaining: [Int]) {
+            if remaining.isEmpty {
+                if phrase.last == 6 { solutions.append(phrase) }
+                return
+            }
+            for index in remaining where fragments[index].first == phrase.last {
+                join(phrase + fragments[index].dropFirst(), remaining: remaining.filter { $0 != index })
+            }
+        }
+        join([0], remaining: Array(fragments.indices))
+        XCTAssertEqual(solutions, [[0, 3, 2, 5, 0, 1, 4, 3, 6]])
+        XCTAssertEqual(FerrisProgress.melody, solutions.first)
+        XCTAssertEqual(fragments[0].last, fragments[1].first)
+        XCTAssertFalse(fragments[2...].contains { $0.first == fragments[1].last },
+                       "Taking the tempting E-B then B-D path leaves two unused papers")
+    }
+
     // Runnable on request. This is a state/compatibility check, not gesture or layout acceptance.
     func testMusicTicketPostcardAndLegacyRestore() throws {
         let suite = "ivy.ferris.tests." + UUID().uuidString
@@ -31,7 +89,7 @@ final class FerrisPuzzleTests: XCTestCase {
         store.persistNow()
         XCTAssertEqual(GameStore(defaults: defaults).ferris.notes, [6])
         store.undoFerrisNote()
-        for note in [0, 2, 4, 3, 1, 5, 6, 2, 0] { store.strikeFerrisNote(note) }
+        for note in [0, 3, 2, 5, 0, 1, 4, 3, 6] { store.strikeFerrisNote(note) }
         XCTAssertFalse(store.ferris.musicSolved, "No correct-prefix or automatic phrase completion")
         store.submitFerrisMusic()
         XCTAssertTrue(store.ferris.musicSolved)
@@ -47,6 +105,11 @@ final class FerrisPuzzleTests: XCTestCase {
         XCTAssertTrue(store.ferris.ticketUsed)
         XCTAssertFalse(store.exploration.tools.contains(.ferrisTicket))
         store.enterFerrisCabin()
+        XCTAssertEqual(store.overlay, .none, "The carriage is a main scene, not an inspection")
+        XCTAssertEqual(store.sceneView, 2)
+        XCTAssertTrue(store.memoryNavigation.isEmpty)
+        store.turnView(-1)
+        XCTAssertEqual(store.sceneView, 2, "Scene arrows cannot bypass the cabin door")
         store.changeFerrisHeight(Int.min)
         XCTAssertEqual(store.ferris.height, 0)
         store.changeFerrisHeight(1)
@@ -55,6 +118,11 @@ final class FerrisPuzzleTests: XCTestCase {
         XCTAssertEqual(store.ferris.height, 2)
         store.changeFerrisHeight(-1)
         XCTAssertEqual(store.ferris.height, 1)
+        store.exitFerrisCabin()
+        XCTAssertEqual(store.sceneView, 2, "The cabin cannot be left above the platform")
+        let riding = GameStore(defaults: defaults)
+        XCTAssertEqual(riding.sceneView, 2)
+        XCTAssertEqual(riding.ferris.height, 1)
         XCTAssertFalse(store.exploration.tools.contains(.ferrisPostcard))
         store.openMemory(.ferrisCamera)
         XCTAssertEqual(store.overlay, .memory(.ferrisCamera))
@@ -78,7 +146,12 @@ final class FerrisPuzzleTests: XCTestCase {
         XCTAssertTrue(store.toolsVisible)
         XCTAssertNil(store.selectedTool)
         XCTAssertTrue(GameStore(defaults: defaults).exploration.tools.contains(.ferrisPostcard))
-        store.openMemory(.ferrisPostbox)
+        store.backFromMemory()
+        XCTAssertEqual(store.overlay, .none)
+        XCTAssertEqual(store.sceneView, 2)
+        store.changeFerrisHeight(-1)
+        store.exitFerrisCabin()
+        XCTAssertEqual(store.sceneView, 1)
         store.postFerrisPostcard()
         XCTAssertFalse(store.collected.contains(.ferris), "Posting still requires active tool selection")
         store.chooseTool(.ferrisPostcard)
@@ -87,7 +160,7 @@ final class FerrisPuzzleTests: XCTestCase {
         XCTAssertTrue(store.ferris.exitUnlocked)
         XCTAssertFalse(store.exploration.tools.contains(.ferrisPostcard))
         XCTAssertFalse(store.toolsVisible)
-        store.overlay = .memory(.ferrisPostbox)
+        store.cancelOverlay()
         store.postFerrisPostcard()
         XCTAssertEqual(store.collected.filter { $0 == .ferris }.count, 1)
         let restored = GameStore(defaults: defaults)

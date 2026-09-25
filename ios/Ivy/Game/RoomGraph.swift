@@ -124,8 +124,8 @@ enum RoomGraph {
             ]
         case .ferris:
             return [
-                DiegeticHotspot(edge: .ferrisBack, rect: back, label: "Old bookstall"),
-                DiegeticHotspot(edge: .ferrisForward, rect: forward, label: "Taxi queue")
+                DiegeticHotspot(edge: .ferrisBack, rect: CGRect(x: 46, y: 136, width: 43, height: 22), label: "Walk back to the bookstall"),
+                DiegeticHotspot(edge: .ferrisForward, rect: FerrisLayout.taxi, label: "Enter the red taxi")
             ]
         case .taxi:
             return [
@@ -133,5 +133,19 @@ enum RoomGraph {
                 DiegeticHotspot(edge: .taxiDoor, rect: CGRect(x: 0, y: 77, width: 38, height: 63), label: "Left rear car door")
             ]
         }
+    }
+}
+
+extension GameStore {
+    /// Navigation artwork and actions must belong to the currently visible plate.
+    var diegeticSpots: [DiegeticHotspot] {
+        let spots = RoomGraph.hotspots(in: room)
+        if room == .ferris {
+            return spots.filter {
+                ($0.edge == .ferrisBack && sceneView == 0) ||
+                ($0.edge == .ferrisForward && sceneView == 1 && ferris.ticketUsed)
+            }
+        }
+        return sceneView == 0 ? spots : []
     }
 }

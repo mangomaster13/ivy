@@ -6,6 +6,7 @@ enum ExplorationAction {
     case perfumeDoor, perfumeExit, dictionaryPen
     case bigTopTool(AdventureTool), bigTopMirror
     case roseHidingPlace(Int)
+    case ferrisBoard, ferrisExit, ferrisPost, ferrisTaxi
 }
 struct ExplorationSpot: Identifiable {
     let id: String
@@ -80,7 +81,8 @@ extension GameStore {
         case (.cinema, 0): CinemaLayout.spots
         case (.dictionary, 0): DictionaryLayout.spots(penAvailable: !memories.picked.contains(.fountainPen) && !dictionary.solved)
         case (.ferris, 0): FerrisLayout.promenadeSpots
-        case (.ferris, 1): ferris.ticketUsed ? FerrisLayout.boothSpots : FerrisLayout.boardingSpots
+        case (.ferris, 1): FerrisLayout.boothSpots
+        case (.ferris, 2): FerrisLayout.cabinSpots
         case (.taxi, 0): TaxiLayout.spots(progress: taxi)
         default: []
         }
@@ -89,6 +91,10 @@ extension GameStore {
     func inspect(_ spot: ExplorationSpot) {
         guard canExplore else { return }
         switch spot.action {
+        case .ferrisBoard: enterFerrisCabin()
+        case .ferrisExit: exitFerrisCabin()
+        case .ferrisPost: postFerrisPostcard()
+        case .ferrisTaxi: leaveFerrisPlatform()
         case .dictionaryPen: takeDictionaryPen()
         case .bigTopTool(let tool): takeBigTopTool(tool)
         case .bigTopMirror: inspectBigTopMirror()
