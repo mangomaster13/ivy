@@ -170,6 +170,8 @@ extension GameStore {
 
     func changeFerrisHeight(_ delta: Int) {
         guard ferrisActive, overlay == .none, sceneView == 2, ferris.ticketUsed, (delta == -1 || delta == 1) else { return }
+        // The previous arrow continues from the lowest view onto the exit platform.
+        if delta == -1, ferris.height == 0 { exitFerrisCabin(); return }
         ferris.height = min(2, max(0, ferris.height + delta))
         dismissSceneHint()
         persistNow()

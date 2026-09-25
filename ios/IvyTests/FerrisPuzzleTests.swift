@@ -3,6 +3,31 @@ import XCTest
 
 @MainActor
 final class FerrisPuzzleTests: XCTestCase {
+    func testDescentContinuesToPostboxWithPostcard() {
+        let suite = "ivy.ferris.return.tests." + UUID().uuidString
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let store = GameStore(defaults: defaults)
+        store.isIntro = false
+        store.room = .ferris
+        store.overlay = .none
+        store.exploration.views["ferris"] = 2
+        store.ferris.ticketUsed = true
+        store.ferris.height = 2
+        store.ferris.stamped = true
+        store.ferris.cardRetrieved = true
+        store.exploration.tools.insert(.ferrisPostcard)
+        for _ in 0..<3 { store.changeFerrisHeight(-1) }
+        XCTAssertEqual(store.sceneView, 1)
+        XCTAssertEqual(store.ferris.height, 0)
+        XCTAssertEqual(store.overlay, .none)
+        XCTAssertTrue(store.exploration.tools.contains(.ferrisPostcard))
+        XCTAssertEqual(GameStore(defaults: defaults).sceneView, 1)
+        store.chooseTool(.ferrisPostcard)
+        store.postFerrisPostcard()
+        XCTAssertTrue(store.ferris.posted)
+    }
+
     func testGateRequiresHeldTicketUntilUsed() {
         let suite = "ivy.ferris.gate.tests." + UUID().uuidString
         let defaults = UserDefaults(suiteName: suite)!

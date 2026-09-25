@@ -62,7 +62,7 @@ struct FerrisWorld: View {
         }
         .allowsHitTesting(false)
         .preference(key: GamePageNavigationKey.self, value: store.canExplore && store.sceneView == 2 ? GamePageNavigation(
-            canGoPrevious: store.ferris.height > 0, canGoNext: store.ferris.height < 2,
+            canGoPrevious: true, canGoNext: store.ferris.height < 2,
             previous: { store.changeFerrisHeight(-1) }, next: { store.changeFerrisHeight(1) }
         ) : nil)
     }
