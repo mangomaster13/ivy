@@ -148,8 +148,7 @@ struct RosePetalTool: View {
         .overlay(RoundedRectangle(cornerRadius: 9).stroke(IvyType.cream.opacity(0.15)))
         .contentShape(Rectangle())
         .onTapGesture { flashName() }
-        // Recognize the held petal alongside the tray's scroll gesture.
-        .simultaneousGesture(LongPressGesture(minimumDuration: 0.3)
+        .gesture(LongPressGesture(minimumDuration: 0.3)
             .sequenced(before: DragGesture(minimumDistance: 0, coordinateSpace: .named("rose-drag")))
             .onChanged { value in
                 guard case .second(true, let drag?) = value else { return }
