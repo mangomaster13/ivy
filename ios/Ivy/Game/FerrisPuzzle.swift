@@ -12,6 +12,7 @@ struct FerrisProgress: Codable, Equatable {
     var ticketTaken = false
     var ticketUsed = false
     var height = 0
+    // Legacy pickup/placement facts remain decodable; new cards start inside the press.
     var postcardTaken = false
     var postcardPlaced = false
     var stamps = [2, 0, 1]
@@ -152,31 +153,9 @@ extension GameStore {
         persistNow()
     }
 
-    func takeFerrisPostcard() {
-        guard ferrisActive, overlay == .memory(.ferrisCabin), ferris.ticketUsed, !ferris.postcardTaken else { return }
-        ferris.postcardTaken = true
-        discover(.ferrisHarbour)
-        acquire(.ferrisPostcard)
-    }
-
-    func placeFerrisPostcard() {
-        guard ferrisActive, overlay == .memory(.ferrisCabin), ferris.ticketUsed else { return }
-        if ferris.posted { replayKeepsake(.ferris); return }
-        if ferris.cardRetrieved { openMemory(.ferrisPostbox); return }
-        if !ferris.postcardPlaced {
-            guard ferris.postcardTaken else { hintForTool(.ferrisPostcard); return }
-            guard use(.ferrisPostcard) else { return }
-            ferris.postcardPlaced = true
-            // Placement keeps ownership; the stamped card will be taken from this same bed.
-            exploration.tools.remove(.ferrisPostcard)
-            persistNow()
-        }
-        openMemory(.ferrisCamera)
-    }
-
     func turnFerrisStamp(_ slot: Int, by delta: Int = 1) {
         guard ferrisActive, overlay == .memory(.ferrisCamera), ferris.ticketUsed,
-              ferris.postcardPlaced, !ferris.stamped, (0..<3).contains(slot), (delta == -1 || delta == 1) else { return }
+              !ferris.stamped, (0..<3).contains(slot), (delta == -1 || delta == 1) else { return }
         ferris.stamps[slot] = (ferris.stamps[slot] + delta + 3) % 3
         dismissSceneHint()
         persistNow()
@@ -184,7 +163,7 @@ extension GameStore {
 
     func pressFerrisPostcard() {
         guard ferrisActive, overlay == .memory(.ferrisCamera), ferris.ticketUsed,
-              ferris.postcardPlaced, !ferris.stamped else { return }
+              !ferris.stamped else { return }
         // A short observation interlude following the full music puzzle, not a brute-force-resistant main puzzle.
         guard ferris.stamps == [0, 1, 2] else { showWrongAnswer(); return }
         ferris.stamped = true
@@ -195,6 +174,7 @@ extension GameStore {
     func retrieveFerrisPostcard() {
         guard ferrisActive, overlay == .memory(.ferrisCamera), ferris.stamped, !ferris.cardRetrieved else { return }
         ferris.cardRetrieved = true
+        ferris.postcardTaken = true
         acquire(.ferrisPostcard)
     }
 
@@ -244,7 +224,7 @@ extension GameStore {
         if progress.musicSolved { exploration.clues.insert(.ferrisScore) }
         for (tool, taken, used, placed) in [
             (AdventureTool.ferrisTicket, progress.ticketTaken, progress.ticketUsed, false),
-            (.ferrisPostcard, progress.postcardTaken, progress.posted, progress.postcardPlaced && !progress.cardRetrieved)
+            (.ferrisPostcard, progress.cardRetrieved, progress.posted, false)
         ] {
             if taken { memories.picked.insert(tool) }
             if used {

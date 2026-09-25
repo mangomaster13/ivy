@@ -179,7 +179,6 @@ extension GameStore {
         case .ferrisCamera:
             guard ferris.ticketUsed else { return }
             if ferris.posted { replayKeepsake(.ferris); return }
-            guard ferris.postcardPlaced else { hintForTool(.ferrisPostcard); return }
         case .ferrisPostbox where !ferris.ticketUsed:
             showSceneHint("The carriage is still waiting for its passengers.", presentation: .interaction)
             return
@@ -228,6 +227,7 @@ extension GameStore {
             memoryNavigation = []
         }
         if panel == .ferris { discover(.ferrisScore) }
+        if panel == .ferrisCamera { discover(.ferrisHarbour) }
         if panel == .cinemaTicket { discover(.cinemaTicket) }
         if panel == .dictionary { discover(.dictionaryEntries) }
         if panel == .dictionarySong { discover(.dictionaryLyric) }

@@ -8,7 +8,6 @@ enum FerrisLayout {
     static let door = CGRect(x: 226, y: 43, width: 35, height: 77)
     static let postboxSlot = CGRect(x: 122, y: 91, width: 20, height: 10)
     static let exitCarriage = CGRect(x: 210, y: 38, width: 52, height: 73)
-    static let cardOnSeat = CGRect(x: 252, y: 122, width: 27, height: 18)
     static let cabinPress = CGRect(x: 23, y: 98, width: 51, height: 28)
     static let pressPaper = CGRect(x: 89, y: 91, width: 135, height: 27)
     static let barCenters: [CGFloat] = [96, 120, 144, 166, 188, 211, 233]
@@ -185,22 +184,15 @@ struct FerrisCloseupView: View {
                         "Middle view. A clock tower rises behind the warehouse. Its stone face blocks the view farther back.",
                         "High view. Beyond the warehouse and clock tower, a domed observatory is visible on the wooded hill."
                     ][store.ferris.height])
-                if !store.ferris.postcardPlaced || store.ferris.cardRetrieved {
+                if store.ferris.cardRetrieved {
                     Image("ferris-cabin-empty-bed").resizable()
                         .frame(width: 220.0 / 1774 * 320 * scale, height: 75.0 / 887 * 160 * scale)
                         .position(x: 293.0 / 1774 * 320 * scale, y: 657.5 / 887 * 160 * scale)
                         .accessibilityHidden(true)
                 }
-                if !store.ferris.postcardTaken {
-                    Image("ferris-postcard").resizable().scaledToFit()
-                        .frame(width: 27 * scale, height: 18 * scale)
-                        .rotation3DEffect(.degrees(48), axis: (x: 1, y: 0, z: 0))
-                        .rotationEffect(.degrees(-5))
-                        .position(x: FerrisLayout.cardOnSeat.midX * scale, y: FerrisLayout.cardOnSeat.midY * scale)
-                        .accessibilityHidden(true)
-                    target(FerrisLayout.cardOnSeat, scale: scale, label: "Take the postcard", action: store.takeFerrisPostcard)
+                target(FerrisLayout.cabinPress, scale: scale, label: "Postcard press") {
+                    store.openMemory(.ferrisCamera)
                 }
-                target(FerrisLayout.cabinPress, scale: scale, label: "Postcard press", accepting: [.ferrisPostcard], action: store.placeFerrisPostcard)
                 target(CGRect(x: 302, y: 84, width: 18, height: 28), scale: scale,
                        label: "Return to the platform") { store.openMemory(.ferrisPostbox) }
             }

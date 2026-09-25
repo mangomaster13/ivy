@@ -252,7 +252,7 @@ extension GameStore {
             line = held ? "The ticket in your bag might open the way."
                 : (ferris.musicSolved ? "A ticket is waiting in the dispenser." : "The gate is waiting for a ticket.")
         case .ferrisPostcard:
-            line = held ? "The postcard in your bag might fit here." : "A postcard is resting on the seat."
+            line = held ? "The postcard in your bag might fit here." : "A postcard is waiting in the press."
         case .ferrisPhone: return
         default: return
         }
