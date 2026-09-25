@@ -2,7 +2,7 @@
 
 ## Letter artwork revision · 2026-09-25
 
-The first Letter and post-13 finale letter share the approved cream folded-paper and red ivy wax-seal design. Their lettering uses the game's bundled Kiddos font, authored into the paper artwork; this is a local exception to Juniper inscriptions. Preserve each letter's wording. The finale machine's envelope belongs in its brass receiving tray, with matching idle, lever, half-dispensed, full-dispensed and heart states. Production sources and placement bounds are recorded in `art/finale/letters/README.md`.
+The first Letter and post-13 finale letter share the approved cream folded-paper and red ivy wax-seal design. Their lettering uses the bundled Juniper font, authored into the paper artwork (the user's final selection supersedes the earlier Kiddos request). Preserve each letter's wording. The finale machine's envelope belongs in its brass receiving tray, with matching idle, lever, half-dispensed, full-dispensed and heart states. Production sources and placement bounds are recorded in `art/finale/letters/README.md`.
 
 Current gameplay and document precedence: [IVY-GUIDE.md](../gameplay/IVY-GUIDE.md). Engineering and save compatibility: [DEVELOPMENT.md](../engineering/DEVELOPMENT.md). This file owns concrete UI rules and testing policy; earlier plans and art notes do not override it.
 

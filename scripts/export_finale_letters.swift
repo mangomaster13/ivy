@@ -45,10 +45,10 @@ for state in ["idle", "lever", "envelope-half", "envelope-full", "heart"] {
     try export(load("machine-" + state), "lottery-machine-" + state)
 }
 
-CTFontManagerRegisterFontsForURL(root.appendingPathComponent("ios/Ivy/Fonts/Kiddos.ttf") as CFURL, .process, nil)
+CTFontManagerRegisterFontsForURL(root.appendingPathComponent("ios/Ivy/Fonts/Juniper-Regular.ttf") as CFURL, .process, nil)
 let paper = load("paper")
 // Original 1774×887 artwork: paper x=400...1390, y=58...808.
-// Lettering stays x=565...1285, y=176...745, clear of ivy and paper edges.
+// Lettering stays x=545...1305, y=176...745, clear of ivy and paper edges.
 let letters: [(String, [(String, CGFloat, CGFloat)])] = [
     ("letter-finale", [
         ("One day, then forever.", 182, 54),
@@ -73,7 +73,7 @@ for (name, lines) in letters {
     NSGraphicsContext.saveGraphicsState()
     NSGraphicsContext.current = NSGraphicsContext(cgContext: c, flipped: false)
     for (text, top, size) in lines {
-        let font = NSFont(name: "KidDos-Font", size: size)!
+        let font = NSFont(name: "Juniper-Regular", size: size)!
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = .center
         let attributes: [NSAttributedString.Key: Any] = [
@@ -81,8 +81,8 @@ for (name, lines) in letters {
             .paragraphStyle: paragraph
         ]
         // A production guard against copy/font changes overflowing the writable surface.
-        precondition((text as NSString).size(withAttributes: attributes).width <= 720, "Letter line exceeds paper")
-        (text as NSString).draw(in: CGRect(x: 565, y: 887 - top - 80, width: 720, height: 80), withAttributes: attributes)
+        precondition((text as NSString).size(withAttributes: attributes).width <= 760, "Letter line exceeds paper")
+        (text as NSString).draw(in: CGRect(x: 545, y: 887 - top - 80, width: 760, height: 80), withAttributes: attributes)
     }
     NSGraphicsContext.restoreGraphicsState()
     try png(c.makeImage()!, source.appendingPathComponent(name + ".png"))
