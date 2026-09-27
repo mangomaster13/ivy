@@ -25,7 +25,9 @@ struct PerfumeCloseupView: View {
     }
 
     var body: some View {
-        if panel == .perfume && store.perfumery.arranged {
+        if [.perfumeLab, .perfumeFormula, .perfumeMix].contains(panel) {
+            PerfumeLaboratoryView(store: store, panel: panel)
+        } else if panel == .perfume && store.perfumery.arranged {
             ElementMemoryView(store: store, image: "ll-perfume-trio", title: "Le Labo",
                               line: EggId.perfume.memoryLine, back: store.backFromMemory)
         } else {

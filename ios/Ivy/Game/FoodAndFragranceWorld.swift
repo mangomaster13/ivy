@@ -28,11 +28,11 @@ struct FoodAndFragranceWorld: View {
                     .frame(width: 9 * scale, height: 13 * scale)
                     .position(x: 218 * scale, y: 60 * scale)
             }
-            if store.room == .perfume && store.sceneView == 4 {
+            if store.room == .perfume && store.sceneView == 4 && store.perfumery.laboratory == nil {
                 PerfumeBenchCabinet(opened: store.perfumery.opened.contains("lab"))
                     .frame(width: 320 * scale, height: 160 * scale)
             }
-            if store.room == .perfume && [2, 3, 4].contains(store.sceneView) {
+            if store.room == .perfume && [2, 3].contains(store.sceneView) {
                 let cabinet = store.sceneView == 2 ? "wood" : store.sceneView == 3 ? "botanical" : "lab"
                 if store.perfumery.opened.contains(cabinet) {
                     IngredientShelfObjects(store: store, cabinet: cabinet, closeup: false)
@@ -52,6 +52,9 @@ struct FoodAndFragranceWorld: View {
                 PerfumeWorldBoxFront().frame(width: 320 * scale, height: 160 * scale)
             }
             if store.room == .perfume && store.sceneView == 4 {
+                PerfumeLabWorldArtwork(store: store).frame(width: 320 * scale, height: 160 * scale)
+            }
+            if store.room == .perfume && store.sceneView == 4 && store.perfumery.laboratory == nil {
                 ForEach(0..<3) { slot in
                     if let tool = store.perfumery.mixture[slot] {
                         PerfumeBenchObject(tool: tool, slot: slot)

@@ -11,9 +11,11 @@ enum AdventureTool: String, Codable, CaseIterable, Identifiable {
     case bergamot, grapefruit, petitgrain, orangeBlossom, iris, violet, jasmine
     case cinnamon, pimentoBay, pinkPepper, cardamom, musk, crystalMoss, clearwood, ambroxyde
     case gaiac10, bergamote22, mousse30
+    case scentPaper
     var id: String { rawValue }
     var label: String {
         switch self {
+        case .scentPaper: "scent papers"
         case .ferrisTicket: "Ferris wheel ticket"
         case .ferrisPhone: "phone"
         case .ferrisPostcard: "Harbour postcard"
@@ -51,6 +53,7 @@ enum AdventureTool: String, Codable, CaseIterable, Identifiable {
     }
     var description: String {
         switch self {
+        case .scentPaper: "A bundle of blank laboratory papers."
         case .ferrisTicket: "Two places in a carriage above the city."
         case .ferrisPhone: "A phone from an earlier journey."
         case .ferrisPostcard: "A little piece of the harbour, ready for its own journey."
@@ -78,9 +81,14 @@ enum AdventureClue: String, Codable, CaseIterable, Identifiable {
     case gaiacFormula, bergamoteFormula, mousseFormula, perfumeOrder, gelatoOrder, gelatoLeaves
     case bigTopLedger, bigTopMirror, dictionaryLyric, dictionaryEntries, cinemaTicket, taxiRoute
     case ferrisScore, ferrisHarbour
+    case perfumeTrialsWood, perfumeTrialsCitrus, perfumeReference, perfumeSamples
     var id: String { rawValue }
     var title: String {
         switch self {
+        case .perfumeTrialsWood: "two cedar experiments"
+        case .perfumeTrialsCitrus: "two bergamot experiments"
+        case .perfumeReference: "a folded reference"
+        case .perfumeSamples: "the six samples"
         case .cinemaTicket: "two seats, one memory"
         case .ferrisScore: "a melody above the harbour"
         case .ferrisHarbour: "near and far"
@@ -174,7 +182,7 @@ extension GameStore {
         case (.perfume, 1): "ll4-entry"
         case (.perfume, 2): perfumery.opened.contains("wood") ? "ll-wood-open" : "ll-wood"
         case (.perfume, 3): perfumery.opened.contains("botanical") ? "ll-botanical-room-open" : "ll-botanical"
-        case (.perfume, 4): "ll4-bench"
+        case (.perfume, 4): "ll5-overview"
         case (.yard, 1): "explore-yard-garden"
         case (.hall, 1): "explore-hall-desk"
         case (.plane, 1): "explore-plane-window"
@@ -256,6 +264,8 @@ extension GameStore {
         case .ferrisTicket:
             line = held ? "The ticket in your bag might open the way."
                 : (ferris.musicSolved ? "A ticket is waiting in the dispenser." : "The gate is waiting for a ticket.")
+        case .scentPaper:
+            line = held ? "There are blank papers in your bag." : "The samples are waiting for paper."
         case .ferrisPostcard:
             line = held ? "The postcard in your bag might fit here." : "A postcard is waiting in the press."
         case .ferrisPhone: return
@@ -311,7 +321,16 @@ extension GameStore {
         case .temperature: "Serving temperature: −12°C."
         case .rainRelation: "Five-petal blossom points to crescent moon."
         case .gaiacFormula, .bergamoteFormula, .mousseFormula:
-            PerfumeFormula.all.first { $0.clue == clue }.map { $0.name + "\n" + $0.core.label + "\n" + $0.supporting.map(\.label).joined(separator: " · ") } ?? ""
+            PerfumeFormula.all.firstIndex { $0.clue == clue }.map {
+                PerfumeFormula.all[$0].name + "\n" + PerfumeLaboratory.recipes[$0].map(\.label).joined(separator: " + ")
+            } ?? ""
+        case .perfumeTrialsWood: "Cedar + Incense: branch and rings. Cedar + Patchouli: branch and waves. Cedar unchanged."
+        case .perfumeTrialsCitrus: "Bergamot + Gaiac Wood: stars and dashes. Bergamot + Oakmoss: stars and mesh."
+        case .perfumeReference: "Cedar: branch."
+        case .perfumeSamples:
+            (0..<6).compactMap { index in
+                perfumeLab.visibleMark(at: index).map { PerfumeLaboratory.sampleName(index) + ": " + $0.rawValue }
+            }.joined(separator: ". ")
         case .perfumeOrder: "X → XXII → XXX"
         case .bigTopLedger: BigTopMenu.ledgerDescription
         case .bigTopMirror: BigTopMenu.mirrorDescription

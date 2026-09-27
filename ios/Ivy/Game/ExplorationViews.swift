@@ -289,12 +289,21 @@ private struct ClueNotebookView: View {
     private var clues: [AdventureClue] {
         AdventureClue.allCases.filter { store.exploration.clues.contains($0) && !Self.fragranceClues.contains($0) }
     }
-    private static let fragranceClues: [AdventureClue] = [.gaiacFormula, .bergamoteFormula, .mousseFormula, .perfumeOrder]
-    private var fragrancePages: [AdventureClue] { Self.fragranceClues.filter { store.exploration.clues.contains($0) } }
+    private static let fragranceClues: [AdventureClue] = [.perfumeTrialsWood, .perfumeTrialsCitrus, .perfumeReference,
+                                                        .perfumeSamples, .gaiacFormula, .bergamoteFormula, .mousseFormula, .perfumeOrder]
+    private var fragrancePages: [AdventureClue] {
+        Self.fragranceClues.filter {
+            store.exploration.clues.contains($0) &&
+            (!store.exploration.clues.contains(.gaiacFormula) || ![.bergamoteFormula, .mousseFormula].contains($0))
+        }
+    }
     private var ordinaryPageCount: Int { max(1, (clues.count + 1) / 2) }
     private var pageCount: Int { ordinaryPageCount + fragrancePages.count }
     private var page: Int {
         guard let clue = store.memories.notebookClue else { return 0 }
+        if [.bergamoteFormula, .mousseFormula].contains(clue), let index = fragrancePages.firstIndex(of: .gaiacFormula) {
+            return ordinaryPageCount + index
+        }
         if let index = fragrancePages.firstIndex(of: clue) { return ordinaryPageCount + index }
         if let index = clues.firstIndex(of: clue) { return index / 2 }
         return 0
@@ -320,13 +329,25 @@ private struct ClueNotebookView: View {
                 let currentPage = min(page, pageCount - 1)
                 let fragrance = currentPage >= ordinaryPageCount ? fragrancePages[currentPage - ordinaryPageCount] : nil
                 let formula = PerfumeFormula.all.first { $0.clue == fragrance }
+                let labPage = fragrance.flatMap { clue -> Int? in
+                    switch clue {
+                    case .perfumeTrialsWood: 0
+                    case .perfumeTrialsCitrus: 1
+                    case .gaiacFormula, .bergamoteFormula, .mousseFormula: 2
+                    case .perfumeReference: 3
+                    case .perfumeSamples: 4
+                    default: nil
+                    }
+                }
                 ZStack {
                     Color("Night")
                     Image(formula.map { "ll4-formula-" + $0.bottle.rawValue } ?? "ll4-notes")
                         .resizable()
                         .interpolation(.high)
                         .frame(width: spreadWidth, height: spreadHeight)
-                    if currentPage < ordinaryPageCount {
+                    if let labPage {
+                        PerfumeLabRecordArtwork(store: store, page: labPage)
+                    } else if currentPage < ordinaryPageCount {
                         ForEach(0..<2) { side in
                             let index = currentPage * 2 + side
                             notebookPage(clue: index < clues.count ? clues[index] : nil, compact: compact)

@@ -287,7 +287,7 @@ struct ContentView: View {
                     .inventoryToolDrop(store: store, accepting: [.ferrisPostcard]) { _ in store.postFerrisPostcard() }
             }
             if store.room == .perfume, store.sceneView == 4 {
-                PerfumeBenchControls(store: store)
+                PerfumeLabWorldControls(store: store)
                     .frame(width: 320 * scale, height: 160 * scale)
             }
             RoseWorldPetals(store: store, scale: scale)

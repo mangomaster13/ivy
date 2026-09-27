@@ -283,7 +283,7 @@ struct WordAnswer: View {
 }
 
 extension AdventureTool {
-    var imageName: String { self == .ferrisPostcard ? "ferris-postcard" : self == .ferrisTicket ? "ferris-navigation-ticket" : self == .ferrisPhone ? "ferris-selfie-phone" : self == .cinemaFilm ? "cinema-film-blank" : self == .fountainPen ? "later-dictionary-fountain-pen" : isFragranceTool ? fragranceImageName : self == .dinnerMenu ? "bt2-menu-cover" : self == .ticket ? "plane-ticket-paper" : self == .sewingKit ? "memory-twine" : self == .eraser ? "tool-eraser" : self == .napkin ? "tool-cloth" : "tool-" + rawValue }
+    var imageName: String { self == .scentPaper ? "ll5-paper-tool" : self == .ferrisPostcard ? "ferris-postcard" : self == .ferrisTicket ? "ferris-navigation-ticket" : self == .ferrisPhone ? "ferris-selfie-phone" : self == .cinemaFilm ? "cinema-film-blank" : self == .fountainPen ? "later-dictionary-fountain-pen" : isFragranceTool ? fragranceImageName : self == .dinnerMenu ? "bt2-menu-cover" : self == .ticket ? "plane-ticket-paper" : self == .sewingKit ? "memory-twine" : self == .eraser ? "tool-eraser" : self == .napkin ? "tool-cloth" : "tool-" + rawValue }
 }
 extension GameStore {
     var potImageName: String {

@@ -91,68 +91,69 @@ final class WonderlandTests: XCTestCase {
         XCTAssertTrue(completed.pendingBottles.isEmpty)
     }
 
-    func testPerfumeBenchWorksInSceneWithoutOpeningAnotherPage() {
+    func testPerfumeLaboratoryToolsWholeSubmissionAndGiftBox() throws {
         let store = StoreHarness.make()
         store.room = .perfume
         store.exploration.views[Room.perfume.rawValue] = 4
-        let ingredients: [AdventureTool] = [.gaiacWood, .musk, .cedar, .bergamot]
-        store.perfumery.found.formUnion(ingredients)
-        ingredients.forEach(store.acquire)
-
-        XCTAssertFalse(store.explorationSpots.contains {
-            if case .memory(.perfumeMix) = $0.action { return true }
-            return false
-        })
-        store.blendPerfume()
-        XCTAssertEqual(store.sceneHint, "The mixing trays are still empty.")
-        XCTAssertEqual(store.overlay, .none)
-        XCTAssertTrue(store.memoryNavigation.isEmpty)
-        XCTAssertNil(store.perfumery.output)
-
-        store.putIngredient(.gaiacWood, at: 0)
-        store.blendPerfume()
-        XCTAssertEqual(store.sceneHint, "Something is still missing from the mixture.")
-        XCTAssertEqual(store.perfumery.mixture, [.gaiacWood, nil, nil])
-        store.putIngredient(.musk, at: 1)
-        store.putIngredient(.bergamot, at: 2)
-        store.blendPerfume()
-        XCTAssertEqual(store.perfumery.mixture, [.gaiacWood, .musk, .bergamot])
-        XCTAssertNil(store.perfumery.output)
-
-        store.putIngredient(.cedar, at: 2)
-        XCTAssertTrue(store.exploration.tools.contains(.bergamot))
-        store.removeIngredient(at: 1)
-        XCTAssertTrue(store.exploration.tools.contains(.musk))
-        store.putIngredient(.musk, at: 1)
-
+        store.preparePerfumeLaboratory()
+        store.openMemory(.perfumeLab)
+        store.samplePerfume(0)
+        XCTAssertTrue(store.perfumeLab.sampled.isEmpty)
+        store.takeScentPapers()
+        XCTAssertTrue(store.toolsVisible)
+        XCTAssertNil(store.selectedTool, "Taking papers does not automatically use them")
+        store.samplePerfume(0)
+        XCTAssertTrue(store.perfumeLab.sampled.isEmpty)
+        store.chooseTool(.scentPaper)
+        store.samplePerfume(0)
+        XCTAssertEqual(store.perfumeLab.sampled, [0])
+        XCTAssertTrue(store.exploration.clues.contains(.perfumeSamples))
+        XCTAssertFalse(store.exploration.clues.contains(.perfumeReference))
+        let identity = store.perfumeLab.sampleOrder
         store.openNotebook()
-        store.removeIngredient(at: 0)
-        store.blendPerfume()
-        XCTAssertEqual(store.perfumery.mixture, [.gaiacWood, .musk, .cedar])
-        XCTAssertNil(store.perfumery.output)
+        store.samplePerfume(1)
+        store.labelPerfume(.cedar, at: 1)
+        XCTAssertNil(store.perfumeLab.labels[1])
+        XCTAssertEqual(store.perfumeLab.sampled, [0])
         store.closeNotebook()
-        store.turnView(-1)
-        store.blendPerfume()
-        XCTAssertNil(store.perfumery.output)
-        store.turnView(1)
-        store.blendPerfume()
-        XCTAssertEqual(store.perfumery.output, .gaiac10)
-        XCTAssertTrue(store.perfumery.mixture.allSatisfy { $0 == nil })
-        XCTAssertTrue(Set(ingredients).isSubset(of: store.exploration.tools))
-        XCTAssertFalse(store.exploration.tools.contains(.gaiac10))
-
-        store.blendPerfume()
-        XCTAssertEqual(store.sceneHint, "A finished bottle is still beneath the press.")
-        XCTAssertEqual(store.perfumery.output, .gaiac10)
-        store.takePerfume()
-        store.takePerfume()
-        XCTAssertNil(store.perfumery.output)
-        XCTAssertTrue(store.exploration.tools.contains(.gaiac10))
-        XCTAssertEqual(store.perfumery.brewed, [.gaiac10])
-        XCTAssertEqual(store.overlay, .none)
-        XCTAssertEqual(store.sceneView, 4)
-        XCTAssertTrue(store.memoryNavigation.isEmpty)
-        XCTAssertTrue(store.collected.isEmpty)
+        store.backFromMemory()
+        store.openMemory(.perfumeFormula)
+        XCTAssertTrue(store.exploration.clues.contains(.perfumeTrialsWood))
+        store.unfoldPerfumeReference()
+        XCTAssertTrue(store.exploration.clues.contains(.perfumeReference))
+        store.readPerfumeLabPage(2)
+        XCTAssertTrue(store.exploration.clues.contains(.mousseFormula))
+        store.backFromMemory()
+        store.openMemory(.perfumeMix)
+        store.placePerfumeSample(0, in: 0)
+        let draft = store.perfumeLab.batches
+        store.openNotebook()
+        store.placePerfumeSample(1, in: 0)
+        store.submitPerfumeLaboratory()
+        XCTAssertEqual(store.perfumeLab.batches, draft)
+        store.closeNotebook()
+        store.removePerfumeSample(0, from: 0)
+        for (cup, recipe) in PerfumeLaboratory.recipes.enumerated() {
+            for material in recipe {
+                store.placePerfumeSample(try XCTUnwrap(identity.firstIndex(of: material)), in: cup)
+            }
+        }
+        store.submitPerfumeLaboratory()
+        XCTAssertTrue(store.perfumeLab.complete)
+        XCTAssertFalse(store.exploration.tools.contains(.scentPaper))
+        XCTAssertFalse(store.collected.contains(.perfume))
+        XCTAssertTrue(Set(PerfumeLaboratory.bottles).isDisjoint(with: store.exploration.tools))
+        store.migrateFoodAndFragrance()
+        XCTAssertTrue(Set(PerfumeLaboratory.bottles).isDisjoint(with: store.exploration.tools), "Unclaimed outputs must not enter Tools on restore")
+        for bottle in PerfumeLaboratory.bottles { store.takeLaboratoryPerfume(bottle) }
+        XCTAssertTrue(Set(PerfumeLaboratory.bottles).isSubset(of: store.exploration.tools))
+        store.backFromMemory()
+        store.openMemory(.perfume)
+        for (slot, bottle) in PerfumeLaboratory.bottles.enumerated() { store.placePerfume(bottle, at: slot) }
+        XCTAssertTrue(store.collected.contains(.perfume))
+        XCTAssertFalse(store.toolsVisible)
+        XCTAssertTrue(store.perfumery.cinemaUnlocked)
+        XCTAssertEqual(store.perfumeLab.sampleOrder, identity)
     }
 
     func testOwnedBedRoseUsesInventoryElementAndReturnsToScene() {

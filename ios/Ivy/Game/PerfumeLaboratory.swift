@@ -6,6 +6,7 @@ enum PerfumeScentMark: String, Codable {
 }
 
 enum PerfumeLaboratory {
+    static func sampleName(_ index: Int) -> String { ["A", "B", "C", "D", "E", "F"].indices.contains(index) ? ["A", "B", "C", "D", "E", "F"][index] : "" }
     static let materials: [AdventureTool] = [.gaiacWood, .cedar, .incense, .bergamot, .oakmoss, .patchouli]
     static let bottles: [AdventureTool] = [.gaiac10, .bergamote22, .mousse30]
     static let recipes: [[AdventureTool]] = [[.gaiacWood, .incense], [.bergamot, .cedar], [.oakmoss, .patchouli]]
@@ -26,7 +27,6 @@ enum PerfumeLaboratory {
 }
 
 /// A–F are stable positions. Player guesses never affect evidence or correctness.
-/// This optional record is activated only when the approved laboratory UI is integrated.
 struct PerfumeLabProgress: Codable, Equatable {
     var sampleOrder: [AdventureTool]
     var papersTaken = false
@@ -157,5 +157,120 @@ struct PerfumeLabProgress: Codable, Equatable {
     mutating func takeBottle(_ bottle: AdventureTool) -> Bool {
         guard PerfumeLaboratory.bottles.contains(bottle), produced.contains(bottle) else { return false }
         return taken.insert(bottle).inserted
+    }
+}
+
+extension GameStore {
+    var perfumeLab: PerfumeLabProgress {
+        get { perfumery.laboratory ?? PerfumeLabProgress(legacy: perfumery) }
+        set { perfumery.laboratory = newValue }
+    }
+
+    func preparePerfumeLaboratory() {
+        if perfumery.laboratory == nil { perfumery.laboratory = PerfumeLabProgress(legacy: perfumery) }
+        if collected.contains(.perfume) {
+            perfumery.arranged = true
+            perfumery.cinemaUnlocked = true
+            perfumery.brewed.formUnion(PerfumeLaboratory.bottles)
+            perfumery.arrangement = PerfumeLaboratory.bottles.map(Optional.some)
+        }
+        if perfumery.arranged || collected.contains(.perfume) {
+            perfumeLab.produced = Set(PerfumeLaboratory.bottles)
+            perfumeLab.taken = perfumeLab.produced
+        }
+        perfumeLab.prepare()
+        // Old raw materials remain decodable/recorded but are now bench samples, not tools.
+        exploration.tools.subtract(PerfumeIngredient.tools)
+        if let selectedTool, selectedTool.ingredient != nil { self.selectedTool = nil }
+        if perfumeLab.papersTaken && !perfumeLab.complete {
+            exploration.tools.insert(.scentPaper)
+        } else { exploration.tools.remove(.scentPaper) }
+        if !perfumeLab.sampled.isEmpty { exploration.clues.insert(.perfumeSamples) }
+        exploration.tools.subtract(PerfumeLaboratory.bottles)
+        if !collected.contains(.perfume) {
+            exploration.tools.formUnion(perfumeLab.taken.subtracting(perfumery.arrangement.compactMap { $0 }))
+        }
+    }
+
+    private var canInspectPerfumeLab: Bool {
+        !isIntro && !isHallTransitioning && collectingEgg == nil && room == .perfume && sceneView > 0
+    }
+    private var canChangePerfumeLab: Bool {
+        canInspectPerfumeLab && !perfumery.arranged && !collected.contains(.perfume)
+    }
+
+    func takeScentPapers() {
+        guard canChangePerfumeLab, !perfumeLab.papersTaken, !perfumeLab.complete,
+              (overlay == .none && sceneView == 4) || overlay == .memory(.perfumeLab) else { return }
+        perfumeLab.papersTaken = true
+        acquire(.scentPaper)
+        persistNow()
+    }
+
+    func samplePerfume(_ index: Int) {
+        guard canChangePerfumeLab, overlay == .memory(.perfumeLab), (0..<6).contains(index),
+              !perfumeLab.complete else { return }
+        guard requireInteractionTool(.scentPaper, missing: "The samples are waiting for paper.") else { return }
+        perfumeLab.sample(index)
+        discover(.perfumeSamples)
+        dismissSceneHint()
+        persistNow()
+    }
+
+    func labelPerfume(_ material: AdventureTool?, at index: Int) {
+        guard canChangePerfumeLab, overlay == .memory(.perfumeLab) else { return }
+        perfumeLab.assignLabel(material, to: index)
+        dismissSceneHint(); persistNow()
+    }
+
+    func placePerfumeSample(_ index: Int, in cup: Int) {
+        guard canChangePerfumeLab, overlay == .memory(.perfumeMix) else { return }
+        perfumeLab.placeSample(index, in: cup)
+        dismissSceneHint(); persistNow()
+    }
+
+    func removePerfumeSample(_ index: Int, from cup: Int) {
+        guard canChangePerfumeLab, overlay == .memory(.perfumeMix) else { return }
+        perfumeLab.removeSample(index, from: cup)
+        dismissSceneHint(); persistNow()
+    }
+
+    func submitPerfumeLaboratory() {
+        guard canChangePerfumeLab, overlay == .memory(.perfumeMix), !perfumeLab.complete else { return }
+        guard perfumeLab.batches.allSatisfy({ $0.count == 2 }) else {
+            showSceneHint("The three cups are not yet filled.", presentation: .interaction)
+            return
+        }
+        guard perfumeLab.submit() else {
+            showSceneHint("The set does not match the formulas.", tone: .wrong)
+            return
+        }
+        perfumery.brewed.formUnion(perfumeLab.produced)
+        perfumery.output = nil
+        perfumery.mixture = [nil, nil, nil]
+        consume(.scentPaper)
+        dismissSceneHint(); IvyHaptics.success(); persistNow()
+    }
+
+    func takeLaboratoryPerfume(_ bottle: AdventureTool) {
+        guard canChangePerfumeLab, overlay == .memory(.perfumeMix), perfumeLab.takeBottle(bottle) else { return }
+        if perfumery.output == bottle { perfumery.output = nil }
+        acquire(bottle); persistNow()
+    }
+
+    func readPerfumeLabPage(_ page: Int) {
+        guard canInspectPerfumeLab, overlay == .memory(.perfumeFormula), (0..<3).contains(page) else { return }
+        perfumeLab.recordPage = page
+        perfumeLab.readPages.insert(page)
+        if page == 0 { discover(.perfumeTrialsWood) }
+        else if page == 1 { discover(.perfumeTrialsCitrus) }
+        else { PerfumeFormula.all.forEach { discover($0.clue) } }
+        persistNow()
+    }
+
+    func unfoldPerfumeReference() {
+        guard canInspectPerfumeLab, overlay == .memory(.perfumeFormula), perfumeLab.recordPage == 0 else { return }
+        perfumeLab.referenceUnfolded = true
+        discover(.perfumeReference); persistNow()
     }
 }

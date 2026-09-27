@@ -42,7 +42,7 @@ struct BigTopProgress: Codable {
 }
 
 struct PerfumeProgress: Codable {
-    // Optional: old saves still decode; activate only with the new laboratory UI.
+    // Optional so pre-laboratory saves still decode without dropping their progress.
     var laboratory: PerfumeLabProgress? = nil
     var opened: Set<String> = []
     var found: Set<AdventureTool> = []
@@ -324,7 +324,7 @@ extension GameStore {
         }
     }
     func takeIngredient(_ tool: AdventureTool) {
-        guard canChangeFoodPuzzle else { return }
+        guard canChangeFoodPuzzle, perfumery.laboratory == nil else { return }
         guard let ingredient = tool.ingredient, room == .perfume,
               overlay == .memory(Self.cabinetPanel(ingredient.cabinet)),
               perfumery.opened.contains(ingredient.cabinet), !perfumery.found.contains(tool),
@@ -338,7 +338,7 @@ extension GameStore {
         discover(PerfumeFormula.all[perfumery.formulaPage].clue)
     }
     private var canUsePerfumeBench: Bool {
-        canChangeFoodPuzzle && room == .perfume && !perfumery.arranged && !collected.contains(.perfume)
+        perfumery.laboratory == nil && canChangeFoodPuzzle && room == .perfume && !perfumery.arranged && !collected.contains(.perfume)
             && ((overlay == .none && sceneView == 4) || overlay == .memory(.perfumeMix))
     }
     func putIngredient(_ tool: AdventureTool, at slot: Int) {
@@ -417,7 +417,7 @@ extension GameStore {
         perfumery.cinemaUnlocked = true
         perfumery.mixture = [nil, nil, nil]
         perfumery.output = nil
-        let tools = Set(PerfumeIngredient.tools + PerfumeFormula.bottles)
+        let tools = Set(PerfumeIngredient.tools + PerfumeFormula.bottles + [.scentPaper])
         exploration.tools.subtract(tools)
         memories.used.formUnion(tools)
         memories.picked.formUnion(perfumery.found.union(perfumery.brewed))
@@ -486,6 +486,7 @@ extension GameStore {
                 consume(tool)
             }
         }
+        preparePerfumeLaboratory()
     }
     private func normalizedSlots(_ slots: [AdventureTool?], allowed: Set<AdventureTool>) -> [AdventureTool?] {
         var seen = Set<AdventureTool>()

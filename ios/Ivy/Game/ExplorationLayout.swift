@@ -71,13 +71,11 @@ extension GameStore {
             .init("Street door", 8, 23, 48, 106, .perfumeExit),
             .init("Presentation box", 164, 82, 54, 46, .memory(.perfume)),
             .init("Formula notebook", 229, 115, 54, 20, .memory(.perfumeFormula))]
-        case (.perfume, 2): [
-            .init("Wood and resin cabinet", 70, 12, 94, 111, .memory(.perfumeWood))]
-        case (.perfume, 3): [
-            .init("Botanical box", 31, 65, 122, 65, .memory(.perfumeBotanical)),
-            .init("Spice drawer", 201, 80, 78, 51, .memory(.perfumeSpice))]
+        case (.perfume, 2), (.perfume, 3): []
         case (.perfume, 4): [
-            .init("Laboratory cabinet", 33, 9, 79, 70, .memory(.perfumeLab))]
+            .init("Laboratory records", 7, 77, 95, 54, .memory(.perfumeFormula)),
+            .init("Six anonymous samples", 115, 54, 81, 69, .memory(.perfumeLab)),
+            .init("Blending apparatus", 205, 67, 108, 62, .memory(.perfumeMix))]
         case (.cinema, 0): CinemaLayout.spots
         case (.dictionary, 0): DictionaryLayout.spots(penAvailable: !memories.picked.contains(.fountainPen) && !dictionary.solved)
         case (.ferris, 0): FerrisLayout.promenadeSpots

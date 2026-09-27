@@ -206,7 +206,7 @@ extension GameStore {
         }
         if panel == .bigTopMenu && !bigTop.menuPlaced { return }
         if [.bigTopMenuSearch, .bigTopMenu].contains(panel) { prepareBigTopMenu() }
-        if panel == .perfumeFormula { discover(PerfumeFormula.all[perfumery.formulaPage].clue) }
+        if panel.room == .perfume { preparePerfumeLaboratory() }
         if panel == .perfume { discover(.perfumeOrder) }
         if panel == .perfumeSpice { perfumery.opened.insert("spice"); persistNow() }
         if panel == .flight {
@@ -250,6 +250,7 @@ extension GameStore {
             persistNow()
         }
         sceneHint = ""; overlay = .memory(panel)
+        if panel == .perfumeFormula { readPerfumeLabPage(perfumeLab.recordPage) }
         if panel == .cinemaCase { openCinemaCase() }
         if panel == .bigTopSign { persistNow() }
         if panel == .bigTop && bigTop.orderSolved { collectDinner() }

@@ -39,9 +39,9 @@ Take reusable scent papers from the dispenser, actively select them, then tap sa
 Files: `art/perfume/laboratory/README.md`, `art/perfume/laboratory/source/`.
 
 - [x] Produce and inspect an overview proposal against current Yard and Le Labo catalog references. Document that historical source paths are absent in this checkout.
-- [ ] Present the actual image for approval. The overview is not a production bitmap containing the whole interactive UI.
-- [ ] After approval, author separate closeups for readable records, samples/labels and blending; export independent strips, labels, sample IDs, cup drafts and folded reference states.
-- [ ] Record physical surface bounds and shared image/hotspot transforms. Keep six samples distinguishable by A–F, not semantic bottle shape or material color. Each ingredient label has its own lettering asset; no ingredient-art substitution.
+- [x] Present the actual image for approval. The overview is not a production bitmap containing the whole interactive UI.
+- [x] After approval, author separate closeups for readable records, samples/labels and blending; export independent strips, labels, sample IDs, cup drafts and folded reference states.
+- [x] Record physical surface bounds and shared image/hotspot transforms in the artwork README. Keep six samples distinguishable by A–F, not semantic bottle shape or material color. Each ingredient label has its own lettering asset; no ingredient-art substitution.
 
 ## Task 2 — Persistent puzzle model
 
@@ -58,13 +58,16 @@ Interfaces: `PerfumeLabProgress(legacy:)`, `sample(_:)`, `assignLabel(_:to:)`, `
 
 Files: `PerfumeViews.swift`, `FoodAndFragranceWorld.swift`, `Exploration.swift`, `ExplorationViews.swift`, `ExplorationLayout.swift`, `MemoryJourney.swift`, `ContentView.swift`, existing inventory artwork routing, new catalog assets and export script.
 
-- [ ] Connect store-guarded actions only in the appropriate room/panel; preserve Back, Notes return location and partial drafts.
-- [ ] Add a scent-paper tool with explicit pickup and selection, independent from scene paper samples. Clear transient selection on leaving, not persisted drafts.
-- [ ] Replace the old blend controls and disable material collecting for the new path; leave old IDs decodable. Reuse the existing box and collection flow.
-- [ ] Replace formula Notes pages with the same discovered artwork used on the desk; never leak unsampled marks, hidden reference or inferred identity in accessibility labels.
-- [ ] Route pending legacy output to the new physical output row without duplicate pickups. Preserve old owned/arranged states and street/scene access.
-- [ ] Update IVY-GUIDE and DEVELOPMENT to describe the actual integrated revision, superseding the old twenty-ingredient rule only when integrated.
+- [x] Connect store-guarded actions only in the appropriate room/panel; preserve Back, Notes return location and partial drafts.
+- [x] Add a scent-paper tool with explicit pickup and selection, independent from scene paper samples. Clear transient selection on leaving, not persisted drafts.
+- [x] Replace the old blend controls and disable material collecting for the new path; leave old IDs decodable. Reuse the existing box and collection flow.
+- [x] Replace formula Notes pages with the same discovered artwork used on the desk; never leak unsampled marks, hidden reference or inferred identity in accessibility labels.
+- [x] Route pending legacy output to the new physical output row without duplicate pickups. Preserve old owned/arranged states and street/scene access.
+- [x] Update IVY-GUIDE and DEVELOPMENT to describe the actual integrated revision, superseding the old twenty-ingredient rule only when integrated.
 
 ## Delivery evidence
 
 Source review and generated-art inspection are distinct from runtime verification. Report exactly what is integrated, what awaits art approval and what remains user-tested. No agent-run tests or builds for this ordinary development request.
+
+
+Implementation complete in source and assets; all checked steps describe authored/reviewed work, not executed tests. Tests, app build and device acceptance were deliberately not run.
