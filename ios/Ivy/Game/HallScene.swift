@@ -7,7 +7,6 @@ enum HallLayout {
 }
 
 struct HallAtmosphere: View {
-    @Bindable var store: GameStore
     let scale: CGFloat
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.scenePhase) private var phase
@@ -24,21 +23,6 @@ struct HallAtmosphere: View {
                 Ellipse().fill(Color.orange.opacity(0.06 + (sin(t * 2.4) + 1) * 0.025))
                     .frame(width: 42 * scale, height: 24 * scale)
                     .position(x: 190 * scale, y: 89 * scale)
-                if store.lotteryReady {
-                    RoundedRectangle(cornerRadius: scale)
-                        .fill(IvyType.cream.opacity(0.86))
-                        .frame(width: 16 * scale, height: 7 * scale)
-                        .position(x: 262 * scale, y: 71 * scale)
-                    Text(store.lotteryDrawn ? "♡" : "13")
-                        .font(IvyType.hand(6 * scale))
-                        .foregroundStyle(IvyType.ink)
-                        .position(x: 262 * scale, y: 71 * scale)
-                    ForEach(0..<3) { index in
-                        Circle().fill(IvyType.cream.opacity(reduceMotion ? 0.8 : 0.65 + sin(t + Double(index)) * 0.2))
-                            .frame(width: 1.5 * scale, height: 1.5 * scale)
-                            .position(x: CGFloat(255 + index * 7) * scale, y: 63 * scale)
-                    }
-                }
             }
         }
         .allowsHitTesting(false)

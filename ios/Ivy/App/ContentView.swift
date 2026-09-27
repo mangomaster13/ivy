@@ -259,7 +259,7 @@ struct ContentView: View {
                 )
             }
             if store.room == .hall, store.sceneView == 0 {
-                HallAtmosphere(store: store, scale: scale)
+                HallAtmosphere(scale: scale)
             }
             if store.sceneView == 0 { WonderlandAtmosphere(store: store, scale: scale) }
             if store.room == .gelato, store.sceneView == 1 {

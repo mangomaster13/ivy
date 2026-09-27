@@ -197,6 +197,8 @@ final class GameStore {
     var roomImageName: String {
         if let sideImageName { return sideImageName }
         if room == .yard { return yardImageName }
+        if room == .hall, lotteryDrawn { return "story-hall-finished" }
+        if room == .hall, lotteryReady { return "story-hall-ready" }
         if room == .ferris {
             let underlying = elementReturnOverlay ?? overlay
             if underlying == .memory(.ferrisPostbox) { return "ferris-postbox" }

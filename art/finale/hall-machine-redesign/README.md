@@ -1,0 +1,15 @@
+# Hall machine redesign proposal · 2026-09-25
+
+Status: user approved `proposal.png`; integrated on 2026-09-27. Built-in imagegen produced both originals. `scripts/export_hall_machine.swift` exports `story-hall-ready` and `story-hall-finished` directly from the originals at 590×295, 1180×590 and 1770×885. No save fields changed.
+
+The reported cream block and `13` came from the `lotteryReady` branch in `HallAtmosphere`. Removed that rectangle, native text and three floating dots. `GameStore.roomImageName` selects the approved ready scene after all collectibles are owned, and the finished scene when `lotteryDrawn` is true. Before readiness, the existing dark-window Hall scene remains. Side views retain priority. Existing closeup lever/letter animation and collection behavior remain unchanged.
+
+References: current `story-hall@3x.png` is the room/camera target; current `story-yard-base@3x.png` is the Yard style anchor (documented art/yard originals are absent); `art/finale/letters/source/machine-idle.png` supplies machine construction and the supported receiving tray.
+
+Prompt direction: edit only the right-hand machine in the full 2:1 Hall scene. Retain the compact teal curved body, aged brass edging and raised right lever; replace the front with recessed dark glass, a small arc of physical amber lamps and a recessed empty receiving tray with a brass lip. No numbers, text, cream panel or UI. Preserve room camera, furniture sizes, table footprint, support contact, door, bench, fireplace and floor opening. Match Yard's dark hand-drawn contours, grouped color shapes, restrained stepped brushwork, matte materials, blue-teal shadows and local amber light. Output full scene without controls or insets.
+
+Finished-state prompt: edit only the approved scene's machine, lowering the right lever diagonally, adding a small amber heart below the arc and seating a cream envelope with red ivy wax seal inside the brass tray. Preserve framing, object scale, camera and furniture; use `art/finale/letters/source/machine-heart.png` as the state reference and the same Yard style anchor. No text or UI.
+
+Art review: both states have no number or cream block; the glass has depth and the machine rests on its table. The envelope sits behind the tray lip. The arc is decorative, not an exact thirteen-count indicator. Overall room composition is retained, with generated brush-detail variation. The shirt remains an independent runtime layer. Both scenes share the fitted 320×160 canvas: machine body approximately x=249…291, y=57…86; tray x=254…274, y=78…85; right lever stays inside x=287…299, y=63…86. Existing `HallLayout.machine` covers the assembly, so tap targets retain the same coordinates.
+
+Reviewed the source changes and generated artwork. Asset production ran; no build, tests, device launch or runtime screenshot pass performed, per the user-owned testing policy. Runtime appearance remains for user acceptance. Existing progress is read unchanged, including already-claimed saves.
