@@ -42,6 +42,8 @@ struct BigTopProgress: Codable {
 }
 
 struct PerfumeProgress: Codable {
+    // Optional: old saves still decode; activate only with the new laboratory UI.
+    var laboratory: PerfumeLabProgress? = nil
     var opened: Set<String> = []
     var found: Set<AdventureTool> = []
     var mixture: [AdventureTool?] = [nil, nil, nil]

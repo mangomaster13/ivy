@@ -3,6 +3,94 @@ import XCTest
 
 @MainActor
 final class WonderlandTests: XCTestCase {
+    func testPerfumeLaboratoryWholeSetEvidenceAndLegacyProgress() throws {
+        let records = PerfumeLaboratory.observations.map { Set($0.compactMap(PerfumeLaboratory.mark)) }
+        XCTAssertEqual(records[0].intersection(records[1]), [.branch])
+        XCTAssertEqual(records[2].intersection(records[3]), [.stars])
+        XCTAssertEqual(Set(PerfumeLaboratory.materials.compactMap(PerfumeLaboratory.mark)).count, 6)
+
+        var lab = PerfumeLabProgress()
+        let originalOrder = lab.sampleOrder
+        lab.sample(0)
+        XCTAssertNil(lab.visibleMark(at: 0), "Paper must be taken before sampling")
+        lab.papersTaken = true
+        lab.sample(0)
+        XCTAssertEqual(lab.visibleMark(at: 0), PerfumeLaboratory.mark(for: originalOrder[0]))
+        XCTAssertNil(lab.visibleMark(at: 1), "Unexamined sample must not reveal its mark")
+        lab.assignLabel(.cedar, to: 0)
+        lab.assignLabel(.incense, to: 1)
+        lab.assignLabel(.cedar, to: 1)
+        XCTAssertEqual(lab.labels[0], .incense)
+        XCTAssertEqual(lab.labels[1], .cedar)
+        lab.placeSample(0, in: 0)
+        lab.placeSample(0, in: 1)
+        XCTAssertTrue(lab.batches[0].isEmpty)
+        XCTAssertEqual(lab.batches[1], [0])
+        let beforeInvalid = lab
+        lab.placeSample(-1, in: 0)
+        lab.placeSample(0, in: 9)
+        lab.assignLabel(.musk, to: 0)
+        XCTAssertEqual(lab, beforeInvalid)
+
+        let answer = PerfumeLaboratory.recipes.map { pair in pair.map { originalOrder.firstIndex(of: $0)! } }
+        lab.batches = [answer[1], answer[0], answer[2]]
+        let wrong = lab
+        XCTAssertFalse(lab.submit())
+        XCTAssertEqual(lab, wrong, "No correct cup or draft changes on a failed complete attempt")
+        lab.referenceUnfolded = true
+        let restored = try JSONDecoder().decode(PerfumeLabProgress.self, from: JSONEncoder().encode(lab))
+        XCTAssertEqual(restored, lab)
+        lab.prepare()
+        XCTAssertEqual(lab.sampleOrder, originalOrder)
+
+        // All eight within-pair orderings are valid; guesses and clue flags are irrelevant.
+        for ordering in 0..<8 {
+            var attempt = PerfumeLabProgress()
+            attempt.sampleOrder = originalOrder
+            attempt.batches = answer.enumerated().map { cup, pair in
+                ordering & (1 << cup) == 0 ? pair : Array(pair.reversed())
+            }
+            XCTAssertTrue(attempt.submit())
+            XCTAssertTrue(attempt.complete)
+            XCTAssertEqual(attempt.pendingBottles, PerfumeLaboratory.bottles)
+            XCTAssertFalse(attempt.submit(), "Repeated submissions cannot produce extra bottles")
+            XCTAssertTrue(attempt.takeBottle(.gaiac10))
+            XCTAssertFalse(attempt.takeBottle(.gaiac10))
+            XCTAssertEqual(attempt.pendingBottles, [.bergamote22, .mousse30])
+        }
+
+        var legacy = PerfumeProgress()
+        legacy.found = [.cedar, .musk]
+        legacy.brewed = [.gaiac10, .bergamote22]
+        legacy.output = .bergamote22
+        legacy.arrangement = [.gaiac10, nil, nil]
+        var migrated = PerfumeLabProgress(legacy: legacy)
+        XCTAssertEqual(migrated.produced, legacy.brewed)
+        XCTAssertEqual(migrated.pendingBottles, [.bergamote22])
+        XCTAssertEqual(migrated.taken, [.gaiac10])
+        let cedarIndex = try XCTUnwrap(migrated.sampleOrder.firstIndex(of: .cedar))
+        XCTAssertEqual(migrated.labels[cedarIndex], .cedar)
+        XCTAssertTrue(migrated.sampled.contains(cedarIndex))
+        let retained = migrated.batches[0]
+        migrated.removeSample(retained[0], from: 0)
+        XCTAssertEqual(migrated.batches[0], retained)
+        for material in PerfumeLaboratory.recipes[2] {
+            migrated.placeSample(try XCTUnwrap(migrated.sampleOrder.firstIndex(of: material)), in: 2)
+        }
+        XCTAssertTrue(migrated.submit())
+        XCTAssertEqual(migrated.pendingBottles, [.bergamote22, .mousse30])
+
+        var oldJSON = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(legacy)) as? [String: Any])
+        oldJSON.removeValue(forKey: "laboratory")
+        let oldSave = try JSONDecoder().decode(PerfumeProgress.self, from: JSONSerialization.data(withJSONObject: oldJSON))
+        XCTAssertNil(oldSave.laboratory)
+        XCTAssertEqual(oldSave.brewed, legacy.brewed)
+        legacy.arranged = true
+        let completed = PerfumeLabProgress(legacy: legacy)
+        XCTAssertTrue(completed.complete)
+        XCTAssertTrue(completed.pendingBottles.isEmpty)
+    }
+
     func testPerfumeBenchWorksInSceneWithoutOpeningAnotherPage() {
         let store = StoreHarness.make()
         store.room = .perfume

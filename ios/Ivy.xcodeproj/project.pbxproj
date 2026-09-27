@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A260927A0000000000000001 /* PerfumeLaboratory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A260927A0000000000000002; };
 		A260924A0000000000000001 /* TaxiPuzzle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A260924A0000000000000002; };
 		A260924A0000000000000003 /* TaxiViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A260924A0000000000000004; };
 		A260924A0000000000000005 /* TaxiPuzzleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A260924A0000000000000006; };
@@ -82,6 +83,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A260927A0000000000000002 /* PerfumeLaboratory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerfumeLaboratory.swift; sourceTree = "<group>"; };
 		A260924A0000000000000002 /* TaxiPuzzle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaxiPuzzle.swift; sourceTree = "<group>"; };
 		A260924A0000000000000004 /* TaxiViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaxiViews.swift; sourceTree = "<group>"; };
 		A260924A0000000000000006 /* TaxiPuzzleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaxiPuzzleTests.swift; sourceTree = "<group>"; };
@@ -239,6 +241,7 @@
 				F2092026B000000000000002 /* PerfumePlacement.swift */,
 				F2092026A000000000000004 /* BigTopViews.swift */,
 				F2092026A000000000000002 /* FoodAndFragrance.swift */,
+				A260927A0000000000000002 /* PerfumeLaboratory.swift */,
 				F19091900000000000000022 /* RoseArtwork.swift */,
 				F01919000000000000000002 /* RubbingSurface.swift */,
 				F02020260000000000000002 /* MemoryJourney.swift */,
@@ -413,6 +416,7 @@
 				F2092026B000000000000001 /* PerfumePlacement.swift in Sources */,
 				F2092026A000000000000003 /* BigTopViews.swift in Sources */,
 				F2092026A000000000000001 /* FoodAndFragrance.swift in Sources */,
+				A260927A0000000000000001 /* PerfumeLaboratory.swift in Sources */,
 				F19091900000000000000021 /* RoseArtwork.swift in Sources */,
 				F01919000000000000000001 /* RubbingSurface.swift in Sources */,
 				F02020260000000000000001 /* MemoryJourney.swift in Sources */,
