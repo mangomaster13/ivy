@@ -87,7 +87,7 @@ enum AdventureClue: String, Codable, CaseIterable, Identifiable {
         switch self {
         case .perfumeTrialsWood: "two cedar experiments"
         case .perfumeTrialsCitrus: "two bergamot experiments"
-        case .perfumeReference: "a folded reference"
+        case .perfumeReference: "Cedar reference"
         case .perfumeSamples: "the six samples"
         case .cinemaTicket: "two seats, one memory"
         case .ferrisScore: "a melody above the harbour"

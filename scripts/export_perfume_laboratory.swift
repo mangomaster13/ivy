@@ -53,6 +53,8 @@ func lettering(_ string: String, rect: CGRect, size: CGFloat, in ctx: CGContext)
     ctx.translateBy(x: rect.midX - bounds.width * fit / 2 - bounds.minX * fit,
                     y: rect.midY - bounds.height * fit / 2 - bounds.minY * fit)
     ctx.scaleBy(x: fit, y: fit)
+    ctx.textMatrix = .identity
+    ctx.textPosition = .zero
     CTLineDraw(line, ctx)
     ctx.restoreGState()
 }
@@ -87,18 +89,6 @@ for (name, text) in lines {
 }
 for letter in ["A", "B", "C", "D", "E", "F"] {
     try export("ll5-id-" + letter, 32, 32) { lettering(letter, rect: CGRect(x: 0, y: 0, width: 32, height: 32), size: 27, in: $0) }
-    // A die-cut, punched paper tag authored as a vector asset, not a runtime UI rectangle.
-    try export("ll5-token-" + letter, 64, 42) { ctx in
-        let path = CGMutablePath()
-        path.move(to: CGPoint(x: 7, y: 3))
-        for point in [CGPoint(x: 59, y: 4), CGPoint(x: 61, y: 31), CGPoint(x: 51, y: 39), CGPoint(x: 6, y: 37)] { path.addLine(to: point) }
-        path.closeSubpath()
-        ctx.setFillColor(NSColor(red: 0.89, green: 0.80, blue: 0.61, alpha: 1).cgColor)
-        ctx.setStrokeColor(NSColor(red: 0.34, green: 0.23, blue: 0.12, alpha: 1).cgColor)
-        ctx.setLineWidth(1.2); ctx.addPath(path); ctx.drawPath(using: .fillStroke)
-        ctx.setFillColor(ink); ctx.fillEllipse(in: CGRect(x: 50, y: 29, width: 3, height: 3))
-        lettering(letter, rect: CGRect(x: 12, y: 7, width: 35, height: 28), size: 27, in: ctx)
-    }
 }
 for name in ["branch", "rings", "waves", "stars", "dashes", "mesh"] {
     try export("ll5-mark-" + name, 64, 64) { ctx in
@@ -138,4 +128,62 @@ for name in ["branch", "rings", "waves", "stars", "dashes", "mesh"] {
         }
     }
 }
-print("Exported perfume laboratory artwork and lettering.")
+// Compose the physical pages at export time. The game scales one complete spread,
+// so lettering cannot acquire a different origin or fitting transform from its paper.
+let blankBook = load(root.appendingPathComponent("ios/Ivy/Assets.xcassets/Scenes/LeLabo/ll4-notes.imageset/ll4-notes@3x.png"))
+let swatchBook = load(source.appendingPathComponent("record-swatches.png"))
+func artwork(_ name: String) -> CGImage {
+    load(catalog.appendingPathComponent("\(name).imageset/\(name)@3x.png"))
+}
+func place(_ image: CGImage, x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat, in ctx: CGContext) {
+    ctx.draw(image, in: CGRect(x: x - width / 2, y: 160 - y - height / 2, width: width, height: height))
+}
+let observationMarks = [["branch", "rings"], ["branch", "waves"], ["stars", "dashes"], ["stars", "mesh"]]
+for page in ["wood", "citrus", "recipes", "reference"] {
+    try export("ll5-record-" + page, 590, 295) { ctx in
+        ctx.scaleBy(x: 590.0 / 320, y: 590.0 / 320)
+        ctx.draw(page == "wood" || page == "citrus" ? swatchBook : blankBook,
+                 in: CGRect(x: 0, y: 0, width: 320, height: 160))
+        if page == "wood" || page == "citrus" {
+            for side in 0..<2 {
+                let observation = (page == "citrus" ? 2 : 0) + side
+                let x: CGFloat = side == 0 ? 91 : 231
+                place(artwork("ll5-observation-\(observation)"), x: x, y: 31, width: 112, height: 15.5, in: ctx)
+                for mark in 0..<2 {
+                    let markX: CGFloat = side == 0 ? (mark == 0 ? 62 : 121) : (mark == 0 ? 201 : 260)
+                    place(artwork("ll5-mark-" + observationMarks[observation][mark]), x: markX, y: 69, width: 30, height: 30, in: ctx)
+                }
+            }
+            if page != "citrus" {
+                place(artwork("ll5-unchanged"), x: 87, y: 114, width: 99, height: 14, in: ctx)
+                lettering("Cedar =", rect: CGRect(x: 184, y: 35, width: 65, height: 16), size: 12, in: ctx)
+                place(artwork("ll5-mark-branch"), x: 263, y: 117, width: 24, height: 24, in: ctx)
+            }
+        } else if page == "recipes" {
+            let ingredients = [["Gaiac Wood", "+ Incense"], ["Bergamot", "+ Cedar"], ["Oakmoss", "+ Patchouli"]]
+            for index in 0..<3 {
+                let x: CGFloat = index < 2 ? 87 : 234
+                let y: CGFloat = index == 1 ? 89 : 32
+                place(artwork("ll5-recipe-name-\(index)"), x: x, y: y, width: 112, height: 15.5, in: ctx)
+                for row in 0..<2 {
+                    lettering(ingredients[index][row], rect: CGRect(x: x - 52, y: 160 - y - 26 - CGFloat(row) * 16,
+                                                                   width: 104, height: 14), size: 11, in: ctx)
+                }
+            }
+        } else {
+            place(artwork("ll5-reference-name"), x: 87, y: 70, width: 100, height: 14, in: ctx)
+            place(artwork("ll5-mark-branch"), x: 234, y: 78, width: 44, height: 44, in: ctx)
+        }
+    }
+}
+
+// Source alpha is transparent outside the silhouette; trim only empty margins.
+let strip = load(source.appendingPathComponent("scent-strip.png"))
+    .cropping(to: CGRect(x: 280, y: 50, width: 472, height: 1390))!
+for letter in ["A", "B", "C", "D", "E", "F"] {
+    try export("ll5-token-" + letter, 48, 144) { ctx in
+        ctx.draw(strip, in: CGRect(x: 0, y: 0, width: 48, height: 144))
+        lettering(letter, rect: CGRect(x: 17, y: 100, width: 25, height: 28), size: 25, in: ctx)
+    }
+}
+print("Exported perfume laboratory artwork and complete record pages.")

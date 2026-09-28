@@ -31,7 +31,7 @@ struct PerfumeLaboratoryView: View {
                 let scale = geometry.size.width / 320
                 ZStack {
                     if panel == .perfumeFormula {
-                        PerfumeLabRecordArtwork(store: store, page: store.perfumeLab.recordPage, interactive: true)
+                        PerfumeLabRecordArtwork(store: store, page: store.perfumeLab.recordPage)
                     } else if panel == .perfumeLab {
                         Image("ll5-samples").resizable().scaledToFit().accessibilityHidden(true)
                         samples(scale: scale)
@@ -170,16 +170,19 @@ struct PerfumeLaboratoryView: View {
         }
         if !store.perfumeLab.complete {
             ForEach(0..<6) { index in
-                let point = PerfumeLabLayout.tag(index)
-                labArt("ll5-token-" + PerfumeLaboratory.sampleName(index), at: point, width: 33, height: 23, scale: scale)
-                hit("Sample " + PerfumeLaboratory.sampleName(index), at: point, width: 46, height: 25, scale: scale, drag: "ivy-perfume-sample:" + String(index)) {
+                let point = CGPoint(x: PerfumeLabLayout.tag(index).x, y: 139)
+                labArt("ll5-token-" + PerfumeLaboratory.sampleName(index), at: point, width: 12, height: 36, scale: scale)
+                if let mark = store.perfumeLab.visibleMark(at: index) {
+                    labArt("ll5-mark-" + mark.rawValue, at: CGPoint(x: point.x, y: 145), width: 8, height: 8, scale: scale)
+                }
+                hit("Sample " + PerfumeLaboratory.sampleName(index), at: point, width: 46, height: 36, scale: scale, drag: "ivy-perfume-sample:" + String(index)) {
                     selectedSample = selectedSample == index ? nil : index
                 }
                 .accessibilityValue(selectedSample == index ? "Selected" : "")
                 if selectedSample == index {
                     Image("ui-storybook-page").resizable().scaledToFit()
                         .frame(width: 7 * scale, height: 7 * scale).rotationEffect(.degrees(90))
-                        .position(x: point.x * scale, y: 126 * scale).allowsHitTesting(false).accessibilityHidden(true)
+                        .position(x: point.x * scale, y: 116 * scale).allowsHitTesting(false).accessibilityHidden(true)
                 }
             }
             hit("Press the bottling handle", at: CGPoint(x: 232, y: 28), width: 48, height: 39, scale: scale,
@@ -192,68 +195,47 @@ struct PerfumeLaboratoryView: View {
 struct PerfumeLabRecordArtwork: View {
     let store: GameStore
     let page: Int
-    var interactive = false
 
     var body: some View {
-        GeometryReader { geometry in
-            let s = geometry.size.width / 320
-            ZStack {
-                Image("ll4-notes").resizable().scaledToFit().accessibilityHidden(true)
-                if page < 2 {
-                    ForEach(0..<2) { side in
-                        let observation = page * 2 + side
-                        let x: CGFloat = side == 0 ? 87 : 234
-                        labArt("ll5-observation-\(observation)", at: CGPoint(x: x, y: 39), width: 118, height: 18, scale: s)
-                        ForEach(Array(PerfumeLaboratory.observations[observation].enumerated()), id: \.offset) { index, material in
-                            if let mark = PerfumeLaboratory.mark(for: material) {
-                                labArt("ll5-mark-" + mark.rawValue, at: CGPoint(x: x + (index == 0 ? -26 : 26), y: 78), width: 30, height: 30, scale: s)
+        FittedSceneStage {
+            GeometryReader { geometry in
+                let s = geometry.size.width / 320
+                ZStack {
+                    Image(recordImage).resizable().interpolation(.high)
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                        .accessibilityHidden(true)
+                    if page == 4 {
+                        // Only the player's discovered sample marks remain dynamic.
+                        ForEach(0..<6) { index in
+                            let x: CGFloat = index < 3 ? 87 : 234
+                            let y = CGFloat(40 + (index % 3) * 35)
+                            if let mark = store.perfumeLab.visibleMark(at: index) {
+                                labArt("ll5-id-" + PerfumeLaboratory.sampleName(index), at: CGPoint(x: x - 29, y: y), width: 18, height: 18, scale: s)
+                                labArt("ll5-mark-" + mark.rawValue, at: CGPoint(x: x + 23, y: y), width: 25, height: 25, scale: s)
                             }
-                        }
-                    }
-                    if page == 0 {
-                        labArt("ll5-unchanged", at: CGPoint(x: 87, y: 117), width: 99, height: 15, scale: s)
-                        if store.perfumeLab.referenceUnfolded {
-                            labArt("ll5-reference-name", at: CGPoint(x: 217, y: 120), width: 52, height: 15, scale: s)
-                            labArt("ll5-mark-branch", at: CGPoint(x: 263, y: 118), width: 23, height: 23, scale: s)
-                        } else {
-                            labArt("ll5-reference-closed", at: CGPoint(x: 236, y: 118), width: 49, height: 39, scale: s)
-                            if interactive {
-                                Button(action: store.unfoldPerfumeReference) {
-                                    Color.clear.frame(width: max(48, 49 * s), height: max(48, 39 * s)).contentShape(Rectangle())
-                                }.buttonStyle(.plain).position(x: 236 * s, y: 118 * s)
-                                    .accessibilityLabel("Unfold the reference paper")
-                            }
-                        }
-                    }
-                } else if page == 2 {
-                    ForEach(0..<3) { index in
-                        let x: CGFloat = index < 2 ? 87 : 234
-                        let y: CGFloat = index == 1 ? 98 : 42
-                        labArt("ll5-recipe-name-\(index)", at: CGPoint(x: x, y: y), width: 118, height: 18, scale: s)
-                        labArt("ll5-recipe-\(index)", at: CGPoint(x: x, y: y + 24), width: 118, height: 17, scale: s)
-                    }
-                } else if page == 3 {
-                    labArt("ll5-reference-name", at: CGPoint(x: 87, y: 62), width: 100, height: 22, scale: s)
-                    labArt("ll5-mark-branch", at: CGPoint(x: 234, y: 78), width: 44, height: 44, scale: s)
-                } else {
-                    ForEach(0..<6) { index in
-                        let x: CGFloat = index < 3 ? 87 : 234
-                        let y = CGFloat(40 + (index % 3) * 35)
-                        if let mark = store.perfumeLab.visibleMark(at: index) {
-                            labArt("ll5-id-" + PerfumeLaboratory.sampleName(index), at: CGPoint(x: x - 29, y: y), width: 18, height: 18, scale: s)
-                            labArt("ll5-mark-" + mark.rawValue, at: CGPoint(x: x + 23, y: y), width: 25, height: 25, scale: s)
                         }
                     }
                 }
+                .frame(width: geometry.size.width, height: geometry.size.height)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(evidenceDescription)
             }
-            .accessibilityElement(children: interactive ? .contain : .ignore)
-            .accessibilityLabel(evidenceDescription)
+        }
+    }
+
+    private var recordImage: String {
+        switch page {
+        case 0: "ll5-record-wood"
+        case 1: "ll5-record-citrus"
+        case 2: "ll5-record-recipes"
+        case 3: "ll5-record-reference"
+        default: "ll4-notes"
         }
     }
 
     private var evidenceDescription: String {
         switch page {
-        case 0: store.clueText(.perfumeTrialsWood) + (store.perfumeLab.referenceUnfolded ? " " + store.clueText(.perfumeReference) : " A folded reference is closed.")
+        case 0: store.clueText(.perfumeTrialsWood) + " " + store.clueText(.perfumeReference)
         case 1: store.clueText(.perfumeTrialsCitrus)
         case 2: PerfumeFormula.all.map { store.clueText($0.clue) }.joined(separator: ". ")
         case 3: store.clueText(.perfumeReference)
@@ -289,6 +271,8 @@ struct PerfumeLabWorldArtwork: View {
                     labArt(row == 0 ? "ll5-mark-rings" : "ll5-mark-waves",
                            at: CGPoint(x: 50, y: CGFloat(98 + row * 21)), width: 8, height: 9, scale: s)
                 }
+                labArt("ll5-reference-name", at: CGPoint(x: 82, y: 88), width: 24, height: 4, scale: s)
+                labArt("ll5-mark-branch", at: CGPoint(x: 82, y: 106), width: 13, height: 15, scale: s)
                 ForEach(Array(PerfumeLaboratory.materials.enumerated()), id: \.offset) { index, material in
                     if !store.perfumeLab.labels.contains(material) && !store.perfumeLab.complete {
                         labArt("ll4-label-" + material.rawValue, at: CGPoint(x: 129 + CGFloat(index) * 25, y: 141), width: 23, height: 10, scale: s)

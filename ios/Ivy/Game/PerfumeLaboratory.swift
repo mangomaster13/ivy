@@ -33,6 +33,7 @@ struct PerfumeLabProgress: Codable, Equatable {
     var sampled: Set<Int> = []
     var labels: [AdventureTool?] = Array(repeating: nil, count: 6)
     var batches: [[Int]] = [[], [], []]
+    // Legacy save field; the Cedar reference is now printed directly on page one.
     var referenceUnfolded = false
     var recordPage = 0
     var readPages: Set<Int> = []
@@ -262,15 +263,9 @@ extension GameStore {
         guard canInspectPerfumeLab, overlay == .memory(.perfumeFormula), (0..<3).contains(page) else { return }
         perfumeLab.recordPage = page
         perfumeLab.readPages.insert(page)
-        if page == 0 { discover(.perfumeTrialsWood) }
+        if page == 0 { discover(.perfumeTrialsWood); discover(.perfumeReference) }
         else if page == 1 { discover(.perfumeTrialsCitrus) }
         else { PerfumeFormula.all.forEach { discover($0.clue) } }
         persistNow()
-    }
-
-    func unfoldPerfumeReference() {
-        guard canInspectPerfumeLab, overlay == .memory(.perfumeFormula), perfumeLab.recordPage == 0 else { return }
-        perfumeLab.referenceUnfolded = true
-        discover(.perfumeReference); persistNow()
     }
 }

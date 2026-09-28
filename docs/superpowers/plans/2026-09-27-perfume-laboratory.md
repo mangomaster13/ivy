@@ -28,7 +28,7 @@ Four historical observations, shown as two readable pairs:
 3. Bergamot + Gaiac Wood → stars + dashes.
 4. Bergamot + Oakmoss → stars + mesh.
 
-The common mark identifies the common ingredient; each remaining mark identifies the other ingredient. Both groups are uniquely solvable. A physical folded reference exposes Cedar's branch mark on request. Notes contains only discovered evidence, never automatically inferred labels. No Hint button or timed tutorial.
+The common mark identifies the common ingredient; each remaining mark identifies the other ingredient. Both groups are uniquely solvable. Revision 2026-09-28: the user removed the folded-reference layer. Cedar's branch mark is printed directly on the first record spread; opening the book records it without an additional action. Notes contains only discovered evidence, never automatically inferred labels. No Hint button or timed tutorial.
 
 Final recipes are simplified fictional game formulas: Gaiac 10=gaiacWood+incense; Bergamote 22=bergamot+cedar; Mousse de Chene 30=oakmoss+patchouli. None is copied from a historical observation. Pair order is irrelevant; three cup identities matter. Each material is used once. There are 90 full partitions into three named pairs; no partial validation reduces that search. Recipes show names, not target marks. Correctness does not depend on player-applied labels.
 
@@ -40,7 +40,7 @@ Files: `art/perfume/laboratory/README.md`, `art/perfume/laboratory/source/`.
 
 - [x] Produce and inspect an overview proposal against current Yard and Le Labo catalog references. Document that historical source paths are absent in this checkout.
 - [x] Present the actual image for approval. The overview is not a production bitmap containing the whole interactive UI.
-- [x] After approval, author separate closeups for readable records, samples/labels and blending; export independent strips, labels, sample IDs, cup drafts and folded reference states.
+- [x] After approval, author separate closeups for readable records, samples/labels and blending; export independent strips, labels, sample IDs, cup drafts and complete record spreads (the folded reference was removed on 2026-09-28).
 - [x] Record physical surface bounds and shared image/hotspot transforms in the artwork README. Keep six samples distinguishable by A–F, not semantic bottle shape or material color. Each ingredient label has its own lettering asset; no ingredient-art substitution.
 
 ## Task 2 — Persistent puzzle model

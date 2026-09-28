@@ -68,3 +68,22 @@ Actual source coordinates, on the shared 320×160 canvas:
 `PerfumeLaboratory.swift` now owns sampling, labels, complete-set judgment, page evidence, pickup and migration guards. `PerfumeLaboratoryViews.swift` owns rack, records, blending, overview state overlays and enlarged closeups. Existing cabinets remain scenery; the old raw-material pickup and old blending entry points are disabled once the optional laboratory record is activated. Successful batches create three independent pending outputs; reload never puts unclaimed output in Tools. The existing gift-box order and perfume ownership commit are reused.
 
 Two focused XCTest methods cover pure state/legacy decoding and the integrated tool–Notes–blend–pickup–box path. They were written but not executed. No validation scripts, verification build, device launch, reset or game screenshot pass was performed. Runtime touch/drag behavior, final device text size and artwork alignment still require user acceptance.
+
+
+## Revision — 2026-09-28: complete book pages and physical scent papers
+
+The user reported overflowing book lettering and flat color-and-letter paper selectors. This revision replaces runtime title/recipe composition with complete `ll5-record-wood`, `ll5-record-citrus`, `ll5-record-recipes` images. `PerfumeLabRecordArtwork` fits the complete spread and is shared by the physical book and Notes. The legacy reference-only Notes page also has an authored image. Discovered A–F evidence remains dynamic, with the same fitted canvas; unseen identities stay hidden.
+
+The user also removed the folded-reference layer. Cedar = branch is permanently printed on the first spread and its clue is recorded when that spread is opened. Notes merges the old standalone reference into the wood record and preserves a saved reading position on that reference. The obsolete save field remains decodable; no progress is reset. The overview book has no envelope or fold hotspot.
+
+Built-in imagegen sources and prompts:
+
+- `record-swatches.png`: `exec-cdf39839-7ada-497c-b43b-0f58bf1a93e2.png`. Edit the existing `ll4-notes` book, using the approved laboratory for physical swatches and Yard for brushwork. Preserve the whole 2:1 book, binding, camera and paper bounds; add exactly four blank taped cream paper swatches, two per page, leaving title and lower annotation areas clear. No baked controls or invented text.
+- `scent-strip.png`: `exec-1853e81d-23c4-4212-b551-09f67dfdc503.png`, refining `exec-004def22-5783-4690-a6ad-6c5e7c151df6.png`. One isolated matte ivory scent strip matching the approved paper, dark irregular edge, slight curl and crisp hand-painted texture. Preserve the blank paper; remove background/halo with transparent alpha. RGB outside the silhouette contains color, but its alpha is zero; production export preserves transparency.
+- `overview.png`: `exec-416517aa-8e8c-4601-a9d3-74cb4c5986d7.png`. The overview's single local edit removes only the envelope from the right journal page and restores blank cream paper; the corresponding Cedar inscription/mark remains a separate overview layer.
+
+The exporter places exact bundled-Juniper lettering and the existing six shared mark symbols into the full book images before producing each asset scale. Actual swatch centers are (62,69), (121,69), (201,69), (260,69) on the 320×160 canvas; headings occupy x=35–147 / 175–287, y≈23–39. Formula ingredients use two lines inside x=35–139 / 182–286, y=45–130. Cedar's visible reference occupies x=184–275, y=101–129. No text is clipped to conceal overflow.
+
+Scent-strip alpha extraction uses source bounds (280,50,472,1390), exported to the existing six `ll5-token-A`…`F` names. Each strip sits at (27+53i,139), 12×36 in the blending scene; discovered marks sit on its lower paper face at y=145. Hit areas remain the existing enlarged targets. Selection arrows sit above the paper at y=116. The old flat vector tag drawing is removed from the exporter.
+
+Inspected exported book artwork, letter boundaries, paper texture and alpha. Updated the existing integration assertion for the reference becoming visible on book open; it was not executed. No app build, device launch, gameplay screenshots or gesture tests were run; device acceptance remains user-owned.

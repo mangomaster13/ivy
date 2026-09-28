@@ -294,6 +294,7 @@ private struct ClueNotebookView: View {
     private var fragrancePages: [AdventureClue] {
         Self.fragranceClues.filter {
             store.exploration.clues.contains($0) &&
+            ($0 != .perfumeReference || !store.exploration.clues.contains(.perfumeTrialsWood)) &&
             (!store.exploration.clues.contains(.gaiacFormula) || ![.bergamoteFormula, .mousseFormula].contains($0))
         }
     }
@@ -301,6 +302,9 @@ private struct ClueNotebookView: View {
     private var pageCount: Int { ordinaryPageCount + fragrancePages.count }
     private var page: Int {
         guard let clue = store.memories.notebookClue else { return 0 }
+        if clue == .perfumeReference, let index = fragrancePages.firstIndex(of: .perfumeTrialsWood) {
+            return ordinaryPageCount + index
+        }
         if [.bergamoteFormula, .mousseFormula].contains(clue), let index = fragrancePages.firstIndex(of: .gaiacFormula) {
             return ordinaryPageCount + index
         }
